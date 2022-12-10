@@ -72,7 +72,7 @@ const Styled = styled.div`
   }
   .body-center {
     padding: 32px;
-    min-width: 400px;
+    min-width: 500px;
     height: 100%;
     background-color: #e7e8eb;
   }
