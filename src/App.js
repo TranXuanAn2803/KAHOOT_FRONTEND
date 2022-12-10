@@ -15,6 +15,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { UserProvider } from "./utils/UserContext";
 import { onLogout } from "./utils/method";
 import Creator from "./pages/Creator";
+import { Header } from "./components/Header";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -26,7 +27,7 @@ const queryClient = new QueryClient({
 
 const App = () => {
   useEffect(() => {
-    const handleInvalidToken = e => {
+    const handleInvalidToken = (e) => {
       console.log("e token", e);
       if ((e.key === "accessToken" || e.key == "refreshToken") && e.oldValue && !e.newValue) {
         onLogout();
@@ -51,11 +52,12 @@ const App = () => {
               backgroundColor: "#fff"
             }}>
             <UserProvider>
+            <Header />
               <Routes>
                 <Route exact path="/" element={<Navigate to="/signin" />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
-                <Route path="/home" element={<Home />} />
+                <Route exact path="/home" element={<Home />} />
                 <Route exact path="/groups" element={<ListGroup />} />
                 <Route exact path="/creator" element={<Creator />} />
                 <Route path="group-detail" element={<ButtonAppBar />} />

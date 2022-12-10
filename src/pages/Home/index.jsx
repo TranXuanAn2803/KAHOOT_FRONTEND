@@ -4,7 +4,6 @@ import { fetchUsers } from "../../utils/api";
 import { useQuery, QueryClient, QueryClientProvider } from "react-query";
 import { onLogout } from "../../utils/method";
 import { Link } from "react-router-dom";
-import { Header } from "../../components/Header";
 import "react-toastify/dist/ReactToastify.css";
 import UserContext from "../../utils/UserContext";
 import { Button, Card, Col, Container, ListGroup, NavLink, Row } from "react-bootstrap";
@@ -36,7 +35,6 @@ function HomePage() {
 
   return (
     <>
-      <Header />
       <Container fluid className="mb-5">
         <Row>
           <Col xs={12} md={3} style={{ marginBottom: "1.4rem" }}>
