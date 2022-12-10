@@ -2,7 +2,7 @@ import React from "react";
 import { Header } from "../../components/Header";
 import Styled from "./style";
 import { Button, Tabs, Input } from "antd";
-import { QuestionCircleOutlined, CloseOutlined } from "@ant-design/icons";
+import { QuestionCircleOutlined, CloseOutlined, PlayCircleTwoTone } from "@ant-design/icons";
 const Creator = () => {
   const onChange = key => {
     console.log("key", key);
@@ -27,7 +27,7 @@ const Creator = () => {
       key: "1",
       children: (
         <>
-          <form method="post" action="/slide">
+          <form method="post" action="/slide" class="form-create-slide">
             <div className="item-container">
               <div className="item-question">
                 <label for="question-name" className="question-text">
@@ -75,7 +75,18 @@ const Creator = () => {
                 );
               })}
             </div>
+            <div className="add-option">
+              <Button type="text">+ Add option</Button>
+            </div>
           </form>
+          <div className="presentation-button">
+            <Button type="primary">
+              <span className="play-icon">
+                <PlayCircleTwoTone />
+              </span>
+              Present
+            </Button>
+          </div>
         </>
       )
     },

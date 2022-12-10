@@ -178,7 +178,7 @@ function CreatingButton(props) {
           </a>
         </MenuItem>
         <MenuItem>
-          <a className="text-decoration-none text-dark" href="/creator">
+          <a className="text-decoration-none text-dark" href="/presentation/creator">
             <span style={{ fontSize: "1.4rem" }}>Create new presentation</span>
           </a>
         </MenuItem>

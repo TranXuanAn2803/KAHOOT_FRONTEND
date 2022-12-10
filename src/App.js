@@ -57,7 +57,7 @@ const App = () => {
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/home" element={<Home />} />
                 <Route exact path="/groups" element={<ListGroup />} />
-                <Route exact path="/creator" element={<Creator />} />
+                <Route path="/presentation/creator" element={<Creator />} />
                 <Route path="group-detail" element={<ButtonAppBar />} />
                 <Route path="group-members" element={<GroupMember />} />
                 <Route path="group-slides" element={<GroupSile />} />
