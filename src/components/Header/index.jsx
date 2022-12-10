@@ -172,9 +172,14 @@ function CreatingButton(props) {
           "aria-labelledby": "create-btn"
         }}
         sx={{ zIndex: "9999" }}>
-        <MenuItem onClick={handleClose}>
+        <MenuItem className="button-creator-container" onClick={handleClose}>
           <a className="text-decoration-none text-dark" href="/groups/create">
             <span style={{ fontSize: "1.4rem" }}>Create new group</span>
+          </a>
+        </MenuItem>
+        <MenuItem>
+          <a className="text-decoration-none text-dark" href="/creator">
+            <span style={{ fontSize: "1.4rem" }}>Create new presentation</span>
           </a>
         </MenuItem>
       </Menu>

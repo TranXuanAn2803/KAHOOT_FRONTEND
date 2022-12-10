@@ -14,6 +14,7 @@ import { UserProfile, ProfileSetting } from "./pages/UserProfile";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { UserProvider } from "./utils/UserContext";
 import { onLogout } from "./utils/method";
+import Creator from "./pages/Creator";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -43,10 +44,11 @@ const App = () => {
           <main
             style={{
               marginTop: "6.4rem",
-              padding: "2.4rem 2.4rem",
+              padding: "2.4rem 0rem",
               overflowY: "auto",
               width: "100vw",
-              height: "100vh"
+              height: "100vh",
+              backgroundColor: "#fff"
             }}>
             <UserProvider>
               <Routes>
@@ -55,7 +57,7 @@ const App = () => {
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/home" element={<Home />} />
                 <Route exact path="/groups" element={<ListGroup />} />
-
+                <Route exact path="/creator" element={<Creator />} />
                 <Route path="group-detail" element={<ButtonAppBar />} />
                 <Route path="group-members" element={<GroupMember />} />
                 <Route path="group-slides" element={<GroupSile />} />
