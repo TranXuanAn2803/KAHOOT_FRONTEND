@@ -9,7 +9,7 @@ import { ArrowLeftOutlined, PlayCircleOutlined, ShareAltOutlined } from "@ant-de
 
 export const EditPresentation = (props) => {
   let { presentationId } = useParams();
-
+  const [currentSlide, setCurrentSlide] = React.useState(1);
   // Todo: Check quyền edit
 
   // Giả sử check quyền thành công
@@ -30,10 +30,12 @@ export const EditPresentation = (props) => {
     });
   }
 
+  // #endregion
+
   React.useEffect(() => {
     document.title = presentation.name;
+    // setCurrentSlide(presentation.slideList[0]);
   }, []);
-  // #endregion
 
   return (
     <>
@@ -52,16 +54,7 @@ export const EditPresentation = (props) => {
             Sider 1
           </Sider>
           <Divider type="vertical" className="m-0" />
-          <Content>{presentation.name}</Content>
-          <Divider type="vertical" className="m-0" />
-          <Sider
-            style={{
-              backgroundColor: "white",
-              overflow: "auto",
-              height: "100vh"
-            }}>
-            Sider 2
-          </Sider>
+          <EditContent slide={presentation.slideList[currentSlide]} />
         </Layout>
       </Layout>
     </>
@@ -97,6 +90,28 @@ const EditHeader = (props) => {
         </MenuList>
       </MenuBar>
     </>
+  );
+};
+
+const EditContent = (props) => {
+  const { id, question, options, type } = props.slide;
+  return (
+    <Layout>
+      <Content style={{ padding: "3.2rem" }}>
+        <div style={{ width: "100%", paddingBottom: "56.25%", backgroundColor: "white" }}>
+          {id} - {question} - {options} - {type}
+        </div>
+      </Content>
+      <Divider type="vertical" className="m-0" />
+      <Sider
+        style={{
+          backgroundColor: "white",
+          overflow: "auto",
+          height: "100vh",
+        }}>
+        Sider 2
+      </Sider>
+    </Layout>
   );
 };
 
