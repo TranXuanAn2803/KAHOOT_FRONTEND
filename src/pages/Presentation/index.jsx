@@ -12,72 +12,63 @@ import {
   UsergroupAddOutlined
 } from "@ant-design/icons";
 import { MenuItem, StyledButton } from "./style";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 const { Content } = Layout;
 const { Search } = Input;
 const { Column, ColumnGroup } = Table;
 
 export const Presentation = (props) => {
+  return <Outlet />;
+};
+
+export const MyPresentations = (props) => {
+  const onSearch = (value) => console.log(value);
   React.useEffect(() => {
     document.title = "My Presentations - Realtime quiz-based learning";
   }, []);
-  return (
-    <Layout>
-      <SideBar />
-      <Layout
-        style={{
-          backgroundColor: "white",
-          padding: "0 2.4rem 2.4rem"
-        }}>
-        <Content
-          style={{
-            margin: "0 1.6rem"
-          }}>
-          <MyPresentations />
-        </Content>
-      </Layout>
-    </Layout>
-  );
-};
-
-const MyPresentations = (props) => {
-  const onSearch = (value) => console.log(value);
   const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);
   return (
     <>
-      <div className="d-flex flex-column" style={{ padding: "3.2rem" }}>
-        <p className="mb-5" style={{ fontWeight: "600" }}>
-          My presentations
-        </p>
-        <div className="d-flex justify-content-between mb-5">
-          <div className="d-flex">
-            {hasSelectedPresentation ? (
-              <StyledButton
-                variant="danger"
-                className="d-flex align-items-center"
-                onClick={() => setModalShow(true)}>
-                <p>Delete</p>
-              </StyledButton>
-            ) : (
-              //   <StyledButton
-              //     variant="primary"
-              //     className="d-flex align-items-center"
-              //     onClick={() => setModalShow(true)}>
-              //     <AddIcon fontSize="large" className="" />
-              //     <p>New Presentation</p>
-              //   </StyledButton>
-              <AddPresentations />
-            )}
-          </div>
-          <div className="d-flex">
-            <Search placeholder="Type to search" size="large" onSearch={onSearch} />
-          </div>
-        </div>
-        <div className="mb-5">
-          <TableOfPresentations handleHasSelectedPresentation={setHasSelectedPresentation} />
-        </div>
-      </div>
+      <Layout>
+        <SideBar />
+        <Layout
+          style={{
+            backgroundColor: "white",
+            padding: "0 2.4rem 2.4rem"
+          }}>
+          <Content
+            style={{
+              margin: "0 1.6rem"
+            }}>
+            <div className="d-flex flex-column" style={{ padding: "3.2rem" }}>
+              <p className="mb-5" style={{ fontWeight: "600" }}>
+                My presentations
+              </p>
+              <div className="d-flex justify-content-between mb-5">
+                <div className="d-flex">
+                  {hasSelectedPresentation ? (
+                    <StyledButton
+                      variant="danger"
+                      className="d-flex align-items-center"
+                      onClick={() => setModalShow(true)}>
+                      <p>Delete</p>
+                    </StyledButton>
+                  ) : (
+                    <AddPresentations />
+                  )}
+                </div>
+                <div className="d-flex">
+                  <Search placeholder="Type to search" size="large" onSearch={onSearch} />
+                </div>
+              </div>
+              <div className="mb-5">
+                <TableOfPresentations handleHasSelectedPresentation={setHasSelectedPresentation} />
+              </div>
+            </div>
+          </Content>
+        </Layout>
+      </Layout>
     </>
   );
 };

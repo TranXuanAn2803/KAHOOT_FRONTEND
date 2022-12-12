@@ -61,7 +61,6 @@ const DefaultHeader = (props) => {
         <MenuBar.Brand href="/" className="d-flex">
             <img id="logo" style={{ maxWidth: "10rem" }} src="/assets/images/kahoot.png" />
           </MenuBar.Brand>
-
         </Container>
       </MenuBar>
     </>

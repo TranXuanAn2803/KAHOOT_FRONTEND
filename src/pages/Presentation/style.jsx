@@ -2,6 +2,7 @@ import Button from "react-bootstrap/Button";
 import AddIcon from "@mui/icons-material/Add";
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
+import { Navbar, Nav } from "react-bootstrap";
 
 export const StyledButton = styled(Button)`
   padding: 0.6rem 1.6rem;
@@ -21,9 +22,17 @@ export const MenuItem = styled(NavLink)`
   font-size: 1.4rem;
   font-weight: 400;
   text-decoration: none;
-
-  &p
-  {
+  color: #000;
+  &p {
     padding-left: 0.5rem;
   }
+`;
+
+export const MenuBar = styled(Navbar)`
+  padding: 0.8rem !important;
+  height: 100%;
+`;
+
+export const MenuList = styled(Nav)`
+  height: inherit;
 `;
