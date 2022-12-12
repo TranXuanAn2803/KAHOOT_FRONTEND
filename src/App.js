@@ -16,6 +16,7 @@ import { UserProvider } from "./utils/UserContext";
 import { onLogout } from "./utils/method";
 import Creator from "./pages/Creator";
 import { Header } from "./components/Header";
+import { Presentation } from "./pages/Presentation";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -45,14 +46,13 @@ const App = () => {
           <main
             style={{
               marginTop: "6.4rem",
-              padding: "2.4rem 0rem",
               overflowY: "auto",
               width: "100vw",
               height: "100vh",
               backgroundColor: "#fff"
             }}>
             <UserProvider>
-            <Header />
+              <Header />
               <Routes>
                 <Route exact path="/" element={<Navigate to="/signin" />} />
                 <Route path="/signin" element={<SignIn />} />
@@ -69,6 +69,7 @@ const App = () => {
                   <Route path={``} element={<Navigate to={`./profile`} />} />
                   <Route path={`profile`} element={<ProfileSetting />} />
                 </Route>
+                <Route path="/presentations" element={<Presentation />} />
                 <Route path="*" element={<NoMatch />} />
               </Routes>
             </UserProvider>

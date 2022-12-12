@@ -87,7 +87,6 @@ export const MenuItem = styled(NavLink)`
   }
   &.active {
     color: #584491 !important;
-    
   }
   &.active:after {
     border-color: #584491 !important;
