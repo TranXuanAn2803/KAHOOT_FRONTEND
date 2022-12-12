@@ -16,7 +16,9 @@ import { UserProvider } from "./utils/UserContext";
 import { onLogout } from "./utils/method";
 import Creator from "./pages/Creator";
 import { Header } from "./components/Header";
-import { Presentation } from "./pages/Presentation";
+import { MyPresentations, Presentation } from "./pages/Presentation";
+import { EditPresentation } from "./pages/Presentation/EditPresentation";
+import { ShowPresentation } from "./pages/Presentation/ShowPresentation";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -69,7 +71,12 @@ const App = () => {
                   <Route path={``} element={<Navigate to={`./profile`} />} />
                   <Route path={`profile`} element={<ProfileSetting />} />
                 </Route>
-                <Route path="/presentations" element={<Presentation />} />
+                <Route path="/presentations" element={<Presentation />}>
+                  <Route index element={<MyPresentations />}></Route>
+                  <Route path="all" element={<MyPresentations />} />
+                  <Route path=":presentationId/edit" element={<EditPresentation />} />
+                  <Route path=":presentationId/show" element={<ShowPresentation />} />
+                </Route>
                 <Route path="*" element={<NoMatch />} />
               </Routes>
             </UserProvider>
