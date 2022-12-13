@@ -37,7 +37,7 @@ const Styled = styled.div`
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    width: 224px;
+    width: 300px;
     overflow-y: auto;
     overflow: visible;
   }

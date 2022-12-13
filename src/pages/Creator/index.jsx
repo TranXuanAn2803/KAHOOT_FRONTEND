@@ -1,12 +1,45 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Header } from "../../components/Header";
 import Styled from "./style";
 import { Button, Tabs, Input } from "antd";
 import { QuestionCircleOutlined, CloseOutlined } from "@ant-design/icons";
-const Creator = () => {
+import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from "recharts";
+const Creator = props => {
+  const { slide, currentSlide, presentation, setCurrentSlide, setPresentation } = props;
+  const [dataChart, setDataChart] = useState([
+    {
+      answer: "A",
+      total: 100
+    },
+    {
+      answer: "B",
+      total: 50
+    },
+    {
+      answer: "C",
+      total: 20
+    },
+    {
+      answer: "D",
+      total: 30
+    }
+  ]);
+  useEffect(() => {
+    console.log("slide currentSlide ", slide, currentSlide);
+    const currentSlideArr = slide[currentSlide];
+    console.log("currentSlideArr: " + currentSlideArr);
+    const data = currentSlideArr.options.map((item, index) => {
+      return {
+        answer: item,
+        total: Math.floor(Math.random() * (100 - 20)) + 20
+      };
+    });
+    setDataChart(data);
+  }, [slide, currentSlide]);
   const onChange = key => {
     console.log("key", key);
   };
+
   const optionItems = [
     {
       id: 1,
@@ -30,7 +63,7 @@ const Creator = () => {
           <form method="post" action="/slide">
             <div className="item-container">
               <div className="item-question">
-                <label for="question-name" className="question-text">
+                <label htmlFor="question-name" className="question-text">
                   Your question
                 </label>
                 <span className="question-icon">
@@ -50,7 +83,7 @@ const Creator = () => {
             </div>
             <div className="item-container">
               <div className="item-question">
-                <label for="answers" className="question-text">
+                <label htmlFor="answers" className="question-text">
                   Options
                 </label>
                 <span className="question-icon">
@@ -59,7 +92,7 @@ const Creator = () => {
               </div>
               {optionItems.map((item, index) => {
                 return (
-                  <div className="item-answer">
+                  <div className="item-answer" key={`item-answer-${index}`}>
                     <Input
                       id="answers"
                       name="answers[]"
@@ -85,6 +118,7 @@ const Creator = () => {
       children: "content of Tab Pane 2"
     }
   ];
+
   return (
     <Styled>
       <Header />
@@ -126,7 +160,16 @@ const Creator = () => {
             </ol>
           </div>
           <div className="body-center">
-            <div className="center-draw"></div>
+            <div className="center-draw">
+              <BarChart width={430} height={500} data={dataChart}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="answer" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="total" fill="#8884d8" />
+              </BarChart>
+            </div>
           </div>
           <div className="body-right">
             <Tabs defaultActiveKey="1" onChange={onChange} items={items} />

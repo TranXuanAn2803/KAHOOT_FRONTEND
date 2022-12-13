@@ -7,28 +7,32 @@ import Container from "react-bootstrap/Container";
 import { MenuItem as MenuBarItem, MenuBar, MenuList, StyledButton } from "../style";
 import { ArrowLeftOutlined, PlayCircleOutlined, ShareAltOutlined } from "@ant-design/icons";
 import Creator from "../../Creator";
+import { useEffect } from "react";
 const SlideType = {
   MultipleChoices: 0
 };
 export const EditPresentation = props => {
   let { presentationId } = useParams();
   const [currentSlide, setCurrentSlide] = React.useState(1);
-  var presentation = {
+  const [presentation, setPresentation] = React.useState({
     id: presentationId,
     name: "present 1",
     slideList: [],
     createdBy: "Nguyen Tuan Khanh"
-  };
-  for (var i = 0; i < 4; i++) {
-    presentation.slideList.push({
-      id: i,
-      type: SlideType.MultipleChoices,
-      question: "Question 1",
-      options: ["Options 1", "Options 2", "Options 3"]
-    });
-  }
+  });
+  useEffect(() => {
+    for (var i = 0; i < 4; i++) {
+      presentation.slideList.push({
+        id: i,
+        type: SlideType.MultipleChoices,
+        question: "Question 1",
+        options: ["Options 1", "Options 2", "Options 3", "Options 4"]
+      });
+    }
+  }, []);
 
   // #endregion
+  console.log("presentation.slideList", presentation.slideList, currentSlide);
 
   React.useEffect(() => {
     document.title = presentation.name;
@@ -42,7 +46,13 @@ export const EditPresentation = props => {
         </Header>
         <Divider type="horizontal" className="m-0" />
         <Layout>
-          <EditContent slide={presentation.slideList} />
+          <EditContent
+            slide={presentation.slideList}
+            currentSlide={currentSlide}
+            presentation={presentation}
+            setCurrentSlide={setCurrentSlide}
+            setPresentation={setPresentation}
+          />
         </Layout>
       </Layout>
     </>
@@ -82,6 +92,15 @@ const EditHeader = props => {
 };
 
 const EditContent = props => {
-  const { id, question, options, type } = props.slide;
-  return <Creator />;
+  const { slide, currentSlide, presentation, setCurrentSlide, setPresentation } = props;
+  console.log("slide edit content", slide, currentSlide);
+  return (
+    <Creator
+      slide={slide}
+      currentSlide={currentSlide}
+      presentation={presentation}
+      setCurrentSlide={setCurrentSlide}
+      setPresentation={setPresentation}
+    />
+  );
 };
