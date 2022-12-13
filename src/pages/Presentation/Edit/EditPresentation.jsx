@@ -32,8 +32,7 @@ export const EditPresentation = props => {
 
   React.useEffect(() => {
     document.title = presentation.name;
-    // setCurrentSlide(presentation.slideList[0]);
-  }, []);
+  });
 
   return (
     <>
