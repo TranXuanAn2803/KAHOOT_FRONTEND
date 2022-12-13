@@ -9,7 +9,7 @@ let AxiosInstance = axios.create({
 
 // const PostAsync = async (method, requestData) => {
 //   var response = await AxiosInstance.post(method, requestData, {
-//     headers: {
+//     headers:
 //       x_authorization: localStorage.getItem("accessToken")
 //     }
 //   });
