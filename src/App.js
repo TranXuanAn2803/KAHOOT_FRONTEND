@@ -53,7 +53,7 @@ const App = () => {
                 marginTop: "6.4rem",
                 overflowY: "auto",
                 width: "100vw",
-                height: "100%"
+                height: "100vh"
               }}>
               <Routes>
                 <Route exact path="/" element={<Navigate to="/signin" />} />
