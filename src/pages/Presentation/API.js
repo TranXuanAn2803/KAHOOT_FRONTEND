@@ -23,8 +23,8 @@ let AxiosInstance = axios.create({
 
 export const GetAllPresentations = async () => {
   var accessToken = localStorage.getItem("accessToken");
-  console.log("accessToken:", accessToken);
-  var response = await AxiosInstance.get("presentation", null, {
+  console.log("accessToken:", AxiosInstance);
+  var response = await axios.get("http://localhost:5000/presentation", {
     headers: {
       x_authorization: accessToken
     }
@@ -34,7 +34,7 @@ export const GetAllPresentations = async () => {
   return response;
 };
 
-export const AddPresentation = async (request) => {
+export const AddPresentation = async request => {
   var requestData = {
     name: request.presentationName
   };
