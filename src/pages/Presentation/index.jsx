@@ -18,12 +18,12 @@ const { Content } = Layout;
 const { Search } = Input;
 const { Column, ColumnGroup } = Table;
 
-export const Presentation = (props) => {
+export const Presentation = props => {
   return <Outlet />;
 };
 
-export const MyPresentations = (props) => {
-  const onSearch = (value) => console.log(value);
+export const MyPresentations = props => {
+  const onSearch = value => console.log(value);
   React.useEffect(() => {
     document.title = "My Presentations - Realtime quiz-based learning";
   });
@@ -96,7 +96,7 @@ for (let i = 0; i < 4; i++) {
   });
 }
 
-const TableOfPresentations = (props) => {
+const TableOfPresentations = props => {
   const [selectedRowKeys, setSelectedRowKeys] = React.useState([]);
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
@@ -154,7 +154,7 @@ const TableOfPresentations = (props) => {
   );
 };
 
-const ActionMenu = (props) => {
+const ActionMenu = props => {
   const data = props.data;
   const items = [
     {
@@ -254,7 +254,7 @@ const ActionMenu = (props) => {
 
 // #region Add new Presentations
 
-const AddPresentations = (props) => {
+const AddPresentations = props => {
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
@@ -273,7 +273,7 @@ const AddPresentations = (props) => {
     setOpen(false);
   };
 
-  const handleSubmit = (values) => {
+  const handleSubmit = values => {
     var { presentationName } = values;
     console.log(`Submit ${presentationName}`);
     // #region Send request to server
