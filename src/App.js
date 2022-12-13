@@ -74,8 +74,8 @@ const App = () => {
                 <Route path="/presentations" element={<Presentation />}>
                   <Route index element={<MyPresentations />}></Route>
                   <Route path="all" element={<MyPresentations />} />
-                  <Route path="/edit/:presentationId" element={<EditPresentation />} />
-                  <Route path="/show/:presentationId" element={<ShowPresentation />} />
+                  <Route path=":presentationId/edit" element={<EditPresentation />} />
+                  <Route path=":presentationId/show" element={<ShowPresentation />} />
                 </Route>
                 <Route path="*" element={<NoMatch />} />
               </Routes>

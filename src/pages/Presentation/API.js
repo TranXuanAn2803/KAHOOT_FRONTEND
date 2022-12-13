@@ -5,19 +5,6 @@ let AxiosInstance = axios.create({
   timeout: _ParamConfig.timeout
 });
 
-// #region private methods
-
-// const PostAsync = async (method, requestData) => {
-//   var response = await AxiosInstance.post(method, requestData, {
-//     headers:
-//       x_authorization: localStorage.getItem("accessToken")
-//     }
-//   });
-//   return response.data;
-// };
-
-// #endregion
-
 // #region Main methods
 
 export const GetAllPresentations = async () => {
