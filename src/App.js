@@ -30,7 +30,7 @@ const queryClient = new QueryClient({
 
 const App = () => {
   useEffect(() => {
-    const handleInvalidToken = (e) => {
+    const handleInvalidToken = e => {
       console.log("e token", e);
       if ((e.key === "accessToken" || e.key == "refreshToken") && e.oldValue && !e.newValue) {
         onLogout();
@@ -50,8 +50,7 @@ const App = () => {
               marginTop: "6.4rem",
               overflowY: "auto",
               width: "100vw",
-              height: "100vh",
-              backgroundColor: "#fff"
+              height: "100vh"
             }}>
             <UserProvider>
               <Header />
