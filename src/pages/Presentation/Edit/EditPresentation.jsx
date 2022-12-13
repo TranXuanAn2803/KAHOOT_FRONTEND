@@ -43,7 +43,7 @@ export const EditPresentation = props => {
         </Header>
         <Divider type="horizontal" className="m-0" />
         <Layout>
-          <EditContent slide={presentation.slideList[currentSlide]} />
+          <EditContent slide={presentation.slideList} />
         </Layout>
       </Layout>
     </>

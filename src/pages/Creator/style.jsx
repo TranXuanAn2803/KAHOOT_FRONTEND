@@ -31,6 +31,7 @@ const Styled = styled.div`
     flex: 1 1 auto;
     height: 100%;
     width: 100%;
+    min-height: 700px;
   }
   .body-left-container {
     display: flex;
@@ -73,7 +74,7 @@ const Styled = styled.div`
   .body-center {
     padding: 32px;
     min-width: 500px;
-    height: 100%;
+    height: 90%;
     background-color: #e7e8eb;
   }
   .center-draw {
