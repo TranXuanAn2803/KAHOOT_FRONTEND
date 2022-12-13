@@ -1,6 +1,5 @@
 import axios from "axios";
 import { ApiConfig as _ParamConfig } from "../../actions/constants";
-
 let AxiosInstance = axios.create({
   baseURL: _ParamConfig.serverUrl,
   timeout: _ParamConfig.timeout
@@ -23,15 +22,17 @@ let AxiosInstance = axios.create({
 
 export const GetAllPresentations = async () => {
   var accessToken = localStorage.getItem("accessToken");
-  console.log("accessToken:", accessToken);
-  var response = await AxiosInstance.get("presentation", null, {
+  // var response = await AxiosInstance.get("/presentation", null, {
+  //   headers: {
+  //     x_authorization: accessToken
+  //   }
+  // });
+  var response = await axios.get("http://localhost:5000/presentation", {
     headers: {
       x_authorization: accessToken
     }
   });
-  console.log(response);
-  console.log(response);
-  return response;
+  return response.data;
 };
 
 export const AddPresentation = async (request) => {
