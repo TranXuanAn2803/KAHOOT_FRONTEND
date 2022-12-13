@@ -12,7 +12,7 @@ export const PresentationProvider = ({ children }) => {
         id: 1,
         type: SlideType.MultipleChoices,
         question: "Question 1",
-        options: ["Options 1", "Options-2", "Options 3", "Options 4"]
+        options: ["Options 1", "Options-2", "Options 3", "Options 4", "Option 5"]
       }
     ],
     createdBy: "Nguyen Tuan Khanh"
