@@ -23,8 +23,9 @@ function HomePage() {
   const accessToken = localStorage.getItem("accessToken");
   const navigate = useNavigate();
   useEffect(() => {
-    document.title = "Home Page - KKahoot";
-    document.getElementById("root").style.backgroundImage = "none";
+    document.title = "Home Page - Realtime quiz-based learning";
+    // document.getElementById("root").style.backgroundImage = "none";
+    document.body.style.backgroundImage = "none";
   }, []);
   useEffect(() => {
     // console.log("currentUser ", currentUser);
