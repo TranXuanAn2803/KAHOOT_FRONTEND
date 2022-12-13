@@ -7,27 +7,13 @@ import Container from "react-bootstrap/Container";
 import { MenuItem as MenuBarItem, MenuBar, MenuList, StyledButton } from "../style";
 import { ArrowLeftOutlined, PlayCircleOutlined, ShareAltOutlined } from "@ant-design/icons";
 import Creator from "../../Creator";
-import { useEffect } from "react";
-const SlideType = {
-  MultipleChoices: 0
-};
+import { useEffect, useContext } from "react";
+import PresentationContext from "../../../utils/PresentationContext";
+
 export const EditPresentation = props => {
   let { presentationId } = useParams();
   const [currentSlide, setCurrentSlide] = React.useState(0);
-  const [presentation, setPresentation] = React.useState({
-    id: presentationId,
-    name: "present 1",
-    slideList: [
-      {
-        id: 1,
-        type: SlideType.MultipleChoices,
-        question: "Question 1",
-        options: ["Options 1", "Options 2", "Options 3", "Options 4"]
-      }
-    ],
-    createdBy: "Nguyen Tuan Khanh"
-  });
-
+  const [presentation, setPresentation] = useContext(PresentationContext);
   // console.log("presentation.slideList", presentation.slideList, currentSlide);
 
   React.useEffect(() => {
