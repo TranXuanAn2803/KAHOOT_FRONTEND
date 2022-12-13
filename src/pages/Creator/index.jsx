@@ -71,17 +71,22 @@ const Creator = props => {
     let currentSlideList = presentation.slideList;
     console.log("currentSLide List", currentSlideList, currentSlide);
     currentSlideList[currentSlide].options[index] = value;
-    console.loog("currentSlide List after change ", currentSlideList);
+    console.log("currentSlide List after change ", currentSlideList);
     setPresentation({ ...presentation, slideList: currentSlideList });
   };
   const changeQuestionOfSlide = value => {
+    console.log("change question of slide");
     let currentSlideList = presentation.slideList;
     currentSlideList[currentSlide].question = value;
     setPresentation({ ...presentation, slideList: currentSlideList });
   };
   const createNewSlide = () => {
+    console.log("new slide");
     let currentSlideList = presentation.slideList;
-    const lastElement = currentSlideList.slice(currentSlideList.length - 1, 1);
+    let lastElement = currentSlideList[currentSlideList.length - 1];
+    lastElement = JSON.parse(JSON.stringify(lastElement));
+    lastElement.id = lastElement.id += 1;
+    console.log("last element ", lastElement);
     currentSlideList.push(lastElement);
     setPresentation({ ...presentation, slideList: currentSlideList });
   };
@@ -109,8 +114,9 @@ const Creator = props => {
                     className="question-input"
                     maxLength={150}
                     placeholder="Multiple Choice"
-                    defaultValue={slide[currentSlide].question}
-                    onBlur={e => changeQuestionOfSlide(e.target.value)}
+                    value={slide[currentSlide].question}
+                    // key={`question-input`}
+                    onChange={e => changeQuestionOfSlide(e.target.value)}
                   />
                 </div>
               </div>
@@ -132,9 +138,9 @@ const Creator = props => {
                         type="text"
                         className="question-input option-input"
                         placeholder="Option"
-                        defaultValue={item.name}
-                        key={`changeitemname-${item.name}`}
-                        onBlur={e => ChangeOptionValue(index, e.target.value)}
+                        value={item.name}
+                        // key={`changeitemname-${item.name}`}
+                        onChange={e => ChangeOptionValue(index, e.target.value)}
                       />
                       <div className="item-close" onClick={e => removeOption(index)}>
                         <CloseOutlined />
