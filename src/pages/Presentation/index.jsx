@@ -13,7 +13,7 @@ import {
 } from "@ant-design/icons";
 import { MenuItem, StyledButton } from "./style";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { GetAllPresentations } from "./API";
+import { AddPresentation, GetAllPresentations } from "./API";
 
 const { Content } = Layout;
 const { Search } = Input;
@@ -31,7 +31,7 @@ export const MyPresentations = props => {
   const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);
   return (
     <>
-      <Layout style={{ height: "fit-content", minHeight: "100%" }}>
+      <Layout style={{ height: "100%", minHeight: "100%" }}>
         <SideBar />
         <Layout
           style={{
@@ -62,7 +62,9 @@ export const MyPresentations = props => {
 const TableOfPresentations = props => {
   const [presentationList, setPresentationList] = React.useState([]);
   const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);
+  // const [selectedRowKeys, setSelectedRowKeys] = React.useState([]);
   const onSearch = value => console.log(value);
+
   React.useEffect(() => {
     GetAllPresentations().then(values => {
       var presentations = values.presentationList;
@@ -76,14 +78,15 @@ const TableOfPresentations = props => {
           name: presentations[i].name,
           createdDate: new Date(presentations[i].createdAt),
           modifiedDate: new Date(presentations[i].updatedAt),
-          owner: owner.username
+          owner: presentations[i].owner
         });
       }
       console.log("dataSource: " + dataSource);
       setPresentationList(dataSource);
     });
   }, []);
-  const [selectedRowKeys, setSelectedRowKeys] = React.useState([]);
+
+  // #region handle cho các sự kiện select rows
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
       if (selectedRowKeys.length == 0) {
@@ -93,6 +96,8 @@ const TableOfPresentations = props => {
       }
     }
   };
+  //
+
   return (
     <>
       <div className="d-flex justify-content-between mb-5">
@@ -306,28 +311,35 @@ const AddPresentations = props => {
     console.log(`Submit ${presentationName}`);
     // #region Send request to server
     // Gỉả lập
-    var success = true;
-    var responseData = { id: presentationName };
-    var { id } = responseData;
-
-    // #endregion
-
-    if (!success) {
-      const modal = Modal.error();
-      console.log(success);
-      modal.update({
-        title: "Notifications",
-        content: (
-          <>
-            <p>{`Create new presentations ${presentationName} failed.`}</p>
-            {contextHolder}
-          </>
-        )
+    AddPresentation({ presentationName })
+      .then(response => {
+        const { presentation, message } = response;
+        if (presentation == null) {
+          const modal = Modal.error();
+          modal.update({
+            title: "Notifications",
+            content: (
+              <>
+                <p>{`Create new presentations ${presentationName} failed. ${message}`}</p>
+              </>
+            )
+          });
+        } else {
+          console.log(presentation);
+          navigate(`/presentations/${presentation._id}/edit`);
+        }
+      })
+      .catch(err => {
+        const modal = Modal.error();
+        modal.update({
+          title: "Notifications",
+          content: (
+            <>
+              <p>{`Create new presentations ${presentationName} failed. ${message}`}</p>
+            </>
+          )
+        });
       });
-      //   modal.destroy();
-    } else {
-      navigate(`/presentations/${id}/edit`);
-    }
   };
   return (
     <>
