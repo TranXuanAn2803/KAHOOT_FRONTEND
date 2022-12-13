@@ -31,7 +31,7 @@ const queryClient = new QueryClient({
 
 const App = () => {
   useEffect(() => {
-    const handleInvalidToken = (e) => {
+    const handleInvalidToken = e => {
       console.log("e token", e);
       if ((e.key === "accessToken" || e.key == "refreshToken") && e.oldValue && !e.newValue) {
         onLogout();
@@ -74,8 +74,8 @@ const App = () => {
                 <Route path="/presentations" element={<Presentation />}>
                   <Route index element={<MyPresentations />}></Route>
                   <Route path="all" element={<MyPresentations />} />
-                  <Route path=":presentationId/edit" element={<EditPresentation />} />
-                  <Route path=":presentationId/show" element={<ShowPresentation />} />
+                  <Route path="/edit/:presentationId" element={<EditPresentation />} />
+                  <Route path="/show/:presentationId" element={<ShowPresentation />} />
                 </Route>
                 <Route path="*" element={<NoMatch />} />
               </Routes>
