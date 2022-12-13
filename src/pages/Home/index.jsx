@@ -35,7 +35,7 @@ function HomePage() {
 
   return (
     <>
-      <Container fluid className="mb-5">
+      <Container fluid className="mt-5 mb-5">
         <Row>
           <Col xs={12} md={3} style={{ marginBottom: "1.4rem" }}>
             <div>

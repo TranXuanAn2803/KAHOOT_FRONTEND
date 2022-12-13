@@ -26,7 +26,7 @@ export const MyPresentations = (props) => {
   const onSearch = (value) => console.log(value);
   React.useEffect(() => {
     document.title = "My Presentations - Realtime quiz-based learning";
-  }, []);
+  });
   const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);
   return (
     <>
