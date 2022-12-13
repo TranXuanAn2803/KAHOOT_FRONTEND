@@ -17,8 +17,8 @@ import { onLogout } from "./utils/method";
 import Creator from "./pages/Creator";
 import { Header } from "./components/Header";
 import { MyPresentations, Presentation } from "./pages/Presentation";
-import { EditPresentation } from "./pages/Presentation/EditPresentation";
-import { ShowPresentation } from "./pages/Presentation/ShowPresentation";
+import { EditPresentation } from "./pages/Presentation/Edit/EditPresentation";
+import { ShowPresentation } from "./pages/Presentation/Show/ShowPresentation";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -60,7 +60,7 @@ const App = () => {
                 <Route path="/signup" element={<SignUp />} />
                 <Route exact path="/home" element={<Home />} />
                 <Route exact path="/groups" element={<ListGroup />} />
-                <Route exact path="/creator" element={<Creator />} />
+                {/* <Route exact path="/creator" element={<Creator />} /> */}
                 <Route path="group-detail" element={<ButtonAppBar />} />
                 <Route path="group-members" element={<GroupMember />} />
                 <Route path="group-slides" element={<GroupSile />} />

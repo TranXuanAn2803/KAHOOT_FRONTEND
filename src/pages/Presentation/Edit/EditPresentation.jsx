@@ -2,19 +2,17 @@ import { Layout, Divider } from "antd";
 const { Header, Footer, Sider, Content } = Layout;
 import * as React from "react";
 import { useParams } from "react-router-dom";
-import { Slide } from "./Slide";
+import { Slide } from "../Slide";
 import Container from "react-bootstrap/Container";
-import { MenuItem as MenuBarItem, MenuBar, MenuList, StyledButton } from "./style";
+import { MenuItem as MenuBarItem, MenuBar, MenuList, StyledButton } from "../style";
 import { ArrowLeftOutlined, PlayCircleOutlined, ShareAltOutlined } from "@ant-design/icons";
-
-export const EditPresentation = (props) => {
+import Creator from "../../Creator";
+const SlideType = {
+  MultipleChoices: 0
+};
+export const EditPresentation = props => {
   let { presentationId } = useParams();
   const [currentSlide, setCurrentSlide] = React.useState(1);
-  // Todo: Check quyền edit
-
-  // Giả sử check quyền thành công
-  // get data from server
-  // #region Giả lập
   var presentation = {
     id: presentationId,
     name: "present 1",
@@ -45,15 +43,6 @@ export const EditPresentation = (props) => {
         </Header>
         <Divider type="horizontal" className="m-0" />
         <Layout>
-          <Sider
-            style={{
-              backgroundColor: "white",
-              overflow: "auto",
-              height: "100vh"
-            }}>
-            Sider 1
-          </Sider>
-          <Divider type="vertical" className="m-0" />
           <EditContent slide={presentation.slideList[currentSlide]} />
         </Layout>
       </Layout>
@@ -61,7 +50,7 @@ export const EditPresentation = (props) => {
   );
 };
 
-const EditHeader = (props) => {
+const EditHeader = props => {
   const { id, name, createdBy } = props.presentation;
   return (
     <>
@@ -93,28 +82,7 @@ const EditHeader = (props) => {
   );
 };
 
-const EditContent = (props) => {
+const EditContent = props => {
   const { id, question, options, type } = props.slide;
-  return (
-    <Layout>
-      <Content style={{ padding: "3.2rem" }}>
-        <div style={{ width: "100%", paddingBottom: "56.25%", backgroundColor: "white" }}>
-          {id} - {question} - {options} - {type}
-        </div>
-      </Content>
-      <Divider type="vertical" className="m-0" />
-      <Sider
-        style={{
-          backgroundColor: "white",
-          overflow: "auto",
-          height: "100vh",
-        }}>
-        Sider 2
-      </Sider>
-    </Layout>
-  );
-};
-
-const SlideType = {
-  MultipleChoices: 0
+  return <Creator />;
 };
