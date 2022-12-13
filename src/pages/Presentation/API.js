@@ -9,11 +9,16 @@ let AxiosInstance = axios.create({
 
 export const GetAllPresentations = async () => {
   var accessToken = localStorage.getItem("accessToken");
-  var response = await AxiosInstance.get("presentation", null, {
+  var response = await AxiosInstance.get("/presentation", {
     headers: {
       x_authorization: accessToken
     }
   });
+  // var response = await axios.get("http://localhost:5000/presentation", {
+  //   headers: {
+  //     x_authorization: accessToken
+  //   }
+  // });
   return response.data;
 };
 
@@ -29,4 +34,5 @@ export const AddPresentation = async request => {
   console.log(response);
   return response.data;
 };
+
 // #endregion

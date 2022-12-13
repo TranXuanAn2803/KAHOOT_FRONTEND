@@ -19,12 +19,12 @@ const { Content } = Layout;
 const { Search } = Input;
 const { Column, ColumnGroup } = Table;
 
-export const Presentation = props => {
+export const Presentation = (props) => {
   return <Outlet />;
 };
 
-export const MyPresentations = props => {
-  const onSearch = value => console.log(value);
+export const MyPresentations = (props) => {
+  const onSearch = (value) => console.log(value);
   React.useEffect(() => {
     document.title = "My Presentations - Realtime quiz-based learning";
   });
@@ -59,13 +59,13 @@ export const MyPresentations = props => {
 
 // #region Table of Presentations
 
-const TableOfPresentations = props => {
+const TableOfPresentations = (props) => {
   const [presentationList, setPresentationList] = React.useState([]);
   const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);
   const onSearch = value => console.log(value);
   React.useEffect(() => {
-    GetAllPresentations().then(values => {
-      var presentations = values.presentationList;
+    GetAllPresentations().then((values) => {
+      var presentations = values.data;
       var owner = values.owner;
       var dataSource = [];
       for (let i = 0; i < presentations.length; i++) {
@@ -76,7 +76,7 @@ const TableOfPresentations = props => {
           name: presentations[i].name,
           createdDate: new Date(presentations[i].createdAt),
           modifiedDate: new Date(presentations[i].updatedAt),
-          owner: presentations[i].owner
+          owner: presentations[i].created_by.name || presentations[i].created_by.username
         });
       }
       console.log("dataSource: " + dataSource);
@@ -121,6 +121,7 @@ const TableOfPresentations = props => {
         dataSource={presentationList}
         pagination={false}>
         <Column
+        width={400}
           title="Name"
           dataIndex="name"
           key="name"
@@ -136,7 +137,7 @@ const TableOfPresentations = props => {
                   />
                 </NavLink>
                 <NavLink
-                  to={`/presentations/edit/${record.id}`}
+                  to={`/presentations/${record.id}/edit`}
                   className="text-decoration-none text-dark">
                   <p className="pl-3" style={{ marginLeft: "1rem" }}>
                     {record.name}
@@ -146,8 +147,8 @@ const TableOfPresentations = props => {
             );
           }}
         />
-        <Column title="Owner" dataIndex="owner" key="owner" sorter={true} />
-        <Column
+        <Column width={150} title="Owner" dataIndex="owner" key="owner" sorter={true} />
+        <Column width={150}
           title="Modified"
           dataIndex="modifiedDate"
           key="modifiedDate"
@@ -160,7 +161,7 @@ const TableOfPresentations = props => {
             })
           }
         />
-        <Column
+        <Column width={150}
           title="Created"
           dataIndex="createdDate"
           key="createdDate"
@@ -173,7 +174,7 @@ const TableOfPresentations = props => {
             })
           }
         />
-        <Column
+        <Column width={100}
           title=""
           key="action"
           render={(_, record) => {
@@ -185,7 +186,7 @@ const TableOfPresentations = props => {
   );
 };
 
-const ActionMenu = props => {
+const ActionMenu = (props) => {
   const data = props.data;
   const items = [
     {
@@ -285,7 +286,7 @@ const ActionMenu = props => {
 
 // #region Add new Presentations
 
-const AddPresentations = props => {
+const AddPresentations = (props) => {
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
@@ -304,7 +305,7 @@ const AddPresentations = props => {
     setOpen(false);
   };
 
-  const handleSubmit = values => {
+  const handleSubmit = (values) => {
     var { presentationName } = values;
     console.log(`Submit ${presentationName}`);
     // #region Send request to server
@@ -366,7 +367,11 @@ const AddPresentations = props => {
               {
                 required: true,
                 message: "Enter a name for your presentation."
-              }
+              },
+              {
+                max: 255,
+                message: "PresentationName should be less than 255 character",
+              },
             ]}
             style={{ marginBottom: "4rem" }}>
             <Input placeholder="Presentation name" />
@@ -393,7 +398,7 @@ const AddPresentations = props => {
 
 // #region Delete Presentation
 
-const DeletePresentation = props => {
+const DeletePresentation = (props) => {
   const selectedPresentationList = props.selectedPresentationList;
   if (selectedPresentationList == null || selectedPresentationList.length == 0) {
     return;
