@@ -7,6 +7,7 @@ import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from "rec
 import { useMemo } from "react";
 const Creator = props => {
   const { slide, currentSlide, presentation, setCurrentSlide, setPresentation } = props;
+  const [slides, setSlides] = useState([1]);
   const [dataChart, setDataChart] = useState([
     {
       answer: "A",
@@ -25,29 +26,10 @@ const Creator = props => {
       total: 30
     }
   ]);
-  const [optionItems, setOptionsItem] = useState([
-    {
-      id: 1,
-      name: "option 1"
-    },
-    {
-      id: 2,
-      name: "test 2"
-    },
-    {
-      id: 3,
-      name: "test 3"
-    },
-    {
-      id: 4,
-      name: "test 4"
-    }
-  ]);
+  const [optionItems, setOptionsItem] = useState([]);
   useEffect(() => {
     // CHART
-    console.log("slide currentSlide ", slide, currentSlide);
     const currentSlideArr = slide[currentSlide];
-    // console.log("currentSlideArr: " + currentSlideArr);
     const data = currentSlideArr.options.map((item, index) => {
       return {
         answer: item,
@@ -63,7 +45,12 @@ const Creator = props => {
         name: item
       };
     });
+
     setOptionsItem(optionsItem);
+    // const testArr = ;
+    setSlides(new Array(presentation.slideList.length).fill(1));
+    //intialize arr
+    // setSlides(new Array(presentation.slideList.length));
   }, [presentation, currentSlide]);
 
   const onChange = key => {
@@ -73,12 +60,32 @@ const Creator = props => {
     let currentSlideList = presentation.slideList;
     let currentOptions = presentation.slideList[currentSlide].options;
     currentSlideList[currentSlide].options.push(currentOptions[currentOptions.length - 1]);
-    console.log("newSlideList", currentSlideList);
-    const newPresentation = { ...presentation, slideList: currentSlideList };
-    console.log("newPresentation", newPresentation);
-    setPresentation({ ...presentation, newPresentation });
+    setPresentation({ ...presentation, slideList: currentSlideList });
   };
-  const items = useMemo(
+  const removeOption = index => {
+    let currentSlideList = presentation.slideList;
+    currentSlideList[currentSlide].options.splice(index, 1);
+    setPresentation({ ...presentation, slideList: currentSlideList });
+  };
+  const ChangeOptionValue = (index, value) => {
+    let currentSlideList = presentation.slideList;
+    console.log("currentSLide List", currentSlideList, currentSlide);
+    currentSlideList[currentSlide].options[index] = value;
+    console.loog("currentSlide List after change ", currentSlideList);
+    setPresentation({ ...presentation, slideList: currentSlideList });
+  };
+  const changeQuestionOfSlide = value => {
+    let currentSlideList = presentation.slideList;
+    currentSlideList[currentSlide].question = value;
+    setPresentation({ ...presentation, slideList: currentSlideList });
+  };
+  const createNewSlide = () => {
+    let currentSlideList = presentation.slideList;
+    const lastElement = currentSlideList.slice(currentSlideList.length - 1, 1);
+    currentSlideList.push(lastElement);
+    setPresentation({ ...presentation, slideList: currentSlideList });
+  };
+  const itemsInTab = useMemo(
     () => [
       {
         label: "Content",
@@ -96,13 +103,14 @@ const Creator = props => {
                   </span>
                 </div>
                 <div className="item-answer">
-                  <Input
+                  <input
                     id="question-name"
                     type="text"
                     className="question-input"
                     maxLength={150}
-                    //   showCount={true}
                     placeholder="Multiple Choice"
+                    defaultValue={slide[currentSlide].question}
+                    onBlur={e => changeQuestionOfSlide(e.target.value)}
                   />
                 </div>
               </div>
@@ -118,15 +126,17 @@ const Creator = props => {
                 {optionItems.map((item, index) => {
                   return (
                     <div className="item-answer" key={`item-answer-${index}`}>
-                      <Input
+                      <input
                         id="answers"
                         name="answers[]"
                         type="text"
                         className="question-input option-input"
-                        placeholder="Option "
+                        placeholder="Option"
                         defaultValue={item.name}
+                        key={`changeitemname-${item.name}`}
+                        onBlur={e => ChangeOptionValue(index, e.target.value)}
                       />
-                      <div className="item-close">
+                      <div className="item-close" onClick={e => removeOption(index)}>
                         <CloseOutlined />
                       </div>
                     </div>
@@ -148,48 +158,44 @@ const Creator = props => {
     ],
     [optionItems]
   );
-  useEffect(() => {
-    console.log("items value", items);
-  }, [items]);
+
   return (
     <Styled>
       <Header />
       <div className="creator-container">
         <div className="creator-header">
           <div className="header-button">
-            <Button type="primary" className="new-slide-button">
+            <Button type="primary" className="new-slide-button" onClick={() => createNewSlide()}>
               + New slide
             </Button>
           </div>
         </div>
         <div className="creator-body">
           <div className="body-left-container">
-            <ol
-              data-rbd-droppable-id="droppable"
-              data-rbd-droppable-context-id="3"
-              className="body-left-list">
-              <li
-                aria-label="Slide"
-                data-rbd-draggable-context-id="3"
-                data-rbd-draggable-id="x3dsryvjw68d"
-                tabIndex="0"
-                role="button"
-                aria-describedby="rbd-hidden-text-3-hidden-text-15"
-                draggable="false">
-                <div className="slide-thumbnail" data-testid="slide-thumbnail-0">
-                  <div className="slide-count">
-                    <span>1</span>
+            <div className="body-left-list">
+              {slides.map((item, index) => {
+                return (
+                  <div
+                    key={`slide-thumbail-${index}`}
+                    className={`${
+                      currentSlide === index ? "slide-current slide-thumbnail" : "slide-thumbnail"
+                    }`}
+                    onClick={() => setCurrentSlide(index)}
+                    data-testid="slide-thumbnail-0">
+                    <div className="slide-count">
+                      <span>{index + 1}</span>
+                    </div>
+                    <div className="slide-image-container">
+                      <img
+                        className="slide-image"
+                        src="https://images.twinkl.co.uk/tw1n/image/private/t_630/u/ux/barchart_ver_1.jpg"
+                        alt="chart"
+                      />
+                    </div>
                   </div>
-                  <div className="slide-image-container">
-                    <img
-                      className="slide-image"
-                      src="https://images.twinkl.co.uk/tw1n/image/private/t_630/u/ux/barchart_ver_1.jpg"
-                      alt="chart"
-                    />
-                  </div>
-                </div>
-              </li>
-            </ol>
+                );
+              })}
+            </div>
           </div>
           <div className="body-center">
             <div className="center-draw">
@@ -204,7 +210,7 @@ const Creator = props => {
             </div>
           </div>
           <div className="body-right">
-            <Tabs defaultActiveKey="1" onChange={onChange} items={items} />
+            <Tabs defaultActiveKey="1" onChange={onChange} items={itemsInTab} />
           </div>
         </div>
       </div>

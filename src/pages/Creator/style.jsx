@@ -61,11 +61,14 @@ const Styled = styled.div`
     max-height: 100px;
     padding: 8px;
     gap: 10px;
+    cursor: pointer;
+  }
+  .slide-current {
+    background-color: bisque;
   }
   .slide-image {
     background-size: contain;
     width: 100%;
-    height: 113px;
   }
   .slide-image-container {
     height: 100%;
@@ -93,6 +96,9 @@ const Styled = styled.div`
     flex-direction: row;
     align-items: center;
     gap: 20px;
+  }
+  .item-close {
+    cursor: pointer;
   }
   .question-text {
     color: rgb(16, 24, 52);
