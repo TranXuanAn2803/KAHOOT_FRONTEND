@@ -26,22 +26,22 @@ const Creator = props => {
     }
   ]);
   const [optionItems, setOptionsItem] = useState([
-    {
-      id: 1,
-      name: "option 1"
-    },
-    {
-      id: 2,
-      name: "test 2"
-    },
-    {
-      id: 3,
-      name: "test 3"
-    },
-    {
-      id: 4,
-      name: "test 4"
-    }
+    // {
+    //   id: 1,
+    //   name: "option 1"
+    // },
+    // {
+    //   id: 2,
+    //   name: "test 2"
+    // },
+    // {
+    //   id: 3,
+    //   name: "test 3"
+    // },
+    // {
+    //   id: 4,
+    //   name: "test 4"
+    // }
   ]);
   useEffect(() => {
     // CHART
