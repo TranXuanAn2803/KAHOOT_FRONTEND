@@ -59,36 +59,31 @@ export const MyPresentations = (props) => {
 
 // #region Table of Presentations
 
-// Giả lập dữ liệu
-
 const TableOfPresentations = (props) => {
   const [presentationList, setPresentationList] = React.useState([]);
   const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);
   const onSearch = (value) => console.log(value);
   React.useEffect(() => {
-    const getAllPresentation = async () => {
-      var response = await GetAllPresentations();
-      return response;
-    };
-
-    var response = getAllPresentation();
-    var data = [];
-    for (let i = 0; i < 20; i++) {
-      data.push({
-        key: i,
-        id: i,
-        name: `Slide ${i}`,
-        owner: "me",
-        modifiedDate: new Date(),
-        createdDate: new Date()
-      });
-    }
-    // setPresentationList((arr) => [...arr, data]);
-  });
+    GetAllPresentations().then((values) => {
+      var presentations = values.presentationList;
+      var dataSource = [];
+      for (let i = 0; i < presentations.length; i++) {
+        presentations[i].key = i;
+        dataSource.push({
+          key: presentations[i]._id,
+          id: presentations[i]._id,
+          name: presentations[i].name,
+          createdDate: new Date(presentations[i].createdAt),
+          modifiedDate: new Date(presentations[i].updatedAt),
+          owner: presentations[i].created_by,
+        })
+      }
+      setPresentationList(dataSource);
+    });
+  }, []);
   const [selectedRowKeys, setSelectedRowKeys] = React.useState([]);
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
-      // console.log(`selectedRowKeys: ${selectedRowKeys}`, "selectedRows: ", selectedRows);
       if (selectedRowKeys.length == 0) {
         setHasSelectedPresentation(false);
       } else {
@@ -186,7 +181,7 @@ const ActionMenu = (props) => {
   const items = [
     {
       label: (
-        <MenuItem to={`/presentations/${data.id}/present`}>
+        <MenuItem to={`/presentations/${data.id}/show`}>
           <PlayCircleOutlined style={{ fontSize: "2rem", paddingRight: "1rem !important" }} />
           <p className="pl-3" style={{ marginLeft: "1.6rem" }}>
             Present

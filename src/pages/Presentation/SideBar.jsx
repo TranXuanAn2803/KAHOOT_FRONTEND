@@ -37,12 +37,6 @@ export const SideBar = (props) => {
       width={200}
       breakpoint="lg"
       collapsedWidth="0"
-      onBreakpoint={(broken) => {
-        console.log(broken);
-      }}
-      onCollapse={(collapsed, type) => {
-        console.log(collapsed, type);
-      }}
       style={{
         borderRight: "2px solid rgb(231, 232, 235)",
         paddingTop: "1.6rem",
