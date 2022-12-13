@@ -13,26 +13,22 @@ const SlideType = {
 };
 export const EditPresentation = props => {
   let { presentationId } = useParams();
-  const [currentSlide, setCurrentSlide] = React.useState(1);
+  const [currentSlide, setCurrentSlide] = React.useState(0);
   const [presentation, setPresentation] = React.useState({
     id: presentationId,
     name: "present 1",
-    slideList: [],
-    createdBy: "Nguyen Tuan Khanh"
-  });
-  useEffect(() => {
-    for (var i = 0; i < 4; i++) {
-      presentation.slideList.push({
-        id: i,
+    slideList: [
+      {
+        id: 1,
         type: SlideType.MultipleChoices,
         question: "Question 1",
         options: ["Options 1", "Options 2", "Options 3", "Options 4"]
-      });
-    }
-  }, []);
+      }
+    ],
+    createdBy: "Nguyen Tuan Khanh"
+  });
 
-  // #endregion
-  console.log("presentation.slideList", presentation.slideList, currentSlide);
+  // console.log("presentation.slideList", presentation.slideList, currentSlide);
 
   React.useEffect(() => {
     document.title = presentation.name;
