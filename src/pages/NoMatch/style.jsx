@@ -1,5 +1,5 @@
 import styled from "styled-components";
-const Styled = styled.div`
+export const Styled = styled.div`
   .page_404 {
     padding: 40px 0;
     background: #fff;
@@ -43,4 +43,3 @@ const Styled = styled.div`
     margin-top: -50px;
   }
 `;
-export default Styled;

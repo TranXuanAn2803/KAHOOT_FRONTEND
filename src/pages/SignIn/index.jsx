@@ -133,19 +133,20 @@ export const SignIn = function () {
     // prompt: 'consent',
   });
   useEffect(() => {
-    document.title = "Sign in- KKahoot!";
-    document.getElementById("root").style.backgroundImage = `url("./assets/images/universe.jpg")`;
-    document.getElementById("root").style.backgroundSize = `cover`;
-    document.getElementById("root").style.backgroundRepeat = `no-repeat`;
+    document.title = "Sign in - Realtime quiz-based learning";
+    // document.getElementById("root").style.backgroundImage = `url("./assets/images/universe.jpg")`;
+    // document.getElementById("root").style.backgroundSize = `cover`;
+    // document.getElementById("root").style.backgroundRepeat = `no-repeat`;
+    document.body.style.backgroundImage = `url("./assets/images/universe.jpg")`;
+    document.body.style.backgroundSize = `cover`;
+    document.body.style.backgroundRepeat = `no-repeat`;
+
     return () => {
-      document.getElementById("root").style.backgroundImage = "url";
+      document.body.style.backgroundImage = "url";
     };
   });
   return (
     <Styled>
-      {/* <div className="header">
-        <img src="./assets/images/kahoot.png" className="header-img" alt="kahoot" />
-      </div> */}
       <div className="signin-container">
         <main className="signin-main">
           <div className="main-container">
