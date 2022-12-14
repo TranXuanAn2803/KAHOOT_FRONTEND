@@ -6,8 +6,16 @@ import { QuestionCircleOutlined, CloseOutlined } from "@ant-design/icons";
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from "recharts";
 import { useMemo } from "react";
 const Creator = props => {
-  const { slide, currentSlide, presentation, setCurrentSlide, setPresentation } = props;
+  const {
+    slide,
+    currentSlide,
+    presentation,
+    setCurrentSlide,
+    setPresentation,
+    savePresentation
+  } = props;
   const [slides, setSlides] = useState([1]);
+
   const [dataChart, setDataChart] = useState([
     {
       answer: "A",
@@ -30,6 +38,7 @@ const Creator = props => {
   useEffect(() => {
     // CHART
     const currentSlideArr = slide[currentSlide];
+
     const data = currentSlideArr.options.map((item, index) => {
       return {
         answer: item,
@@ -93,7 +102,13 @@ const Creator = props => {
   const deleteSlide = () => {
     let currentSlideList = presentation.slideList;
     currentSlideList.splice(currentSlide, 1);
+    console.log("new slide list", currentSlideList, currentSlide);
     setPresentation({ ...presentation, slideList: currentSlideList });
+
+    if (currentSlide == currentSlideList.length) {
+      console.log("change current slide", currentSlide);
+      setCurrentSlide(currentSlide - 1);
+    }
   };
   const itemsInTab = useMemo(
     () => [
@@ -154,9 +169,14 @@ const Creator = props => {
                   );
                 })}
               </div>
-              <Button type="primary" onClick={() => createNewOption()}>
-                + Add option
-              </Button>
+              <div className="button-creator-container">
+                <Button type="text" onClick={() => createNewOption()}>
+                  + Add option
+                </Button>
+                <Button type="primary" onClick={() => savePresentation()}>
+                  Save presentation
+                </Button>
+              </div>
             </form>
           </>
         )

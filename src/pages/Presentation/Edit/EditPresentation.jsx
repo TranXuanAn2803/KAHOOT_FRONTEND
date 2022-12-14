@@ -9,7 +9,7 @@ import { ArrowLeftOutlined, PlayCircleOutlined, ShareAltOutlined } from "@ant-de
 import Creator from "../../Creator";
 import { useEffect, useContext } from "react";
 import PresentationContext from "../../../utils/PresentationContext";
-import { GetOnePresentation } from "../API";
+import { GetOnePresentation, savePresentationAPI } from "../API";
 export const EditPresentation = props => {
   let { presentationId } = useParams();
   const [currentSlide, setCurrentSlide] = React.useState(0);
@@ -31,28 +31,77 @@ export const EditPresentation = props => {
         });
       });
   };
+  const savePresentation = () => {
+    // console.log("current presentation: " + JSON.stringify(presentation.slideList));
+    const arr = presentation.slideList;
+    console.log("arr ", arr);
+    setCurrentSlide(0);
+    const request = {
+      presentationId: presentationId,
+      slides: presentation.slideList
+    };
+    savePresentationAPI(request)
+      .then(values => {
+        console.log(values);
+        if (values && values.status == 200) {
+          // Gỉa sử delete thành công
+          modal.info({
+            title: "Notifications",
+            content: (
+              <>
+                <p>{`Save presentations successfully.`}</p>
+              </>
+            )
+          });
+        } else {
+          modal.error({
+            title: "Notifications",
+            content: (
+              <>
+                <p>{`Save presentations failed.`}</p>
+              </>
+            )
+          });
+        }
+      })
+      .catch(error => {
+        modal.error({
+          title: "Notifications",
+          content: (
+            <>
+              <p>{`Delete presentations failed. ${error}`}</p>
+            </>
+          )
+        });
+      });
+  };
   useEffect(() => {
     document.title = presentation.name;
     const getDataForPresentation = async () => {
       const value = await GetOnePresentation(presentationId);
       const arrPresentation = value.data.data;
       let newPresentation = {
-        slideList: []
+        slideList: [],
+        id: "",
+        name: ""
       };
-      console.log("arrPresentation ", arrPresentation);
-      for (let i = 0; i < arrPresentation.length; i++) {
-        const listOptions = arrPresentation[i].options;
+      newPresentation.id = arrPresentation._id;
+      newPresentation.name = arrPresentation.name;
+
+      for (let i = 0; i < arrPresentation.slides.length; i++) {
+        const listOptions = arrPresentation.slides[i].options;
         let newListOptions = listOptions.map((item, index) => {
           return item.content;
         });
         newPresentation["slideList"].push({
-          id: arrPresentation[i].index,
-          type: arrPresentation[i].slide_type,
-          question: arrPresentation[i].question,
+          id: arrPresentation.slides[i].index,
+          type: arrPresentation.slides[i].slide_type,
+          question: arrPresentation.slides[i].question,
           options: newListOptions
         });
       }
-      setPresentation(...newPresentation);
+      console.log("newPresentation ", newPresentation);
+      setPresentation(newPresentation);
     };
     getDataForPresentation();
   }, []);
@@ -71,6 +120,7 @@ export const EditPresentation = props => {
             presentation={presentation}
             setCurrentSlide={setCurrentSlide}
             setPresentation={setPresentation}
+            savePresentation={savePresentation}
           />
         </Layout>
       </Layout>
@@ -79,13 +129,14 @@ export const EditPresentation = props => {
 };
 
 const EditHeader = props => {
-  console.log("props presentation ", props.presentation);
   const { id, name, createdBy } = props.presentation;
+  let { presentationId } = useParams();
+
   return (
     <>
       <MenuBar id="menubar-horizontal" bg="light" className="d-flex justify-content-between">
         <MenuList className="me-auto">
-          <MenuBarItem to="/presentations">
+          <MenuBarItem onClick={() => savePresentation()} to="/presentations">
             <ArrowLeftOutlined style={{ fontSize: "2.4rem" }} />
           </MenuBarItem>
           <MenuBarItem>
@@ -112,8 +163,14 @@ const EditHeader = props => {
 };
 
 const EditContent = props => {
-  const { slide, currentSlide, presentation, setCurrentSlide, setPresentation } = props;
-  console.log("slide edit content", slide, currentSlide);
+  const {
+    slide,
+    currentSlide,
+    presentation,
+    setCurrentSlide,
+    setPresentation,
+    savePresentation
+  } = props;
   return (
     <Creator
       slide={slide}
@@ -121,6 +178,7 @@ const EditContent = props => {
       presentation={presentation}
       setCurrentSlide={setCurrentSlide}
       setPresentation={setPresentation}
+      savePresentation={savePresentation}
     />
   );
 };
