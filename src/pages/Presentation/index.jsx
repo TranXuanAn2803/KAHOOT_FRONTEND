@@ -88,7 +88,6 @@ const TableOfPresentations = (props) => {
   const deletePresentation = (presentationId) => {
     DeletePresentation({ presentationId })
       .then((values) => {
-      .then((values) => {
         console.log(values);
         if (values && values.status == 200) {
           // Gỉa sử delete thành công
@@ -446,7 +445,7 @@ const AddPresentations = (props) => {
         console.log(response);
         const {data: presentation, message, status } = response;
         if (presentation == null || status !== 200) {
-          modal.info({
+          modal.error({
             title: "Notifications",
             content: (
               <>
@@ -456,14 +455,15 @@ const AddPresentations = (props) => {
           });
         } else {
           CreateSlide({ presentationId: presentation._id, index: 0 })
-            .then((values) => {
-              const {data: slide, message, status } = values;
-              if (slide == null || status !== 200) {
+            .then(values => {
+              console.log(values);
+              const { data, message, status } = values;
+              if (data == null || status !== 200) {
                 modal.info({
                   title: "Notifications",
                   content: (
                     <>
-                      <p>{`Create new presentations ${presentationName} failed. ${message}`}</p>
+                      <p>{`Create new presentations ${presentationName} failed. Cannot create slide. ${message}`}</p>
                     </>
                   )
                 });
