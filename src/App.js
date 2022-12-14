@@ -47,39 +47,41 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <UserProvider>
-            <Header />
-            <main
-              style={{
-                marginTop: "6.4rem",
-                overflowY: "auto",
-                width: "100vw",
-                height: "100vh"
-              }}>
-              <Routes>
-                <Route exact path="/" element={<Navigate to="/signin" />} />
-                <Route path="/signin" element={<SignIn />} />
-                <Route path="/signup" element={<SignUp />} />
-                <Route exact path="/home" element={<Home />} />
-                <Route exact path="/groups" element={<ListGroup />} />
-                {/* <Route exact path="/creator" element={<Creator />} /> */}
-                <Route path="group-detail" element={<ButtonAppBar />} />
-                <Route path="group-members" element={<GroupMember />} />
-                <Route path="group-slides" element={<GroupSile />} />
-                <Route exact path="/group-invitation/:id" element={<GroupInvitation />} />
+            <PresentationProvider>
+              <Header />
+              <main
+                style={{
+                  marginTop: "6.4rem",
+                  overflowY: "auto",
+                  width: "100vw",
+                  height: "100vh"
+                }}>
+                <Routes>
+                  <Route exact path="/" element={<Navigate to="/signin" />} />
+                  <Route path="/signin" element={<SignIn />} />
+                  <Route path="/signup" element={<SignUp />} />
+                  <Route exact path="/home" element={<Home />} />
+                  <Route exact path="/groups" element={<ListGroup />} />
+                  {/* <Route exact path="/creator" element={<Creator />} /> */}
+                  <Route path="group-detail" element={<ButtonAppBar />} />
+                  <Route path="group-members" element={<GroupMember />} />
+                  <Route path="group-slides" element={<GroupSile />} />
+                  <Route exact path="/group-invitation/:id" element={<GroupInvitation />} />
 
-                <Route path="/user" element={<UserProfile />}>
-                  <Route path={``} element={<Navigate to={`./profile`} />} />
-                  <Route path={`profile`} element={<ProfileSetting />} />
-                </Route>
-                <Route path="/presentations" element={<Presentation />}>
-                  <Route index element={<MyPresentations />}></Route>
-                  <Route path="all" element={<MyPresentations />} />
-                  <Route path=":presentationId/edit" element={<EditPresentation />} />
-                  <Route path=":presentationId/show" element={<ShowPresentation />} />
-                </Route>
-                <Route path="*" element={<NoMatch />} />
-              </Routes>
-            </main>
+                  <Route path="/user" element={<UserProfile />}>
+                    <Route path={``} element={<Navigate to={`./profile`} />} />
+                    <Route path={`profile`} element={<ProfileSetting />} />
+                  </Route>
+                  <Route path="/presentations" element={<Presentation />}>
+                    <Route index element={<MyPresentations />}></Route>
+                    <Route path="all" element={<MyPresentations />} />
+                    <Route path=":presentationId/edit" element={<EditPresentation />} />
+                    <Route path=":presentationId/show" element={<ShowPresentation />} />
+                  </Route>
+                  <Route path="*" element={<NoMatch />} />
+                </Routes>
+              </main>
+            </PresentationProvider>
           </UserProvider>
         </BrowserRouter>
       </QueryClientProvider>
