@@ -4,7 +4,6 @@ import { fetchUsers } from "../../utils/api";
 import { useQuery, QueryClient, QueryClientProvider } from "react-query";
 import { onLogout } from "../../utils/method";
 import { Link } from "react-router-dom";
-import { Header } from "../../components/Header";
 import "react-toastify/dist/ReactToastify.css";
 import UserContext from "../../utils/UserContext";
 import { Button, Card, Col, Container, ListGroup, NavLink, Row } from "react-bootstrap";
@@ -24,8 +23,9 @@ function HomePage() {
   const accessToken = localStorage.getItem("accessToken");
   const navigate = useNavigate();
   useEffect(() => {
-    document.title = "Home Page - KKahoot";
-    document.getElementById("root").style.backgroundImage = "none";
+    document.title = "Home Page - Realtime quiz-based learning";
+    // document.getElementById("root").style.backgroundImage = "none";
+    document.body.style.backgroundImage = "none";
   }, []);
   useEffect(() => {
     // console.log("currentUser ", currentUser);
@@ -36,8 +36,7 @@ function HomePage() {
 
   return (
     <>
-      <Header />
-      <Container fluid className="mb-5">
+      <Container fluid className="mt-5 mb-5">
         <Row>
           <Col xs={12} md={3} style={{ marginBottom: "1.4rem" }}>
             <div>

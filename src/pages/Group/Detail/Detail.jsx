@@ -16,7 +16,6 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { StyledNavLink } from "./style";
-import { Header } from "../../../components/Header";
 import { Menu } from "antd";
 const drawerWidth = 240;
 const style = {
@@ -184,7 +183,6 @@ export default function ButtonAppBar() {
   });
   return (
     <>
-      <Header />
       <Menu
         style={{
           width: drawerWidth,

@@ -34,20 +34,52 @@ function stringAvatar(name) {
   }
 }
 
-export const Header = function(props) {
+export const Header = function (props) {
   const [currentUser, setCurrentUser] = useContext(UserContext);
+  var location = window.location;
+  if (
+    location.pathname.toLowerCase() == "signin" ||
+    location.pathname.toLowerCase() == "login" ||
+    location.pathname.toLowerCase() == "register" ||
+    location.pathname.toLowerCase() == "signup"
+  ) {
+    return <DefaultHeader />;
+  }
 
+  if (!currentUser) {
+    return <DefaultHeader />;
+  }
+
+  return <MainHeader user={currentUser} />;
+};
+
+const DefaultHeader = (props) => {
+  return (
+    <>
+      {/* <MenuBar id="menubar-horizontal" bg="light" className="d-none d-md-flex">
+        <Container fluid style={{ height: "inherit" }}>
+        <MenuBar.Brand href="/" className="d-flex">
+            <img id="logo" style={{ maxWidth: "10rem" }} src="/assets/images/kahoot.png" />
+          </MenuBar.Brand>
+        </Container>
+      </MenuBar> */}
+    </>
+  );
+};
+
+const MainHeader = (props) => {
   return (
     <>
       <MenuBar id="menubar-horizontal" bg="light" className="d-flex">
         <Container fluid style={{ height: "inherit" }}>
-          <MenuBar.Brand href="/">
-            <img id="logo" style={{ width: "4rem" }} src="/assets/images/google-classroom.png" />
+          <MenuBar.Brand href="/" className="d-flex">
+            <img id="logo" style={{ maxWidth: "10rem" }} src="/assets/images/kahoot.png" />
           </MenuBar.Brand>
           {/* <MenuBar.Toggle aria-controls="navbar-nav" /> */}
           <MenuList className="me-auto">
             <MenuBarItem to="/home">Home</MenuBarItem>
             <MenuBarItem to="/groups">Groups</MenuBarItem>
+            <MenuBarItem to="/presentations">Presentations</MenuBarItem>
           </MenuList>
           <MenuList className="d-flex align-items-center justify-content-evenly">
             <CreatingButton variant="contained" id="create-btn" className="m-2 expanded">
@@ -56,59 +88,7 @@ export const Header = function(props) {
             </CreatingButton>
             <AvatarButton>
               <Avatar
-                {...stringAvatar(currentUser?.name || currentUser?.username)}
-                className="bg-success"
-                role="button"
-                sx={{ fontSize: "1.6rem" }}
-              />
-            </AvatarButton>
-            <NotificationsOutlinedIcon
-              className="m-2"
-              sx={{ width: "4rem", height: "4rem" }}
-              role="button"
-            />
-          </MenuList>
-        </Container>
-      </MenuBar>
-    </>
-  );
-};
-
-const DefaultHeader = props => {
-  return (
-    <>
-      <MenuBar id="menubar-horizontal" bg="light" className="d-none d-md-flex">
-        <Container fluid style={{ height: "inherit" }}>
-          <MenuBar.Brand href="/">
-            <img id="logo" style={{ width: "4rem" }} src="/assets/images/google-classroom.png" />
-          </MenuBar.Brand>
-        </Container>
-      </MenuBar>
-    </>
-  );
-};
-
-const FullHeader = props => {
-  return (
-    <>
-      <MenuBar id="menubar-horizontal" bg="light" className="d-none d-md-flex">
-        <Container fluid style={{ height: "inherit" }}>
-          <MenuBar.Brand href="/">
-            <img id="logo" style={{ width: "4rem" }} src="/assets/images/google-classroom.png" />
-          </MenuBar.Brand>
-          {/* <MenuBar.Toggle aria-controls="navbar-nav" /> */}
-          <MenuList className="me-auto">
-            <MenuBarItem to="/home">Home</MenuBarItem>
-            <MenuBarItem to="/groups">Groups</MenuBarItem>
-          </MenuList>
-          <MenuList className="d-flex align-items-center justify-content-evenly">
-            <CreatingButton variant="contained" id="create-btn" className="m-2 expanded">
-              <AddIcon className="d-lg-none" fontSize="large" />
-              <p className="d-none d-lg-block mb-0">Create</p>
-            </CreatingButton>
-            <AvatarButton>
-              <Avatar
-                {...stringAvatar("Kent Dodds")}
+                {...stringAvatar(props.user?.name || props.user?.username)}
                 className="bg-success"
                 role="button"
                 sx={{ fontSize: "1.6rem" }}
@@ -131,7 +111,7 @@ const FullHeader = props => {
 function CreatingButton(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  const handleClick = event => {
+  const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
@@ -193,7 +173,7 @@ function CreatingButton(props) {
 function AvatarButton(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  const handleClick = event => {
+  const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
