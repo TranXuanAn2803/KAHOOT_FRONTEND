@@ -90,6 +90,11 @@ const Creator = props => {
     currentSlideList.push(lastElement);
     setPresentation({ ...presentation, slideList: currentSlideList });
   };
+  const deleteSlide = () => {
+    let currentSlideList = presentation.slideList;
+    currentSlideList.splice(currentSlide, 1);
+    setPresentation({ ...presentation, slideList: currentSlideList });
+  };
   const itemsInTab = useMemo(
     () => [
       {
@@ -173,6 +178,9 @@ const Creator = props => {
           <div className="header-button">
             <Button type="primary" className="new-slide-button" onClick={() => createNewSlide()}>
               + New slide
+            </Button>
+            <Button type="primary" danger onClick={() => deleteSlide()}>
+              Delete slide
             </Button>
           </div>
         </div>
