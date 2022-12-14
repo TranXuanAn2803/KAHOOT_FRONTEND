@@ -91,4 +91,20 @@ export const DeleteManyPresentation = async () => {
   return { status: 200 };
 };
 
+export const CreateSlide = async (request) => {
+  var requestData = {
+    presentation_id: request.presentationId,
+    index: request.index
+  };
+  var response = await AxiosInstance.post(`slide`, requestData, {
+    headers: {
+      x_authorization: localStorage.getItem("accessToken")
+    }
+  });
+  return {
+    status: response.status,
+    data: response.data.data,
+    message: response.data.message || null
+  };
+};
 // #endregion

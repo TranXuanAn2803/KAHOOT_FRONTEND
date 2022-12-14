@@ -17,7 +17,8 @@ import {
   AddPresentation,
   GetAllPresentations,
   DeletePresentation,
-  DeleteManyPresentation
+  DeleteManyPresentation,
+  CreateSlide
 } from "./API";
 
 const { Content } = Layout;
@@ -71,7 +72,7 @@ const TableOfPresentations = props => {
   const [selectedRows, setSelectedRows] = React.useState([]);
   const onSearch = (value) => console.log(value);
   const deletePresentation = (presentationId) => {
-    DeletePresentation({presentationId})
+    DeletePresentation({ presentationId })
       .then((values) => {
         console.log(values);
         if (values && values.status == 200) {
@@ -437,7 +438,31 @@ const AddPresentations = props => {
             )
           });
         } else {
-          navigate(`/presentations/${data._id}/edit`);
+          CreateSlide({ presentationId: data._id, index: 0 })
+            .then((values) => {
+              const { data, message, status } = values;
+              if (data == null || status !== 200) {
+                modal.info({
+                  title: "Notifications",
+                  content: (
+                    <>
+                      <p>{`Create new presentations ${presentationName} failed. ${message}`}</p>
+                    </>
+                  )
+                });
+              }
+              navigate(`/presentations/${data._id}/edit`);
+            })
+            .catch((error) => {
+              modal.error({
+                title: "Notifications",
+                content: (
+                  <>
+                    <p>{`Create new slide failed. ${error}`}</p>
+                  </>
+                )
+              });
+            });
         }
       })
       .catch((error) => {
