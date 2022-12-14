@@ -24,12 +24,12 @@ const { Content } = Layout;
 const { Search } = Input;
 const { Column, ColumnGroup } = Table;
 
-export const Presentation = (props) => {
+export const Presentation = props => {
   return <Outlet />;
 };
 
-export const MyPresentations = (props) => {
-  const onSearch = (value) => console.log(value);
+export const MyPresentations = props => {
+  const onSearch = value => console.log(value);
   React.useEffect(() => {
     document.title = "My Presentations - Realtime quiz-based learning";
   });
@@ -64,42 +64,31 @@ export const MyPresentations = (props) => {
 
 // #region Table of Presentations
 
-const TableOfPresentations = (props) => {
+const TableOfPresentations = props => {
   const [modal, contextHolder] = Modal.useModal();
   const [presentationList, setPresentationList] = React.useState([]);
   const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);
   const [selectedRows, setSelectedRows] = React.useState([]);
-  const onSearch = (value) => console.log(value);
-  const deletePresentation = (presentationIdList) => {
+  const onSearch = value => console.log(value);
+  const deletePresentation = presentationIdList => {
     DeletePresentation({ presentationIdList })
-      .then((values) => {
+      .then(values => {
         console.log(values);
-        if (true) {
-          // Gỉa sử delete thành công
-          modal.info({
-            title: "Notifications",
-            content: (
-              <>
-                <p>{`Delete presentations successfully.`}</p>
-              </>
-            )
-          });
-          var newPresentationList = presentationList.filter(
-            (presentation) => !presentationIdList.includes(presentation.id)
-          );
-          setPresentationList(newPresentationList);
-        } else {
-          modal.error({
-            title: "Notifications",
-            content: (
-              <>
-                <p>{`Delete presentations failed.`}</p>
-              </>
-            )
-          });
-        }
+        // Gỉa sử delete thành công
+        modal.info({
+          title: "Notifications",
+          content: (
+            <>
+              <p>{`Delete presentations successfully.`}</p>
+            </>
+          )
+        });
+        var newPresentationList = presentationList.filter(
+          presentation => !presentationIdList.includes(presentation.id)
+        );
+        setPresentationList(newPresentationList);
       })
-      .catch((error) => {
+      .catch(error => {
         modal.error({
           title: "Notifications",
           content: (
@@ -111,34 +100,23 @@ const TableOfPresentations = (props) => {
       });
   };
   const deleteManyPresentations = () => {
-    var presentationIdList = selectedRows.map((row) => row.id);
+    var presentationIdList = selectedRows.map(row => row.id);
     DeleteManyPresentation({})
-      .then((values) => {
-        if (true) {
-          modal.info({
-            title: "Notifications",
-            content: (
-              <>
-                <p>{`Delete presentations successfully.`}</p>
-              </>
-            )
-          });
-          var newPresentationList = presentationList.filter(
-            (presentation) => !presentationIdList.includes(presentation.id)
-          );
-          setPresentationList(newPresentationList);
-        } else {
-          modal.error({
-            title: "Notifications",
-            content: (
-              <>
-                <p>{`Delete presentations failed.`}</p>
-              </>
-            )
-          });
-        }
+      .then(values => {
+        modal.info({
+          title: "Notifications",
+          content: (
+            <>
+              <p>{`Delete presentations successfully.`}</p>
+            </>
+          )
+        });
+        var newPresentationList = presentationList.filter(
+          presentation => !presentationIdList.includes(presentation.id)
+        );
+        setPresentationList(newPresentationList);
       })
-      .catch((error) => {
+      .catch(error => {
         modal.error({
           title: "Notifications",
           content: (
@@ -150,7 +128,7 @@ const TableOfPresentations = (props) => {
       });
   };
   React.useEffect(() => {
-    GetAllPresentations().then((values) => {
+    GetAllPresentations().then(values => {
       var presentations = values.data;
       var dataSource = [];
       for (let i = 0; i < presentations.length; i++) {
@@ -276,7 +254,7 @@ const TableOfPresentations = (props) => {
   );
 };
 
-const ActionMenu = (props) => {
+const ActionMenu = props => {
   const data = props.data;
 
   const items = [
@@ -377,7 +355,7 @@ const ActionMenu = (props) => {
 
 // #region Add new Presentations
 
-const AddPresentations = (props) => {
+const AddPresentations = props => {
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
@@ -396,13 +374,13 @@ const AddPresentations = (props) => {
     setOpen(false);
   };
 
-  const handleSubmit = (values) => {
+  const handleSubmit = values => {
     var { presentationName } = values;
     console.log(`Submit ${presentationName}`);
     // #region Send request to server
     // Gỉả lập
     AddPresentation({ presentationName })
-      .then((response) => {
+      .then(response => {
         const { presentation, message } = response;
         if (presentation == null) {
           const modal = Modal.error();
@@ -419,7 +397,7 @@ const AddPresentations = (props) => {
           navigate(`/presentations/${presentation._id}/edit`);
         }
       })
-      .catch((err) => {
+      .catch(err => {
         const modal = Modal.error();
         modal.error({
           title: "Notifications",
