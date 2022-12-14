@@ -3,7 +3,7 @@ import { Layout, Menu } from "antd";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Sider } = Layout;
 
 function getItem(label, key, icon, children, type) {
   return {
@@ -20,15 +20,15 @@ const StyledNavLink = styled(NavLink)`
   &.active {
     color: #584491 !important;
     font-size: 1.4rem;
-    font-weight: 600;
+    font-weight: 700;
   }
 `;
 
-export const SideBar = (props) => {
+export const SideBar = props => {
   const items = [
-    getItem(<StyledNavLink to="/presentations">My Presentations</StyledNavLink>, "item1"),
-    getItem(<StyledNavLink to="/templates">Templates</StyledNavLink>, "item2"),
-    getItem(<StyledNavLink to="/tutorials">Tutorials</StyledNavLink>, "item3")
+    getItem(<StyledNavLink to="/presentations">List Presentations</StyledNavLink>, "item1")
+    // getItem(<StyledNavLink to="/templates">Templates</StyledNavLink>, "item2"),
+    // getItem(<StyledNavLink to="/tutorials">Tutorials</StyledNavLink>, "item3")
   ];
 
   return (
@@ -46,8 +46,7 @@ export const SideBar = (props) => {
         mode="inline"
         defaultSelectedKeys={["1"]}
         style={{
-          height: "100%",
-          paddingTop: "0.8rem"
+          height: "100%"
         }}
         items={items}
       />
