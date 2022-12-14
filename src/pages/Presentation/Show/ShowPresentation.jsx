@@ -105,7 +105,7 @@ const items = [
   {
     label: "Disable comments",
     key: "Disable comments",
-    icon: <CommentOutlined style={{ transform: "rotate(90deg)" }} />
+    icon: <CommentOutlined style={{ transform: "rotate(90deg)" }} />,
   },
   {
     label: "Previous slide",
