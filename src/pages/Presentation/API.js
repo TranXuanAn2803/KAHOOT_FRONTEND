@@ -41,7 +41,7 @@ export const getSlidesFromPresentation = async id => {
   return response;
 };
 
-export const AddPresentation = async (request) => {
+export const AddPresentation = async request => {
   if (!request.presentationName || request.presentationName.trim() == "") {
     return null;
   }
@@ -60,7 +60,7 @@ export const AddPresentation = async (request) => {
   };
 };
 
-export const DeletePresentation = async (request) => {
+export const DeletePresentation = async request => {
   var presentationId = request.presentationId;
   if (!presentationId || presentationId.trim() == "") {
     return null;
@@ -80,16 +80,14 @@ export const DeletePresentation = async (request) => {
   };
 };
 
-export const DeleteManyPresentation = async (request) => {
+export const DeleteManyPresentation = async request => {
   var requestData = { id: request.presentationIdList };
-  var response = await AxiosInstance.delete(
-    `presentation`,
-    { data: requestData ,
-      headers: {
-        x_authorization: localStorage.getItem("accessToken")
-      }
+  var response = await AxiosInstance.delete(`presentation`, {
+    data: requestData,
+    headers: {
+      x_authorization: localStorage.getItem("accessToken")
     }
-  );
+  });
   return {
     status: response.status,
     data: response.data.data,
@@ -97,7 +95,7 @@ export const DeleteManyPresentation = async (request) => {
   };
 };
 
-export const CreateSlide = async (request) => {
+export const CreateSlide = async request => {
   var requestData = {
     presentation_id: request.presentationId,
     index: request.index

@@ -135,6 +135,7 @@ const Creator = props => {
                     maxLength={150}
                     placeholder="Multiple Choice"
                     value={slide[currentSlide].question}
+                    // key={`question-input`}
                     onChange={e => changeQuestionOfSlide(e.target.value)}
                   />
                 </div>
