@@ -5,7 +5,6 @@ const SlideType = {
 };
 export const PresentationProvider = ({ children }) => {
   const [presentation, setPresentation] = React.useState({
-    id: 1,
     name: "present 1",
     slideList: [
       {
@@ -14,8 +13,7 @@ export const PresentationProvider = ({ children }) => {
         question: "Question 1",
         options: ["Options 1", "Options-2", "Options 3", "Options 4", "Option 5"]
       }
-    ],
-    createdBy: "Nguyen Tuan Khanh"
+    ]
   });
 
   let values = useMemo(() => [presentation, setPresentation], [presentation]);

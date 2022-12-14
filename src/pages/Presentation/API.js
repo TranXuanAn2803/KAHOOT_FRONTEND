@@ -25,7 +25,7 @@ export const GetAllPresentations = async () => {
 
 export const GetOnePresentation = async id => {
   var accessToken = localStorage.getItem("accessToken");
-  var response = await AxiosInstance.get(`/presentation/${id}`, {
+  var response = await AxiosInstance.get(`/slide/by-present/${id}`, {
     headers: {
       x_authorization: accessToken
     }
@@ -67,6 +67,8 @@ export const DeletePresentation = async request => {
   if (!presentationId || presentationId.trim() == "") {
     return null;
   }
+  console.log("delete presentationid ", presentationId);
+
   var response = await AxiosInstance.delete(`presentation/${presentationId}`, {
     headers: {
       x_authorization: localStorage.getItem("accessToken")
@@ -81,6 +83,18 @@ export const DeletePresentation = async request => {
 };
 
 export const DeleteManyPresentation = async () => {
+  // try {
+  //   var presentationList = request.presentationIdList;
+  //   for (let i = 0; i < presentationList.length; i++) {
+  //     await AxiosInstance.delete(`presentation/${presentationList[i]}`, {
+  //       headers: {
+  //         x_authorization: localStorage.getItem("accessToken")
+  //       }
+  //     });
+  //   }
+  // } catch (e) {
+  //   return null;
+  // }
   // var requestData ={request};
   // var response = await AxiosInstance.delete(`presentation`, requestData, {
   //   headers: {
@@ -88,7 +102,7 @@ export const DeleteManyPresentation = async () => {
   //   }
   // });
   //  return { status: response.status, data: response.data.data, message: response.data.message || null };
-  return { status: 200 };
+  // return { status: 200 };
 };
 
 export const CreateSlide = async request => {

@@ -212,7 +212,7 @@ const TableOfPresentations = props => {
   // #region handle cho các sự kiện select rows
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
-      console.log(selectedRows);
+      console.log("selectedRows ", selectedRows);
       setSelectedRows(selectedRows);
       if (selectedRowKeys.length == 0) {
         setHasSelectedPresentation(false);

@@ -34,9 +34,25 @@ export const EditPresentation = props => {
   useEffect(() => {
     document.title = presentation.name;
     const getDataForPresentation = async () => {
-      const presentation = await GetOnePresentation(presentationId);
-      console.log("presentation ", presentation);
-      const created_by = presentation.data.data.created_by;
+      const value = await GetOnePresentation(presentationId);
+      const arrPresentation = value.data.data;
+      let newPresentation = {
+        slideList: []
+      };
+      console.log("arrPresentation ", arrPresentation);
+      for (let i = 0; i < arrPresentation.length; i++) {
+        const listOptions = arrPresentation[i].options;
+        let newListOptions = listOptions.map((item, index) => {
+          return item.content;
+        });
+        newPresentation["slideList"].push({
+          id: arrPresentation[i].index,
+          type: arrPresentation[i].slide_type,
+          question: arrPresentation[i].question,
+          options: newListOptions
+        });
+      }
+      setPresentation(...newPresentation);
     };
     getDataForPresentation();
   }, []);
