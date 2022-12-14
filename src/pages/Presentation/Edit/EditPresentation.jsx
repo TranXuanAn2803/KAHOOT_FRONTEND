@@ -12,6 +12,7 @@ import PresentationContext from "../../../utils/PresentationContext";
 
 export const EditPresentation = props => {
   let { presentationId } = useParams();
+  console.log("presentationId ", presentationId);
   const [currentSlide, setCurrentSlide] = React.useState(0);
   const [presentation, setPresentation] = useContext(PresentationContext);
   // console.log("presentation.slideList", presentation.slideList, currentSlide);
