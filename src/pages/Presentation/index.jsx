@@ -25,10 +25,10 @@ const { Content } = Layout;
 const { Search } = Input;
 const { Column, ColumnGroup } = Table;
 let initialialPresentationList = [];
-export const Presentation = props => {
+export const Presentation = (props) => {
   return <Outlet />;
 };
-export const MyPresentations = props => {
+export const MyPresentations = (props) => {
   React.useEffect(() => {
     document.title = "List Presentations - Realtime quiz-based learning";
   });
@@ -65,17 +65,17 @@ export const MyPresentations = props => {
 
 // #region Table of Presentations
 
-const TableOfPresentations = props => {
+const TableOfPresentations = (props) => {
   const [modal, contextHolder] = Modal.useModal();
   const [presentationList, setPresentationList] = React.useState([]);
   const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);
   const [selectedRows, setSelectedRows] = React.useState([]);
 
-  const onSearch = value => {
+  const onSearch = (value) => {
     const currValue = value;
     console.log("currValue ", currValue);
     if (currValue !== "") {
-      const filteredPresentation = presentationList.filter(presentation =>
+      const filteredPresentation = presentationList.filter((presentation) =>
         presentation.name.includes(currValue)
       );
       console.log("filteredPresentation ", filteredPresentation);
@@ -85,8 +85,9 @@ const TableOfPresentations = props => {
     }
   };
   //delete one presentation
-  const deletePresentation = presentationId => {
+  const deletePresentation = (presentationId) => {
     DeletePresentation({ presentationId })
+      .then((values) => {
       .then((values) => {
         console.log(values);
         if (values && values.status == 200) {
@@ -115,7 +116,7 @@ const TableOfPresentations = props => {
           });
         }
       })
-      .catch(error => {
+      .catch((error) => {
         modal.error({
           title: "Notifications",
           content: (
@@ -128,10 +129,10 @@ const TableOfPresentations = props => {
   };
   //delete many presentations
   const deleteManyPresentations = () => {
-    var presentationIdList = selectedRows.map(row => row.id);
-    DeleteManyPresentation({})
-      .then((values) => {
-        if (values && values.status == 200) {
+    var presentationIdList = selectedRows.map((row) => row.id);
+    DeleteManyPresentation({ presentationIdList: presentationIdList })
+      .then((response) => {
+        if (response && response.status == 200) {
           modal.info({
             title: "Notifications",
             content: (
@@ -144,6 +145,7 @@ const TableOfPresentations = props => {
             (presentation) => !presentationIdList.includes(presentation.id)
           );
           setPresentationList(newPresentationList);
+          setHasSelectedPresentation(false);
           initialialPresentationList = newPresentationList;
         } else {
           modal.error({
@@ -156,7 +158,7 @@ const TableOfPresentations = props => {
           });
         }
       })
-      .catch(error => {
+      .catch((error) => {
         modal.error({
           title: "Notifications",
           content: (
@@ -324,7 +326,7 @@ const TableOfPresentations = props => {
   );
 };
 
-const ActionMenu = props => {
+const ActionMenu = (props) => {
   const data = props.data;
 
   const items = [
@@ -425,7 +427,7 @@ const ActionMenu = props => {
 
 // #region Add new Presentations
 
-const AddPresentations = props => {
+const AddPresentations = (props) => {
   const navigate = useNavigate();
   // const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
@@ -433,24 +435,17 @@ const AddPresentations = props => {
   const showModal = () => {
     setOpen(true);
   };
-  // const handleOk = () => {
-  //   setLoading(true);
-  //   setTimeout(() => {
-  //     setLoading(false);
-  //     setOpen(false);
-  //   }, 3000);
-  // };
   const handleCancel = () => {
     setOpen(false);
   };
 
-  const handleSubmit = values => {
+  const handleSubmit = (values) => {
     var { presentationName } = values;
     AddPresentation({ presentationName })
       .then((response) => {
         console.log(response);
-        const { data, message, status } = response;
-        if (data == null || status !== 200) {
+        const {data: presentation, message, status } = response;
+        if (presentation == null || status !== 200) {
           modal.info({
             title: "Notifications",
             content: (
@@ -460,10 +455,10 @@ const AddPresentations = props => {
             )
           });
         } else {
-          CreateSlide({ presentationId: data._id, index: 0 })
+          CreateSlide({ presentationId: presentation._id, index: 0 })
             .then((values) => {
-              const { data, message, status } = values;
-              if (data == null || status !== 200) {
+              const {data: slide, message, status } = values;
+              if (slide == null || status !== 200) {
                 modal.info({
                   title: "Notifications",
                   content: (
@@ -473,7 +468,7 @@ const AddPresentations = props => {
                   )
                 });
               }
-              navigate(`/presentations/${data._id}/edit`);
+              navigate(`/presentations/${presentation._id}/edit`);
             })
             .catch((error) => {
               modal.error({
