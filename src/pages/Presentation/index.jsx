@@ -70,11 +70,11 @@ const TableOfPresentations = (props) => {
   const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);
   const [selectedRows, setSelectedRows] = React.useState([]);
   const onSearch = (value) => console.log(value);
-  const deletePresentation = (presentationIdList) => {
-    DeletePresentation({ presentationIdList })
+  const deletePresentation = (presentationId) => {
+    DeletePresentation({presentationId})
       .then((values) => {
         console.log(values);
-        if (true) {
+        if (values && values.status == 200) {
           // Gỉa sử delete thành công
           modal.info({
             title: "Notifications",
@@ -85,7 +85,7 @@ const TableOfPresentations = (props) => {
             )
           });
           var newPresentationList = presentationList.filter(
-            (presentation) => !presentationIdList.includes(presentation.id)
+            (presentation) => presentation.id != presentationId
           );
           setPresentationList(newPresentationList);
         } else {
@@ -114,7 +114,7 @@ const TableOfPresentations = (props) => {
     var presentationIdList = selectedRows.map((row) => row.id);
     DeleteManyPresentation({})
       .then((values) => {
-        if (true) {
+        if (values && values.status == 200) {
           modal.info({
             title: "Notifications",
             content: (
@@ -150,22 +150,44 @@ const TableOfPresentations = (props) => {
       });
   };
   React.useEffect(() => {
-    GetAllPresentations().then((values) => {
-      var presentations = values.data;
-      var dataSource = [];
-      for (let i = 0; i < presentations.length; i++) {
-        presentations[i].key = i;
-        dataSource.push({
-          key: presentations[i]._id,
-          id: presentations[i]._id,
-          name: presentations[i].name,
-          createdDate: new Date(presentations[i].createdAt),
-          modifiedDate: new Date(presentations[i].updatedAt),
-          owner: presentations[i].created_by.name || presentations[i].created_by.username
+    GetAllPresentations()
+      .then((values) => {
+        if (values && values.status == 200) {
+          var presentations = values.data;
+          var dataSource = [];
+          for (let i = 0; i < presentations.length; i++) {
+            presentations[i].key = i;
+            dataSource.push({
+              key: presentations[i]._id,
+              id: presentations[i]._id,
+              name: presentations[i].name,
+              createdDate: new Date(presentations[i].createdAt),
+              modifiedDate: new Date(presentations[i].updatedAt),
+              owner: presentations[i].created_by.name || presentations[i].created_by.username
+            });
+          }
+          setPresentationList(dataSource);
+        } else {
+          modal.error({
+            title: "Notifications",
+            content: (
+              <>
+                <p>{`Has error ${values.message}. Please comeback again.`}</p>
+              </>
+            )
+          });
+        }
+      })
+      .catch((error) => {
+        modal.error({
+          title: "Notifications",
+          content: (
+            <>
+              <p>{`Has error ${error}. Please comeback again.`}</p>
+            </>
+          )
         });
-      }
-      setPresentationList(dataSource);
-    });
+      });
   }, []);
 
   // #region handle cho các sự kiện select rows
@@ -337,7 +359,7 @@ const ActionMenu = (props) => {
     },
     {
       label: (
-        <MenuItem onClick={() => props.handleDelete([data.id])} className="text-danger">
+        <MenuItem onClick={() => props.handleDelete(data.id)} className="text-danger">
           <DeleteOutlined style={{ fontSize: "2rem", paddingRight: "1rem !important" }} />
           <p className="pl-3" style={{ marginLeft: "1.6rem" }}>
             Delete
@@ -403,9 +425,9 @@ const AddPresentations = (props) => {
     // Gỉả lập
     AddPresentation({ presentationName })
       .then((response) => {
-        const { presentation, message } = response;
-        if (presentation == null) {
-          const modal = Modal.error();
+        console.log(response);
+        const { data, message, status } = response;
+        if (data == null || status !== 200) {
           modal.info({
             title: "Notifications",
             content: (
@@ -415,17 +437,15 @@ const AddPresentations = (props) => {
             )
           });
         } else {
-          console.log(presentation);
-          navigate(`/presentations/${presentation._id}/edit`);
+          navigate(`/presentations/${data._id}/edit`);
         }
       })
-      .catch((err) => {
-        const modal = Modal.error();
+      .catch((error) => {
         modal.error({
           title: "Notifications",
           content: (
             <>
-              <p>{`Create new presentations ${presentationName} failed. ${message}`}</p>
+              <p>{`Create new presentations ${presentationName} failed. ${error}`}</p>
             </>
           )
         });
