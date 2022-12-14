@@ -17,7 +17,27 @@ export const GetAllPresentations = async () => {
   return response.data;
 };
 
-export const AddPresentation = async (request) => {
+export const GetOnePresentation = async id => {
+  var accessToken = localStorage.getItem("accessToken");
+  var response = await AxiosInstance.get(`/presentation/${id}`, {
+    headers: {
+      x_authorization: accessToken
+    }
+  });
+  return response;
+};
+
+export const getSlidesFromPresentation = async id => {
+  var accessToken = localStorage.getItem("accessToken");
+  var response = await AxiosInstance.get(`/slide/${id}`, {
+    headers: {
+      x_authorization: accessToken
+    }
+  });
+  return response;
+};
+
+export const AddPresentation = async request => {
   if (!request.presentationName || request.presentationName.trim() == "") {
     return null;
   }
@@ -29,11 +49,10 @@ export const AddPresentation = async (request) => {
       x_authorization: localStorage.getItem("accessToken")
     }
   });
-  console.log(response);
   return response.data;
 };
 
-export const DeletePresentation = async (request) => {
+export const DeletePresentation = async request => {
   var presentationIdList = request.presentationIdList;
   if (!presentationIdList) {
     return null;
@@ -59,6 +78,6 @@ export const DeleteManyPresentation = async () => {
   // });
   // return response;
   return true;
-}
+};
 
 // #endregion

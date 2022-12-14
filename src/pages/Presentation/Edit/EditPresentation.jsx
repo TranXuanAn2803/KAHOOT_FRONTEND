@@ -9,17 +9,37 @@ import { ArrowLeftOutlined, PlayCircleOutlined, ShareAltOutlined } from "@ant-de
 import Creator from "../../Creator";
 import { useEffect, useContext } from "react";
 import PresentationContext from "../../../utils/PresentationContext";
-
+import { GetOnePresentation } from "../API";
 export const EditPresentation = props => {
   let { presentationId } = useParams();
-  console.log("presentationId ", presentationId);
   const [currentSlide, setCurrentSlide] = React.useState(0);
   const [presentation, setPresentation] = useContext(PresentationContext);
   // console.log("presentation.slideList", presentation.slideList, currentSlide);
-
-  React.useEffect(() => {
+  const GetPresentation = id => {
+    GetOnePresentation(id)
+      .then(value => {
+        console.log("value ", value);
+      })
+      .catch(error => {
+        modal.error({
+          title: "Notifications",
+          content: (
+            <>
+              <p>{`get presentation failed. ${error}`}</p>
+            </>
+          )
+        });
+      });
+  };
+  useEffect(() => {
     document.title = presentation.name;
-  });
+    const getDataForPresentation = async () => {
+      const presentation = await GetOnePresentation(presentationId);
+      console.log("presentation ", presentation);
+      const created_by = presentation.data.data.created_by;
+    };
+    getDataForPresentation();
+  }, []);
 
   return (
     <>
@@ -43,6 +63,7 @@ export const EditPresentation = props => {
 };
 
 const EditHeader = props => {
+  console.log("props presentation ", props.presentation);
   const { id, name, createdBy } = props.presentation;
   return (
     <>
