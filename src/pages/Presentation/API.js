@@ -14,8 +14,6 @@ export const GetAllPresentations = async () => {
       x_authorization: accessToken
     }
   });
-  console.log(response);
-
   return {
     status: response.status,
     data: response.data.data,
@@ -113,4 +111,30 @@ export const CreateSlide = async request => {
     message: response.data.message || null
   };
 };
+
+export const savePresentationAPI = async request => {
+  var presentationId = request.presentationId;
+  var newSlides = request.slides.map(item => {
+    return {
+      index: item.id,
+      question: item.question,
+      options: item.options
+    };
+  });
+  var requestData = {
+    slides: newSlides
+  };
+  console.log("request data ", requestData);
+  var response = await AxiosInstance.post(`slide/${presentationId}`, requestData, {
+    headers: {
+      x_authorization: localStorage.getItem("accessToken")
+    }
+  });
+  return {
+    status: response.status,
+    data: response.data.data,
+    message: response.data.message || null
+  };
+};
+
 // #endregion

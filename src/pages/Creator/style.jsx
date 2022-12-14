@@ -144,6 +144,11 @@ const Styled = styled.div`
     align-items: center;
     margin: 20px 0px;
   }
+  .button-creator-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 `;
 
 export default Styled;
