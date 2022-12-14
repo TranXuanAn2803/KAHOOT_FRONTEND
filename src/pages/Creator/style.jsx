@@ -37,7 +37,7 @@ const Styled = styled.div`
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    width: 300px;
+    max-wdith: 150px;
     overflow-y: auto;
     overflow: visible;
   }
@@ -69,6 +69,7 @@ const Styled = styled.div`
   .slide-image {
     background-size: contain;
     width: 100%;
+    height: 100%;
   }
   .slide-image-container {
     height: 100%;
@@ -77,19 +78,33 @@ const Styled = styled.div`
   .body-center {
     padding: 32px;
     min-width: 500px;
+    padding-top: 56.25%;
     height: 90%;
+    overflow: hidden;
+    /* height: 0; */
+    position: relative;
     background-color: #e7e8eb;
+    flex: 1 1 0;
   }
   .center-draw {
-    background-color: #fff;
     height: 100%;
     width: 100%;
+    position: absolute;
+    top: 0px;
+    bottom: 0;
+    left: 0;
+    background-color: #e7e8eb;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .body-right {
     width: 100%;
     height: 100%;
     background-color: #fff;
     padding: 20px 30px;
+    max-width: 400px;
   }
   .item-question {
     display: flex;
