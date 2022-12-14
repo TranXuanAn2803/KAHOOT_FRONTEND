@@ -18,12 +18,10 @@ import styled from "styled-components";
 import { EditProfileScreen } from "./EditProfile";
 import { ChangePassWordScreen } from "./ChangePassword";
 import UserContext from "../../utils/UserContext";
-import { Header } from "../../components/Header";
 
 export const UserProfile = function (props) {
   return (
     <>
-      <Header />
       <Outlet />
     </>
   );
@@ -93,7 +91,7 @@ export const ProfileSetting = function (props) {
 
 const StyledTabList = styled(TabList)`
 & .MuiTabs-indicator {
-  background-color: #009e58 !important;
+  background-color: #584491 !important;
 }`;
 
 const StyledTab = styled(Tab)`
@@ -101,7 +99,7 @@ const StyledTab = styled(Tab)`
   font-weight: 700 !important;
   text-transform: capitalize !important;
   &.Mui-selected {
-    color: #009e58 !important;
+    color: #584491 !important;
   }
 `;
 

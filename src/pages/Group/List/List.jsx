@@ -32,7 +32,6 @@ import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import UserContext from "../../../utils/UserContext";
 import { Menu } from "antd";
-import { Header } from "../../../components/Header";
 
 const style = {
   position: "absolute",
@@ -160,7 +159,6 @@ function GroupsPage() {
 
   return (
     <>
-      <Header />
       <Menu
         style={{
           width: drawerWidth,
