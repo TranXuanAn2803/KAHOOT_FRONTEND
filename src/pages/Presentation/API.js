@@ -62,7 +62,7 @@ export const AddPresentation = async request => {
   };
 };
 
-export const DeletePresentation = async (request) => {
+export const DeletePresentation = async request => {
   var presentationId = request.presentationId;
   if (!presentationId || presentationId.trim() == "") {
     return null;
@@ -91,7 +91,7 @@ export const DeleteManyPresentation = async () => {
   return { status: 200 };
 };
 
-export const CreateSlide = async (request) => {
+export const CreateSlide = async request => {
   var requestData = {
     presentation_id: request.presentationId,
     index: request.index
