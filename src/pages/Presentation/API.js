@@ -43,7 +43,7 @@ export const getSlidesFromPresentation = async id => {
   return response;
 };
 
-export const AddPresentation = async request => {
+export const AddPresentation = async (request) => {
   if (!request.presentationName || request.presentationName.trim() == "") {
     return null;
   }
@@ -62,7 +62,7 @@ export const AddPresentation = async request => {
   };
 };
 
-export const DeletePresentation = async request => {
+export const DeletePresentation = async (request) => {
   var presentationId = request.presentationId;
   if (!presentationId || presentationId.trim() == "") {
     return null;
@@ -82,30 +82,24 @@ export const DeletePresentation = async request => {
   };
 };
 
-export const DeleteManyPresentation = async () => {
-  // try {
-  //   var presentationList = request.presentationIdList;
-  //   for (let i = 0; i < presentationList.length; i++) {
-  //     await AxiosInstance.delete(`presentation/${presentationList[i]}`, {
-  //       headers: {
-  //         x_authorization: localStorage.getItem("accessToken")
-  //       }
-  //     });
-  //   }
-  // } catch (e) {
-  //   return null;
-  // }
-  // var requestData ={request};
-  // var response = await AxiosInstance.delete(`presentation`, requestData, {
-  //   headers: {
-  //     x_authorization: localStorage.getItem("accessToken")
-  //   }
-  // });
-  //  return { status: response.status, data: response.data.data, message: response.data.message || null };
-  // return { status: 200 };
+export const DeleteManyPresentation = async (request) => {
+  var requestData = { id: request.presentationIdList };
+  var response = await AxiosInstance.delete(
+    `presentation`,
+    { data: requestData ,
+      headers: {
+        x_authorization: localStorage.getItem("accessToken")
+      }
+    }
+  );
+  return {
+    status: response.status,
+    data: response.data.data,
+    message: response.data.message || null
+  };
 };
 
-export const CreateSlide = async request => {
+export const CreateSlide = async (request) => {
   var requestData = {
     presentation_id: request.presentationId,
     index: request.index
