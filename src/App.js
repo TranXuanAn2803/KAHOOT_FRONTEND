@@ -20,6 +20,7 @@ import { Header } from "./components/Header";
 import { MyPresentations, Presentation } from "./pages/Presentation";
 import { EditPresentation } from "./pages/Presentation/Edit/EditPresentation";
 import { ShowPresentation } from "./pages/Presentation/Show/ShowPresentation";
+import PresentPresentation from "./pages/Presentation/Present/presentPresentation";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -77,6 +78,7 @@ const App = () => {
                     <Route path="all" element={<MyPresentations />} />
                     <Route path=":presentationId/edit" element={<EditPresentation />} />
                     <Route path=":presentationId/show" element={<ShowPresentation />} />
+                    <Route path="show" element={<PresentPresentation />} />
                   </Route>
                   <Route path="*" element={<NoMatch />} />
                 </Routes>
