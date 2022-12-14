@@ -13,7 +13,12 @@ import {
 } from "@ant-design/icons";
 import { MenuItem, StyledButton } from "./style";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { AddPresentation, GetAllPresentations } from "./API";
+import {
+  AddPresentation,
+  GetAllPresentations,
+  DeletePresentation,
+  DeleteManyPresentation
+} from "./API";
 
 const { Content } = Layout;
 const { Search } = Input;
@@ -60,13 +65,93 @@ export const MyPresentations = (props) => {
 // #region Table of Presentations
 
 const TableOfPresentations = (props) => {
+  const [modal, contextHolder] = Modal.useModal();
   const [presentationList, setPresentationList] = React.useState([]);
   const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);
-  const onSearch = value => console.log(value);
+  const [selectedRows, setSelectedRows] = React.useState([]);
+  const onSearch = (value) => console.log(value);
+  const deletePresentation = (presentationIdList) => {
+    DeletePresentation({ presentationIdList })
+      .then((values) => {
+        console.log(values);
+        if (true) {
+          // Gỉa sử delete thành công
+          modal.info({
+            title: "Notifications",
+            content: (
+              <>
+                <p>{`Delete presentations successfully.`}</p>
+              </>
+            )
+          });
+          var newPresentationList = presentationList.filter(
+            (presentation) => !presentationIdList.includes(presentation.id)
+          );
+          setPresentationList(newPresentationList);
+        } else {
+          modal.error({
+            title: "Notifications",
+            content: (
+              <>
+                <p>{`Delete presentations failed.`}</p>
+              </>
+            )
+          });
+        }
+      })
+      .catch((error) => {
+        modal.error({
+          title: "Notifications",
+          content: (
+            <>
+              <p>{`Delete presentations failed. ${error}`}</p>
+            </>
+          )
+        });
+      });
+  };
+  const deleteManyPresentations = () => {
+    var presentationIdList = selectedRows.map((row) => row.id);
+    DeleteManyPresentation({})
+      .then((values) => {
+        if (true) {
+          modal.info({
+            title: "Notifications",
+            content: (
+              <>
+                <p>{`Delete presentations successfully.`}</p>
+              </>
+            )
+          });
+          var newPresentationList = presentationList.filter(
+            (presentation) => !presentationIdList.includes(presentation.id)
+          );
+          setPresentationList(newPresentationList);
+        } else {
+          modal.error({
+            title: "Notifications",
+            content: (
+              <>
+                <p>{`Delete presentations failed.`}</p>
+              </>
+            )
+          });
+        }
+      })
+      .catch((error) => {
+        modal.error({
+          title: "Notifications",
+          content: (
+            <>
+              <p>{`Delete many presentations failed. ${error}`}</p>
+            </>
+          )
+        });
+      });
+  };
   React.useEffect(() => {
     GetAllPresentations().then((values) => {
       var presentations = values.data;
-      var owner = values.owner;
       var dataSource = [];
       for (let i = 0; i < presentations.length; i++) {
         presentations[i].key = i;
@@ -79,7 +164,6 @@ const TableOfPresentations = (props) => {
           owner: presentations[i].created_by.name || presentations[i].created_by.username
         });
       }
-      console.log("dataSource: " + dataSource);
       setPresentationList(dataSource);
     });
   }, []);
@@ -87,6 +171,8 @@ const TableOfPresentations = (props) => {
   // #region handle cho các sự kiện select rows
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
+      console.log(selectedRows);
+      setSelectedRows(selectedRows);
       if (selectedRowKeys.length == 0) {
         setHasSelectedPresentation(false);
       } else {
@@ -104,7 +190,7 @@ const TableOfPresentations = (props) => {
             <StyledButton
               variant="danger"
               className="d-flex align-items-center"
-              onClick={() => setModalShow(true)}>
+              onClick={() => deleteManyPresentations()}>
               <p>Delete</p>
             </StyledButton>
           ) : (
@@ -121,7 +207,7 @@ const TableOfPresentations = (props) => {
         dataSource={presentationList}
         pagination={false}>
         <Column
-        width={400}
+          width={350}
           title="Name"
           dataIndex="name"
           key="name"
@@ -147,8 +233,9 @@ const TableOfPresentations = (props) => {
             );
           }}
         />
-        <Column width={150} title="Owner" dataIndex="owner" key="owner" sorter={true} />
-        <Column width={150}
+        <Column width={250} title="Owner" dataIndex="owner" key="owner" sorter={true} />
+        <Column
+          width={150}
           title="Modified"
           dataIndex="modifiedDate"
           key="modifiedDate"
@@ -161,7 +248,8 @@ const TableOfPresentations = (props) => {
             })
           }
         />
-        <Column width={150}
+        <Column
+          width={150}
           title="Created"
           dataIndex="createdDate"
           key="createdDate"
@@ -174,20 +262,23 @@ const TableOfPresentations = (props) => {
             })
           }
         />
-        <Column width={100}
+        <Column
+          width={100}
           title=""
           key="action"
           render={(_, record) => {
-            return <ActionMenu data={record} />;
+            return <ActionMenu data={record} handleDelete={deletePresentation} />;
           }}
         />
       </Table>
+      {contextHolder}
     </>
   );
 };
 
 const ActionMenu = (props) => {
   const data = props.data;
+
   const items = [
     {
       label: (
@@ -246,7 +337,7 @@ const ActionMenu = (props) => {
     },
     {
       label: (
-        <MenuItem to={`/presentations/${data.id}/delete`} className="text-danger">
+        <MenuItem onClick={() => props.handleDelete([data.id])} className="text-danger">
           <DeleteOutlined style={{ fontSize: "2rem", paddingRight: "1rem !important" }} />
           <p className="pl-3" style={{ marginLeft: "1.6rem" }}>
             Delete
@@ -315,7 +406,7 @@ const AddPresentations = (props) => {
         const { presentation, message } = response;
         if (presentation == null) {
           const modal = Modal.error();
-          modal.update({
+          modal.info({
             title: "Notifications",
             content: (
               <>
@@ -330,7 +421,7 @@ const AddPresentations = (props) => {
       })
       .catch((err) => {
         const modal = Modal.error();
-        modal.update({
+        modal.error({
           title: "Notifications",
           content: (
             <>
@@ -370,8 +461,8 @@ const AddPresentations = (props) => {
               },
               {
                 max: 255,
-                message: "PresentationName should be less than 255 character",
-              },
+                message: "PresentationName should be less than 255 character"
+              }
             ]}
             style={{ marginBottom: "4rem" }}>
             <Input placeholder="Presentation name" />
@@ -398,59 +489,59 @@ const AddPresentations = (props) => {
 
 // #region Delete Presentation
 
-const DeletePresentation = (props) => {
-  const selectedPresentationList = props.selectedPresentationList;
-  if (selectedPresentationList == null || selectedPresentationList.length == 0) {
-    return;
-  }
-  return;
-  <>
-    <StyledButton
-      variant="danger"
-      className="d-flex align-items-center"
-      onClick={() => setModalShow(true)}>
-      <p>Delete</p>
-    </StyledButton>
-    <Modal
-      width={800}
-      open={open}
-      title={<p style={{ fontSize: "2rem" }}>Create new presentation</p>}
-      onCancel={handleCancel}
-      footer={null}>
-      <Form
-        name="addNewPresentationForm"
-        initialValues={{
-          remember: true
-        }}
-        autoComplete="off"
-        size="large"
-        onFinish={handleSubmit}>
-        <Form.Item
-          name="presentationName"
-          rules={[
-            {
-              required: true,
-              message: "Enter a name for your presentation."
-            }
-          ]}
-          style={{ marginBottom: "4rem" }}>
-          <Input placeholder="Presentation name" />
-        </Form.Item>
-        <Form.Item className="text-center text-md-end">
-          <StyledButton
-            key="back"
-            variant="secondary"
-            onClick={handleCancel}
-            style={{ marginRight: "1rem" }}>
-            Cancel
-          </StyledButton>
-          <StyledButton key="submit" variant="primary" type="submit">
-            Create presentation
-          </StyledButton>
-        </Form.Item>
-      </Form>
-    </Modal>
-  </>;
-};
+// const DeletePresentation = (props) => {
+//   const selectedPresentationList = props.selectedPresentationList;
+//   if (selectedPresentationList == null || selectedPresentationList.length == 0) {
+//     return;
+//   }
+//   return;
+//   <>
+//     <StyledButton
+//       variant="danger"
+//       className="d-flex align-items-center"
+//       onClick={() => setModalShow(true)}>
+//       <p>Delete</p>
+//     </StyledButton>
+//     <Modal
+//       width={800}
+//       open={open}
+//       title={<p style={{ fontSize: "2rem" }}>Create new presentation</p>}
+//       onCancel={handleCancel}
+//       footer={null}>
+//       <Form
+//         name="addNewPresentationForm"
+//         initialValues={{
+//           remember: true
+//         }}
+//         autoComplete="off"
+//         size="large"
+//         onFinish={handleSubmit}>
+//         <Form.Item
+//           name="presentationName"
+//           rules={[
+//             {
+//               required: true,
+//               message: "Enter a name for your presentation."
+//             }
+//           ]}
+//           style={{ marginBottom: "4rem" }}>
+//           <Input placeholder="Presentation name" />
+//         </Form.Item>
+//         <Form.Item className="text-center text-md-end">
+//           <StyledButton
+//             key="back"
+//             variant="secondary"
+//             onClick={handleCancel}
+//             style={{ marginRight: "1rem" }}>
+//             Cancel
+//           </StyledButton>
+//           <StyledButton key="submit" variant="primary" type="submit">
+//             Create presentation
+//           </StyledButton>
+//         </Form.Item>
+//       </Form>
+//     </Modal>
+//   </>;
+// };
 
 // #endregion

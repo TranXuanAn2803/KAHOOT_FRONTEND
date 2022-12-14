@@ -14,15 +14,13 @@ export const GetAllPresentations = async () => {
       x_authorization: accessToken
     }
   });
-  // var response = await axios.get("http://localhost:5000/presentation", {
-  //   headers: {
-  //     x_authorization: accessToken
-  //   }
-  // });
   return response.data;
 };
 
-export const AddPresentation = async request => {
+export const AddPresentation = async (request) => {
+  if (!request.presentationName || request.presentationName.trim() == "") {
+    return null;
+  }
   var requestData = {
     name: request.presentationName
   };
@@ -34,5 +32,33 @@ export const AddPresentation = async request => {
   console.log(response);
   return response.data;
 };
+
+export const DeletePresentation = async (request) => {
+  var presentationIdList = request.presentationIdList;
+  if (!presentationIdList) {
+    return null;
+  }
+  var response = [];
+  for (const presentationId of presentationIdList) {
+    var result = await AxiosInstance.delete(`presentation/${presentationId}`, {
+      headers: {
+        x_authorization: localStorage.getItem("accessToken")
+      }
+    });
+    response.push(result);
+    return response;
+  }
+};
+
+export const DeleteManyPresentation = async () => {
+  // var requestData ={request};
+  // var response = await AxiosInstance.delete(`presentation`, requestData, {
+  //   headers: {
+  //     x_authorization: localStorage.getItem("accessToken")
+  //   }
+  // });
+  // return response;
+  return true;
+}
 
 // #endregion
