@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import { SideBar } from "./SideBar";
 import AddIcon from "@mui/icons-material/Add";
 import { Table, Layout, Dropdown, Space, Form, Input, Modal } from "antd";
@@ -24,20 +24,18 @@ import {
 const { Content } = Layout;
 const { Search } = Input;
 const { Column, ColumnGroup } = Table;
-
+let initialialPresentationList = [];
 export const Presentation = props => {
   return <Outlet />;
 };
-
 export const MyPresentations = props => {
-  const onSearch = value => console.log(value);
   React.useEffect(() => {
-    document.title = "My Presentations - Realtime quiz-based learning";
+    document.title = "List Presentations - Realtime quiz-based learning";
   });
-  const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);
+  // const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);
   return (
     <>
-      <Layout style={{ height: "100%", minHeight: "100%" }}>
+      <Layout style={{ height: "100%", width: "100%" }}>
         <SideBar />
         <Layout
           style={{
@@ -50,10 +48,12 @@ export const MyPresentations = props => {
             }}>
             <div className="d-flex flex-column" style={{ padding: "3rem 3.2rem" }}>
               <p className="mb-5" style={{ fontWeight: "600", fontSize: "1.6rem" }}>
-                My presentations
+                List presentations
               </p>
               <div className="mb-5">
-                <TableOfPresentations handleHasSelectedPresentation={setHasSelectedPresentation} />
+                <TableOfPresentations
+                // handleHasSelectedPresentation={setHasSelectedPresentation}
+                />
               </div>
             </div>
           </Content>
@@ -70,8 +70,22 @@ const TableOfPresentations = props => {
   const [presentationList, setPresentationList] = React.useState([]);
   const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);
   const [selectedRows, setSelectedRows] = React.useState([]);
-  const onSearch = (value) => console.log(value);
-  const deletePresentation = (presentationId) => {
+
+  const onSearch = value => {
+    const currValue = value;
+    console.log("currValue ", currValue);
+    if (currValue !== "") {
+      const filteredPresentation = presentationList.filter(presentation =>
+        presentation.name.includes(currValue)
+      );
+      console.log("filteredPresentation ", filteredPresentation);
+      setPresentationList(filteredPresentation);
+    } else {
+      setPresentationList(initialialPresentationList);
+    }
+  };
+  //delete one presentation
+  const deletePresentation = presentationId => {
     DeletePresentation({ presentationId })
       .then((values) => {
         console.log(values);
@@ -89,6 +103,7 @@ const TableOfPresentations = props => {
             (presentation) => presentation.id != presentationId
           );
           setPresentationList(newPresentationList);
+          initialialPresentationList = newPresentationList;
         } else {
           modal.error({
             title: "Notifications",
@@ -111,6 +126,7 @@ const TableOfPresentations = props => {
         });
       });
   };
+  //delete many presentations
   const deleteManyPresentations = () => {
     var presentationIdList = selectedRows.map(row => row.id);
     DeleteManyPresentation({})
@@ -128,6 +144,7 @@ const TableOfPresentations = props => {
             (presentation) => !presentationIdList.includes(presentation.id)
           );
           setPresentationList(newPresentationList);
+          initialialPresentationList = newPresentationList;
         } else {
           modal.error({
             title: "Notifications",
@@ -150,7 +167,7 @@ const TableOfPresentations = props => {
         });
       });
   };
-  React.useEffect(() => {
+  useEffect(() => {
     GetAllPresentations()
       .then((values) => {
         if (values && values.status == 200) {
@@ -168,6 +185,7 @@ const TableOfPresentations = props => {
             });
           }
           setPresentationList(dataSource);
+          initialialPresentationList = dataSource;
         } else {
           modal.error({
             title: "Notifications",
@@ -221,7 +239,14 @@ const TableOfPresentations = props => {
           )}
         </div>
         <div className="d-flex">
-          <Search placeholder="Type to search" size="large" onSearch={onSearch} />
+          <Search
+            placeholder="Type to search"
+            size="large"
+            onSearch={onSearch}
+            allowClear={true}
+            bordered={true}
+            maxLength={10}
+          />
         </div>
       </div>
       <Table
@@ -402,28 +427,25 @@ const ActionMenu = props => {
 
 const AddPresentations = props => {
   const navigate = useNavigate();
-  const [loading, setLoading] = React.useState(false);
+  // const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [modal, contextHolder] = Modal.useModal();
   const showModal = () => {
     setOpen(true);
   };
-  const handleOk = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setOpen(false);
-    }, 3000);
-  };
+  // const handleOk = () => {
+  //   setLoading(true);
+  //   setTimeout(() => {
+  //     setLoading(false);
+  //     setOpen(false);
+  //   }, 3000);
+  // };
   const handleCancel = () => {
     setOpen(false);
   };
 
   const handleSubmit = values => {
     var { presentationName } = values;
-    console.log(`Submit ${presentationName}`);
-    // #region Send request to server
-    // Gỉả lập
     AddPresentation({ presentationName })
       .then((response) => {
         console.log(response);
