@@ -29,10 +29,10 @@ const queryClient = new QueryClient({
     }
   }
 });
-
+// App.js
 const App = () => {
   useEffect(() => {
-    const handleInvalidToken = e => {
+    const handleInvalidToken = (e) => {
       console.log("e token", e);
       if ((e.key === "accessToken" || e.key == "refreshToken") && e.oldValue && !e.newValue) {
         onLogout();
