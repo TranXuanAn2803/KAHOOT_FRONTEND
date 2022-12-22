@@ -29,16 +29,14 @@ export const UserProvider = ({ children }) => {
     const currentPathname = window.location.pathname;
     const accessToken = localStorage.getItem("accessToken");
     // console.log("currentPathname ", currentPathname);
-    if (currentPathname != "/signin" && currentPathname != "/signup") {
-      // console.log("check sign in ", accessToken);
-      if (currentUser == undefined && accessToken == null) {
-        window.location.href = "/signin";
-      }
-    }
+    // if (currentPathname != "/signin" && currentPathname != "/signup") {
+    //   // console.log("check sign in ", accessToken);
+    //   if (currentUser == undefined && accessToken == null) {
+    //     window.location.href = "/signin";
+    //   }
+    // }
   });
   let values = useMemo(() => [currentUser, setCurrentUser], [currentUser]);
-  return (
-    <UserContext.Provider value={values}>{children}</UserContext.Provider>
-  );
+  return <UserContext.Provider value={values}>{children}</UserContext.Provider>;
 };
 export default UserContext;

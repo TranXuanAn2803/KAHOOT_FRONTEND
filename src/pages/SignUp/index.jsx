@@ -135,7 +135,7 @@ const SignUp = () => {
                   className="form-login"
                   method="post"
                   onSubmit={formik.handleSubmit}
-                  autoComplete="on">
+                  autoComplete="off">
                   <div className="input-box">
                     <label htmlFor="username" className="input-label">
                       Username
@@ -148,6 +148,7 @@ const SignUp = () => {
                       type="text"
                       placeholder="Input username"
                       className="input-text"
+                      autoComplete="false"
                     />
                     {formik.errors.username && formik.touched.username && (
                       <p className="error-message">{formik.errors.username}</p>

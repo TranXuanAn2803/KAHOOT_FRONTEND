@@ -86,24 +86,35 @@ export const loginUserWithGoogle = async (tokenId) => {
     status: status
   };
   return objectReturn;
-
-  //   .catch((error) => {
-  //     if (error.response) {
-  //       // The request was made and the server responded with a status code
-  //       // that falls out of the range of 2xx
-  //       const objectReturn = {
-  //         data: error.response.data,
-  //         status: error.response.status
-  //       };
-  //       return objectReturn;
-  //     }
-  //   });
-  // const { data, status } = response;
-  // const objectReturn = {
-  //   data: data,
-  //   status: status
-  // };
-  // return objectReturn;
+};
+export const sendChangePasswordMail = async (email) => {
+  const response = await axios
+    .post(`${URL}/auth/change-password`, {
+      email
+    })
+    .catch((error) => {
+      console.log("error ", error);
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        const objectReturn = {
+          data: error.response.data,
+          status: error.response.status
+        };
+        return objectReturn;
+      }
+    });
+  const { data, status } = response;
+  const objectReturn = {
+    data: data,
+    status: status
+  };
+  console.log("objectReturn ", objectReturn);
+  return objectReturn;
+  //   return response;
+  // } catch (err) {
+  //   console.log("Error while send change password ", err);
+  // }
 };
 export const createGroup = async (name, accessToken) => {
   try {
@@ -313,6 +324,17 @@ export const confirmGroupInvitation = async (id, accessToken) => {
     headers: {
       x_authorization: accessToken
     }
+  });
+  return data;
+};
+export const findUserByResetPasswordCode = async (resetPasswordCode) => {
+  const { data } = await axios.get(`${URL}/auth/user/${resetPasswordCode}`);
+  return data;
+};
+export const changePassword = async (password, resetPasswordCode) => {
+  const { data } = await axios.post(`${URL}/auth/user/change-new-password`, {
+    resetPasswordCode: resetPasswordCode,
+    password: password
   });
   return data;
 };

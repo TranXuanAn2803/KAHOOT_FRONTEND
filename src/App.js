@@ -21,6 +21,8 @@ import { MyPresentations, Presentation } from "./pages/Presentation";
 import { EditPresentation } from "./pages/Presentation/Edit/EditPresentation";
 import { ShowPresentation } from "./pages/Presentation/Show/ShowPresentation";
 import PresentPresentation from "./pages/Presentation/Present/presentPresentation";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -80,6 +82,12 @@ const App = () => {
                     <Route path=":presentationId/show" element={<ShowPresentation />} />
                     <Route path="show" element={<PresentPresentation />} />
                   </Route>
+
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route
+                    path="/auth/reset-password/:resetPasswordToken"
+                    element={<ResetPassword />}
+                  />
                   <Route path="*" element={<NoMatch />} />
                 </Routes>
               </main>

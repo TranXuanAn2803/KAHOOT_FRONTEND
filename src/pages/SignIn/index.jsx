@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import Styled from "./style";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
@@ -25,7 +25,6 @@ export const SignIn = function () {
     }
   }, [currentUser]);
   const responseGoogle = async (response) => {
-    console.log("response google ", response);
     const res = await loginUserWithGoogle(response.tokenId);
     const { data, status } = res;
     if (status != 200) {
@@ -202,6 +201,12 @@ export const SignIn = function () {
                     {formik.errors.password && formik.touched.password && (
                       <p className="error-message">{formik.errors.password}</p>
                     )}
+                  </div>
+                  <div className="forgot-password">
+                    Forgot password?
+                    <Link to="/forgot-password" className="reset-link">
+                      Reset your password
+                    </Link>
                   </div>
                   <button type="submit" className="login-btn">
                     Log in

@@ -188,6 +188,11 @@ const Styled = styled.div`
     justify-content: center;
     cursor: pointer;
   }
+  .forgot-password {
+    font-size: 1.5rem;
+    line-height: 17px;
+    margin: 1rem 0px 1.5rem;
+  }
 `;
 
 export default Styled;
