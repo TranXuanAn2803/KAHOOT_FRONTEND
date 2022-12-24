@@ -13,7 +13,6 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Header } from "../../../components/Header";
 import  SideBar  from "../SideBar";
-import { Styled } from "./style";
 import { Tabs, Form, Button, Modal, Input, Card } from 'antd';
 import { CopyOutlined, EditOutlined, EllipsisOutlined, } from '@ant-design/icons';
 const { Meta } = Card;

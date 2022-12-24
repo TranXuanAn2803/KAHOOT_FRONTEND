@@ -11,7 +11,7 @@ import {
   SmallDashOutlined,
   UsergroupAddOutlined
 } from "@ant-design/icons";
-import { MenuItem, StyledButton, Styled } from "./style";
+import Styled, { MenuItem, StyledButton } from "./style";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   AddPresentation,
