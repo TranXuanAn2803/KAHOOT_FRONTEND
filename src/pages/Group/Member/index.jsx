@@ -17,7 +17,7 @@ import * as Yup from "yup";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useLocation } from "react-router";
-
+import { Styled } from "./style";
 import { Layout, Space, Table, Button, Form, Input, Modal, Select, Tabs } from "antd";
 import { Header } from "../../../components/Header";
 import SideBar from "../SideBar";
@@ -337,9 +337,13 @@ function MemberPage() {
                 </Form.Item>
               </Form>
             </Modal>
-            <Modal title="Change Member's Role" open={openRoleForm} footer={null}>
+            <Modal
+              title="Change Member's Role"
+              open={openRoleForm}
+              footer={null}
+              onCancel={handleCloseRoleForm}>
               <Form name="basic" onSubmit={roleFormik.handleSubmit} form={roleForm}>
-                <Form.Item label="Email" name="email">
+                <Form.Item label="Role:">
                   <Select
                     showSearch
                     placeholder="Select a person"
