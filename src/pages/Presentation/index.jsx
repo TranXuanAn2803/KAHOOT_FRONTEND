@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { SideBar } from "./SideBar";
 import AddIcon from "@mui/icons-material/Add";
-import { Table, Layout, Dropdown, Space, Form, Input, Modal } from "antd";
+import { Table, Layout, Dropdown, Space, Form, Input, Modal, Button } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
@@ -11,7 +11,7 @@ import {
   SmallDashOutlined,
   UsergroupAddOutlined
 } from "@ant-design/icons";
-import { MenuItem, StyledButton } from "./style";
+import { MenuItem, StyledButton, Styled } from "./style";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   AddPresentation,
@@ -20,6 +20,8 @@ import {
   DeleteManyPresentation,
   CreateSlide
 } from "./API";
+import * as Yup from "yup";
+import { useFormik } from "formik";
 
 const { Content } = Layout;
 const { Search } = Input;
@@ -29,13 +31,74 @@ export const Presentation = (props) => {
   return <Outlet />;
 };
 export const MyPresentations = (props) => {
+  const [addCollaborators, setAddCollaborators] = useState(true);
+  const addCollaboratorsSchema = Yup.object({
+    email: Yup.string()
+      .email("Not a proper email")
+      .min(10, "Minimum 10 characters")
+      .required("Email required")
+  });
+  const formik = useFormik({
+    initialValues: {
+      email: ""
+    },
+    validationSchema: addCollaboratorsSchema,
+    onSubmit: async (value) => {
+      console.log("value submit ", value);
+    }
+  });
+  const handleOpenAddCollaborators = () => {
+    setAddCollaborators(true);
+  };
+
+  const handleCloseAddCollaborators = () => {
+    setAddCollaborators(false);
+  };
   React.useEffect(() => {
     document.title = "List Presentations - Realtime quiz-based learning";
   });
+
   // const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);
   return (
     <>
       <Layout style={{ height: "100%", width: "100%" }}>
+        <Modal
+          title="Add collaborators"
+          open={addCollaborators}
+          onOk={handleCloseAddCollaborators}
+          onCancel={handleCloseAddCollaborators}
+          okButtonProps={<></>}
+          footer={null}>
+          <Styled>
+            <form
+              method="POST"
+              className="form-add-collaborators"
+              autoComplete="on"
+              onSubmit={formik.handleSubmit}>
+              <div className="input-box">
+                <label htmlFor="email" className="input-label">
+                  Email
+                </label>
+                <Input
+                  id="email"
+                  name="email"
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  type="email"
+                  placeholder="Input email address..."
+                  className="input-text"
+                  autoComplete="true"
+                />
+                {formik.errors.email && formik.touched.email && (
+                  <p className="error-message">{formik.errors.email}</p>
+                )}
+              </div>
+              <Button type="primary" htmlType="submit">
+                Add collaborator
+              </Button>
+            </form>
+          </Styled>
+        </Modal>
         <SideBar />
         <Layout
           style={{
@@ -52,7 +115,8 @@ export const MyPresentations = (props) => {
               </p>
               <div className="mb-5">
                 <TableOfPresentations
-                // handleHasSelectedPresentation={setHasSelectedPresentation}
+                  handleOpenAddCollaborators={handleOpenAddCollaborators}
+                  // handleHasSelectedPresentation={setHasSelectedPresentation}
                 />
               </div>
             </div>
@@ -66,6 +130,7 @@ export const MyPresentations = (props) => {
 // #region Table of Presentations
 
 const TableOfPresentations = (props) => {
+  const handleOpenAddCollaborators = props.handleOpenAddCollaborators;
   const [modal, contextHolder] = Modal.useModal();
   const [presentationList, setPresentationList] = React.useState([]);
   const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);
@@ -316,7 +381,13 @@ const TableOfPresentations = (props) => {
           title=""
           key="action"
           render={(_, record) => {
-            return <ActionMenu data={record} handleDelete={deletePresentation} />;
+            return (
+              <ActionMenu
+                data={record}
+                handleDelete={deletePresentation}
+                handleOpenAddCollaborators={handleOpenAddCollaborators}
+              />
+            );
           }}
         />
       </Table>
@@ -326,7 +397,7 @@ const TableOfPresentations = (props) => {
 };
 
 const ActionMenu = (props) => {
-  const data = props.data;
+  const { data, handleOpenAddCollaborators } = props;
 
   const items = [
     {
@@ -345,15 +416,15 @@ const ActionMenu = (props) => {
     },
     {
       label: (
-        <MenuItem to={`/presentations`}>
+        <MenuItem onClick={() => handleOpenAddCollaborators()}>
           <UsergroupAddOutlined style={{ fontSize: "2rem", paddingRight: "1rem !important" }} />
-          <p className="pl-3" style={{ marginLeft: "1.6rem" }}>
+          <span className="pl-3" style={{ marginLeft: "1.6rem" }}>
             Invite Collaborators
-          </p>
+          </span>
         </MenuItem>
       ),
-      key: "1",
-      disabled: true
+      key: "1"
+      // disabled: true
     },
     {
       label: (
@@ -443,7 +514,7 @@ const AddPresentations = (props) => {
     AddPresentation({ presentationName })
       .then((response) => {
         console.log(response);
-        const {data: presentation, message, status } = response;
+        const { data: presentation, message, status } = response;
         if (presentation == null || status !== 200) {
           modal.info({
             title: "Notifications",
@@ -456,7 +527,7 @@ const AddPresentations = (props) => {
         } else {
           CreateSlide({ presentationId: presentation._id, index: 0 })
             .then((values) => {
-              const {data: slide, message, status } = values;
+              const { data: slide, message, status } = values;
               if (slide == null || status !== 200) {
                 modal.info({
                   title: "Notifications",

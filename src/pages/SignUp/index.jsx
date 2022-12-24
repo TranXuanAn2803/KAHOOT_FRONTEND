@@ -27,7 +27,7 @@ const SignUp = () => {
     email: Yup.string()
       .email("Not a proper email")
       .min(10, "Minimum 10 characters")
-      .required("Username required"),
+      .required("Email required"),
     password: Yup.string()
       .required("No password provided.")
       .min(8, "Password is too short - should be at least 8 characters")
@@ -199,26 +199,8 @@ const SignUp = () => {
                       <p className="error-message">{formik.errors.password}</p>
                     )}
                   </div>
-                  {/* <div className="input-box">
-                    <label htmlFor="role_id" className="input-label">
-                      Your role
-                    </label>
-                    <select
-                      id="role_id"
-                      name="role_id"
-                      value={formik.values.role_id}
-                      onChange={formik.handleChange}>
-                      {userRole.map((item, idx) => {
-                        return (
-                          <option key={`userRole-${idx}`} value={item.value}>
-                            {item.content}
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </div> */}
                   <button type="submit" className="signup-btn">
-                    Sign up
+                    Sign upƯ
                   </button>
                 </form>
                 <div className="auth-split">

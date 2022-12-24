@@ -36,3 +36,11 @@ export const MenuBar = styled(Navbar)`
 export const MenuList = styled(Nav)`
   height: inherit;
 `;
+export const Styled = styled.div`
+  .input-box {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+`;
