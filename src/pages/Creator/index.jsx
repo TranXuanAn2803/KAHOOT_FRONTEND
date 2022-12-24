@@ -62,9 +62,6 @@ const Creator = props => {
     // setSlides(new Array(presentation.slideList.length));
   }, [presentation, currentSlide]);
 
-  const onChange = key => {
-    console.log("key", key);
-  };
   const createNewOption = () => {
     let currentSlideList = presentation.slideList;
     let currentOptions = presentation.slideList[currentSlide].options;

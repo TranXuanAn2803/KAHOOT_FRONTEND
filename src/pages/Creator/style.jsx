@@ -163,6 +163,24 @@ const Styled = styled.div`
     display: flex;
     flex-direction: column;
     gap: 20px;
+  .add-option button {
+    width: 100%;
+    background-color: rgb(219, 220, 225);
+  }
+  .add-option button:hover {
+    background-color: rgb(175, 176, 180);
+  }
+  .presentation-button button {
+    width: 100%;
+  }
+  .presentation-button .play-icon {
+    transform: translate(-9px, -3px);
+  }
+  .form-create-slide {
+    margin-bottom: 20px;
+  }
+  .ant-tabs-content-holder {
+    min-height: 492px;
   }
 `;
 
