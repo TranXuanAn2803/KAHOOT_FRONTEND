@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { SideBar } from "./SideBar";
+import SideBar from "./SideBar";
 import AddIcon from "@mui/icons-material/Add";
 import { Table, Layout, Dropdown, Space, Form, Input, Modal, Button } from "antd";
 import {
@@ -19,10 +19,13 @@ import {
   DeletePresentation,
   DeleteManyPresentation,
   CreateSlide,
-  addCollaboratorAPI
+  addCollaboratorAPI,
+  GetAllCollaboratorsAPI,
+  deleteCollaboratorAPI
 } from "./API";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import Collaborators from "./Collaborators/Collaborators";
 
 const { Content } = Layout;
 const { Search } = Input;
@@ -32,8 +35,11 @@ export const Presentation = (props) => {
   return <Outlet />;
 };
 export const MyPresentations = (props) => {
+  const [currentselected, setCurrentselected] = useState("presentation");
   const [addCollaborators, setAddCollaborators] = useState(false);
   const [currentPresentation, setCurrentPresentation] = useState("");
+  const [collaboratorsList, setCollaboratorsList] = useState([]);
+
   const addCollaboratorsSchema = Yup.object({
     email: Yup.string()
       .email("Not a proper email")
@@ -64,9 +70,31 @@ export const MyPresentations = (props) => {
   const handleCloseAddCollaborators = () => {
     setAddCollaborators(false);
   };
-  React.useEffect(() => {
+  const deleteCollaborator = (data) => {
+    console.log("deleteCollaborator ", data);
+    deleteCollaboratorAPI(data._id, data.collaborator).then((value) => {
+      console.log("value return ", value);
+    });
+  };
+  useEffect(() => {
     document.title = "List Presentations - Realtime quiz-based learning";
-  });
+    GetAllCollaboratorsAPI().then((values) => {
+      const data = values.data;
+      const newArr = [];
+      for (let i = 0; i < data.length; i++) {
+        for (let j = 0; j < data[i].collaborators.length; j++) {
+          const newObj = {
+            ...data[i],
+            collaborator: data[i].collaborators[j].username,
+            key: data[i]._id + j,
+            owner: data[i].created_by.username
+          };
+          newArr.push(newObj);
+        }
+      }
+      setCollaboratorsList(newArr);
+    });
+  }, []);
 
   // const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);
   return (
@@ -109,7 +137,7 @@ export const MyPresentations = (props) => {
             </form>
           </Styled>
         </Modal>
-        <SideBar />
+        <SideBar currentselected={currentselected} setcurrentselected={setCurrentselected} />
         <Layout
           style={{
             backgroundColor: "white",
@@ -119,17 +147,31 @@ export const MyPresentations = (props) => {
             style={{
               margin: "0 1.6rem 2rem"
             }}>
-            <div className="d-flex flex-column" style={{ padding: "3rem 3.2rem" }}>
-              <p className="mb-5" style={{ fontWeight: "600", fontSize: "1.6rem" }}>
-                List presentations
-              </p>
-              <div className="mb-5">
-                <TableOfPresentations
-                  handleOpenAddCollaborators={handleOpenAddCollaborators}
-                  // handleHasSelectedPresentation={setHasSelectedPresentation}
-                />
+            {currentselected == "presentation" ? (
+              <div className="d-flex flex-column" style={{ padding: "3rem 3.2rem" }}>
+                <p className="mb-5" style={{ fontWeight: "600", fontSize: "1.6rem" }}>
+                  List presentations
+                </p>
+                <div className="mb-5">
+                  <TableOfPresentations
+                    handleOpenAddCollaborators={handleOpenAddCollaborators}
+                    // handleHasSelectedPresentation={setHasSelectedPresentation}
+                  />
+                </div>
               </div>
-            </div>
+            ) : (
+              <div>
+                <p className="mb-5" style={{ fontWeight: "600", fontSize: "1.6rem" }}>
+                  List collaborators
+                </p>
+                <div className="mb-5">
+                  <Collaborators
+                    collaboratorsList={collaboratorsList}
+                    deleteCollaborator={deleteCollaborator}
+                  />
+                </div>
+              </div>
+            )}
           </Content>
         </Layout>
       </Layout>
@@ -283,6 +325,22 @@ const TableOfPresentations = (props) => {
           )
         });
       });
+
+    GetAllCollaboratorsAPI().then((values) => {
+      console.log("collaborators ", values);
+      const data = values.data;
+      const newArr = [];
+      for (let i = 0; i < data.length; i++) {
+        for (let j = 0; j < data[i].collaborators.length; j++) {
+          const newObj = {
+            ...data[i],
+            collaborators: data[i].collaborators[j].username
+          };
+          newArr.push(newObj);
+        }
+      }
+      setCollaboratorsList(newArr);
+    });
   }, []);
 
   // #region handle cho các sự kiện select rows

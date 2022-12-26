@@ -8,7 +8,6 @@ import GroupDetail from "./pages/Group/Detail";
 import GroupMember from "./pages/Group/Member";
 import GroupInvitation from "./pages/Group/Invitate/Invitate";
 
-
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { UserProfile, ProfileSetting } from "./pages/UserProfile";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -23,6 +22,7 @@ import { ShowPresentation } from "./pages/Presentation/Show/ShowPresentation";
 import PresentPresentation from "./pages/Presentation/Present/presentPresentation";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import Collaborators from "./pages/Presentation/Collaborators/Collaborators";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -64,8 +64,8 @@ const App = () => {
                   <Route path="/signin" element={<SignIn />} />
                   <Route path="/signup" element={<SignUp />} />
                   <Route exact path="/home" element={<Home />} />
-                  <Route exact path="/groups" element={<ListGroup typeOfGroup={'1'}/>} />
-                  <Route exact path="/groups/owner" element={<ListGroup typeOfGroup={'2'}/>} />
+                  <Route exact path="/groups" element={<ListGroup typeOfGroup={"1"} />} />
+                  <Route exact path="/groups/owner" element={<ListGroup typeOfGroup={"2"} />} />
                   {/* <Route exact path="/creator" element={<Creator />} /> */}
                   <Route path="group-detail" element={<GroupDetail />} />
                   <Route path="group-members" element={<GroupMember />} />

@@ -37,6 +37,11 @@ export const MenuList = styled(Nav)`
   height: inherit;
 `;
 const Styled = styled.div`
+  .on-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
   .input-box {
     display: flex;
     flex-direction: column;

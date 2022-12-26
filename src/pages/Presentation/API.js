@@ -20,6 +20,35 @@ export const GetAllPresentations = async () => {
     message: response.data.message || null
   };
 };
+export const GetAllCollaboratorsAPI = async () => {
+  var accessToken = localStorage.getItem("accessToken");
+  var response = await AxiosInstance.get("/presentation/collaborators", {
+    headers: {
+      x_authorization: accessToken
+    }
+  });
+  return {
+    status: response.status,
+    data: response.data.data,
+    message: response.data.message || null
+  };
+};
+export const deleteCollaboratorAPI = async (idPresentation, collaborator) => {
+  var accessToken = localStorage.getItem("accessToken");
+  var response = await AxiosInstance.delete(
+    `/presentation/collaborator/${idPresentation}/${collaborator}`,
+    {
+      headers: {
+        x_authorization: accessToken
+      }
+    }
+  );
+  return {
+    status: response.status,
+    data: response.data.data,
+    message: response.data.message || null
+  };
+};
 export const addCollaboratorAPI = async (data) => {
   var requestData = {
     idPresentation: data.idPresentation,
