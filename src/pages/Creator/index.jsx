@@ -5,15 +5,9 @@ import { Button, Tabs, Input } from "antd";
 import { QuestionCircleOutlined, CloseOutlined } from "@ant-design/icons";
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from "recharts";
 import { useMemo } from "react";
-const Creator = props => {
-  const {
-    slide,
-    currentSlide,
-    presentation,
-    setCurrentSlide,
-    setPresentation,
-    savePresentation
-  } = props;
+const Creator = (props) => {
+  const { slide, currentSlide, presentation, setCurrentSlide, setPresentation, savePresentation } =
+    props;
   const [slides, setSlides] = useState([1]);
 
   const [dataChart, setDataChart] = useState([
@@ -42,7 +36,8 @@ const Creator = props => {
     const data = currentSlideArr.options.map((item, index) => {
       return {
         answer: item,
-        total: Math.floor(Math.random() * (100 - 20)) + 20
+        // total: Math.floor(Math.random() * (100 - 20)) + 20,
+        total: 0
       };
     });
     setDataChart(data);
@@ -68,7 +63,7 @@ const Creator = props => {
     currentSlideList[currentSlide].options.push(currentOptions[currentOptions.length - 1]);
     setPresentation({ ...presentation, slideList: currentSlideList });
   };
-  const removeOption = index => {
+  const removeOption = (index) => {
     let currentSlideList = presentation.slideList;
     currentSlideList[currentSlide].options.splice(index, 1);
     setPresentation({ ...presentation, slideList: currentSlideList });
@@ -80,7 +75,7 @@ const Creator = props => {
     console.log("currentSlide List after change ", currentSlideList);
     setPresentation({ ...presentation, slideList: currentSlideList });
   };
-  const changeQuestionOfSlide = value => {
+  const changeQuestionOfSlide = (value) => {
     console.log("change question of slide");
     let currentSlideList = presentation.slideList;
     currentSlideList[currentSlide].question = value;
@@ -133,7 +128,7 @@ const Creator = props => {
                     placeholder="Multiple Choice"
                     value={slide[currentSlide].question}
                     // key={`question-input`}
-                    onChange={e => changeQuestionOfSlide(e.target.value)}
+                    onChange={(e) => changeQuestionOfSlide(e.target.value)}
                   />
                 </div>
               </div>
@@ -157,9 +152,9 @@ const Creator = props => {
                         placeholder="Option"
                         value={item.name}
                         // key={`changeitemname-${item.name}`}
-                        onChange={e => ChangeOptionValue(index, e.target.value)}
+                        onChange={(e) => ChangeOptionValue(index, e.target.value)}
                       />
-                      <div className="item-close" onClick={e => removeOption(index)}>
+                      <div className="item-close" onClick={(e) => removeOption(index)}>
                         <CloseOutlined />
                       </div>
                     </div>
@@ -241,7 +236,7 @@ const Creator = props => {
             </div>
           </div>
           <div className="body-right">
-            <Tabs defaultActiveKey="1" onChange={onChange} items={itemsInTab} />
+            <Tabs defaultActiveKey="1" items={itemsInTab} />
           </div>
         </div>
       </div>

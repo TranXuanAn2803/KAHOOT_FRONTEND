@@ -10,17 +10,17 @@ import Creator from "../../Creator";
 import { useEffect, useContext } from "react";
 import PresentationContext from "../../../utils/PresentationContext";
 import { GetOnePresentation, savePresentationAPI } from "../API";
-export const EditPresentation = props => {
+export const EditPresentation = (props) => {
   let { presentationId } = useParams();
   const [currentSlide, setCurrentSlide] = React.useState(0);
   const [presentation, setPresentation] = useContext(PresentationContext);
   // console.log("presentation.slideList", presentation.slideList, currentSlide);
-  const GetPresentation = id => {
+  const GetPresentation = (id) => {
     GetOnePresentation(id)
-      .then(value => {
+      .then((value) => {
         console.log("value ", value);
       })
-      .catch(error => {
+      .catch((error) => {
         modal.error({
           title: "Notifications",
           content: (
@@ -34,14 +34,13 @@ export const EditPresentation = props => {
   const savePresentation = () => {
     // console.log("current presentation: " + JSON.stringify(presentation.slideList));
     const arr = presentation.slideList;
-    console.log("arr ", arr);
     setCurrentSlide(0);
     const request = {
       presentationId: presentationId,
       slides: presentation.slideList
     };
     savePresentationAPI(request)
-      .then(values => {
+      .then((values) => {
         console.log(values);
         if (values && values.status == 200) {
           // Gỉa sử delete thành công
@@ -64,7 +63,7 @@ export const EditPresentation = props => {
           });
         }
       })
-      .catch(error => {
+      .catch((error) => {
         modal.error({
           title: "Notifications",
           content: (
@@ -129,7 +128,7 @@ export const EditPresentation = props => {
   );
 };
 
-const EditHeader = props => {
+const EditHeader = (props) => {
   const { id, name, createdBy } = props.presentation;
   let { presentationId } = useParams();
 
@@ -163,15 +162,9 @@ const EditHeader = props => {
   );
 };
 
-const EditContent = props => {
-  const {
-    slide,
-    currentSlide,
-    presentation,
-    setCurrentSlide,
-    setPresentation,
-    savePresentation
-  } = props;
+const EditContent = (props) => {
+  const { slide, currentSlide, presentation, setCurrentSlide, setPresentation, savePresentation } =
+    props;
   return (
     <Creator
       slide={slide}

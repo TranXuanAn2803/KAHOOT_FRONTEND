@@ -27,7 +27,10 @@ const StyledNavLink = styled(NavLink)`
 export const SideBar = (props) => {
   const items = [
     getItem(<StyledNavLink to="/presentations">List Presentations</StyledNavLink>, "item1"),
-    getItem(<StyledNavLink to="/collaborators">List collaborators</StyledNavLink>, "item2")
+    getItem(
+      <StyledNavLink to="/presentation/collaborators">List collaborators</StyledNavLink>,
+      "item2"
+    )
     // getItem(<StyledNavLink to="/tutorials">Tutorials</StyledNavLink>, "item3")
   ];
 

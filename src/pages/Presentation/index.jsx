@@ -18,7 +18,8 @@ import {
   GetAllPresentations,
   DeletePresentation,
   DeleteManyPresentation,
-  CreateSlide
+  CreateSlide,
+  addCollaboratorAPI
 } from "./API";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -31,7 +32,8 @@ export const Presentation = (props) => {
   return <Outlet />;
 };
 export const MyPresentations = (props) => {
-  const [addCollaborators, setAddCollaborators] = useState(true);
+  const [addCollaborators, setAddCollaborators] = useState(false);
+  const [currentPresentation, setCurrentPresentation] = useState("");
   const addCollaboratorsSchema = Yup.object({
     email: Yup.string()
       .email("Not a proper email")
@@ -44,10 +46,18 @@ export const MyPresentations = (props) => {
     },
     validationSchema: addCollaboratorsSchema,
     onSubmit: async (value) => {
-      console.log("value submit ", value);
+      console.log("value submit ", value, "presentation", currentPresentation);
+      const dataSubmit = {
+        idPresentation: currentPresentation,
+        email: value.email
+      };
+      addCollaboratorAPI(dataSubmit).then((values) => {
+        console.log("values return ", values);
+      });
     }
   });
-  const handleOpenAddCollaborators = () => {
+  const handleOpenAddCollaborators = (id) => {
+    setCurrentPresentation(id);
     setAddCollaborators(true);
   };
 
@@ -398,7 +408,6 @@ const TableOfPresentations = (props) => {
 
 const ActionMenu = (props) => {
   const { data, handleOpenAddCollaborators } = props;
-
   const items = [
     {
       label: (
@@ -416,7 +425,7 @@ const ActionMenu = (props) => {
     },
     {
       label: (
-        <MenuItem onClick={() => handleOpenAddCollaborators()}>
+        <MenuItem onClick={() => handleOpenAddCollaborators(data.id)}>
           <UsergroupAddOutlined style={{ fontSize: "2rem", paddingRight: "1rem !important" }} />
           <span className="pl-3" style={{ marginLeft: "1.6rem" }}>
             Invite Collaborators
