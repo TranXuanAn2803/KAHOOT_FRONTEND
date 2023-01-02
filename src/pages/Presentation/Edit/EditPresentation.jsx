@@ -1,6 +1,6 @@
 import { Layout, Divider } from "antd";
 const { Header, Footer, Sider, Content } = Layout;
-import * as React from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Slide } from "../Slide";
 import Container from "react-bootstrap/Container";
@@ -12,8 +12,9 @@ import PresentationContext from "../../../utils/PresentationContext";
 import { GetOnePresentation, savePresentationAPI } from "../API";
 export const EditPresentation = (props) => {
   let { presentationId } = useParams();
-  const [currentSlide, setCurrentSlide] = React.useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [presentation, setPresentation] = useContext(PresentationContext);
+
   // console.log("presentation.slideList", presentation.slideList, currentSlide);
   const GetPresentation = (id) => {
     GetOnePresentation(id)
@@ -130,6 +131,7 @@ export const EditPresentation = (props) => {
 
 const EditHeader = (props) => {
   const { id, name, createdBy } = props.presentation;
+  console.log("props presentation ", props.presentation);
   let { presentationId } = useParams();
 
   return (
@@ -150,7 +152,7 @@ const EditHeader = (props) => {
               <span style={{ marginLeft: "1rem" }}>Share</span>
             </StyledButton>
           </MenuBarItem>
-          <MenuBarItem to="/presentations/show">
+          <MenuBarItem to={`/presentations/${id}/show`}>
             <StyledButton>
               <PlayCircleOutlined style={{ fontSize: "2rem" }} />
               <span style={{ marginLeft: "1rem" }}>Present</span>

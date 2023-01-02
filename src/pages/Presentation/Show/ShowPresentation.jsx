@@ -1,6 +1,5 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from "recharts";
-import { useState } from "react";
 import { Styled, StyleMenu } from "./style";
 import { Layout, Menu } from "antd";
 import {
@@ -12,50 +11,45 @@ import {
   ArrowLeftOutlined
 } from "@ant-design/icons";
 import { Slide } from "../Slide";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { GetOnePresentation } from "../API";
+import PresentationContext from "../../../utils/PresentationContext";
 const { Content, Sider } = Layout;
+var presentationName = "presentation";
 export const ShowPresentation = (props) => {
   const { presentationId } = useParams();
-  const [presentation, setPresentation] = React.useState({});
-  const [currentSlide, setCurrentSlide] = React.useState({});
-  console.log(presentationId);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [presentation, setPresentation] = useState(PresentationContext);
   const [dataChart, setDataChart] = useState([
     {
       answer: "A",
-      total: 100
+      total: 0
     },
     {
       answer: "B",
-      total: 50
+      total: 0
     },
     {
       answer: "C",
-      total: 20
+      total: 0
     },
     {
       answer: "D",
-      total: 30
+      total: 0
     }
   ]);
-  var presentationName = "presentation";
-  React.useEffect(() => {
+  useEffect(() => {
     document.title = `${presentationName} - Realtime quiz-based learning`;
 
     // #region get presentation and slides
-
-    const getDataForPresentation = async () => {
-      const presentation = await GetOnePresentation(presentationId);
-      console.log("presentation ", presentation);
-    };
     GetOnePresentation(presentationId)
       .then((response) => {
-        console.log(response);
+        console.log("one presentation ", response);
+        console.log();
       })
       .catch((error) => {
         console.log(error);
       });
-
     // #endregion
   });
   //   return (
@@ -105,7 +99,7 @@ const items = [
   {
     label: "Disable comments",
     key: "Disable comments",
-    icon: <CommentOutlined style={{ transform: "rotate(90deg)" }} />,
+    icon: <CommentOutlined style={{ transform: "rotate(90deg)" }} />
   },
   {
     label: "Previous slide",
@@ -121,13 +115,22 @@ const items = [
 
 const SlideShowForHost = (props) => {
   const [collapsed, setCollapsed] = useState(false);
+  const { dataChart } = props;
+  const pathName = useLocation();
   return (
     <Layout style={{ height: "100vh" }}>
       <Content style={{ margin: "1rem auto", padding: "3rem 3.2rem", width: "100%" }}>
         <StyleMenu theme="dark" mode="inline" items={items} inlineCollapsed={true} />
         <Styled>
+          <div className="codePublic">
+            Go to{" "}
+            <a className="url_code" href={`/presentations/public`}>
+              this link{" "}
+            </a>
+            and use code 123456
+          </div>
           <div className="show_presentation-container">
-            <Slide dataChart={props.dataChart} />
+            <Slide dataChart={dataChart} />
           </div>
         </Styled>
       </Content>

@@ -204,6 +204,55 @@ const Styled = styled.div`
   .ant-tabs-content-holder {
     min-height: 492px;
   }
+  .publicPresentation-container {
+    background: rgb(56, 18, 114);
+    width: 100%;
+    height: 100vh;
+    position: relative;
+  }
+  .pubPresentation-box {
+    position: absolute;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 12px 0 rgb(0 0 0 / 0%);
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 320px;
+    padding: 20px;
+    text-align: center;
+  }
+  .publicquestion-input {
+    transition: all 0.3s ease 0s;
+    padding: 8px;
+    outline: none;
+    cursor: auto;
+    border: 1px solid rgb(183, 186, 194);
+    display: block;
+    border-radius: 3px;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  .username-submit {
+    width: 100%;
+    margin: 0px;
+    border: 0px;
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: bottom;
+    box-shadow: rgb(0 0 0 / 25%) 0px -4px inset;
+    background: rgb(51, 51, 51);
+    color: rgb(255, 255, 255);
+    border-radius: 4px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    min-width: 48px;
+    min-height: 48px;
+    padding: 0px 16px 4px;
+  }
 `;
 
 export default Styled;

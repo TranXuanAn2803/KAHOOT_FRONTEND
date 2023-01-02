@@ -19,10 +19,10 @@ import { Header } from "./components/Header";
 import { MyPresentations, Presentation } from "./pages/Presentation";
 import { EditPresentation } from "./pages/Presentation/Edit/EditPresentation";
 import { ShowPresentation } from "./pages/Presentation/Show/ShowPresentation";
-import PresentPresentation from "./pages/Presentation/Present/presentPresentation";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Collaborators from "./pages/Presentation/Collaborators/Collaborators";
+import { PublicPresentation } from "./pages/Presentation/Public/PublicPresentation";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -80,7 +80,7 @@ const App = () => {
                     <Route path="all" element={<MyPresentations />} />
                     <Route path=":presentationId/edit" element={<EditPresentation />} />
                     <Route path=":presentationId/show" element={<ShowPresentation />} />
-                    <Route path="show" element={<PresentPresentation />} />
+                    <Route path="public" element={<PublicPresentation />} />
                   </Route>
 
                   <Route path="/forgot-password" element={<ForgotPassword />} />
