@@ -77,8 +77,9 @@ const GetCode = () => {
           </div>
         </div>
       ) : (
-        <></>
+        <AnswerPresentation />
       )}
     </>
   );
 };
+const AnswerPresentation = () => {};
