@@ -7,7 +7,7 @@ import { Sector } from "recharts";
 
 export const PublicPresentation = (props) => {
   const [username, setUsername] = useState("");
-  const [getUser, setGetUser] = useState(true);
+  const [getUser, setGetUser] = useState(false);
   const [presentation, setPresentation] = useContext(PresentationContext);
 
   const submitUsername = () => {
@@ -48,7 +48,7 @@ export const PublicPresentation = (props) => {
   );
 };
 const GetCode = () => {
-  const [submitGetCode, setSubmitGetCode] = useState(true);
+  const [submitGetCode, setSubmitGetCode] = useState(false);
   const [code, setCode] = useState("");
   const submitCode = () => {
     setSubmitGetCode(true);
