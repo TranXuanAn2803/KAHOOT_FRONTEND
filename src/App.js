@@ -53,8 +53,9 @@ const App = () => {
             <PresentationProvider>
               <Header />
               <main
+                id="main"
                 style={{
-                  marginTop: "6.4rem",
+                  paddingTop: "6.4rem",
                   overflowY: "auto",
                   width: "100vw",
                   height: "100vh"

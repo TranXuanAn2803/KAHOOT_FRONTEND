@@ -11,10 +11,14 @@ export const PublicPresentation = (props) => {
   const [presentation, setPresentation] = useContext(PresentationContext);
 
   const submitUsername = () => {
-    console.log("username ", username);
+    // console.log("username ", username);
     setGetUser(true);
   };
-  console.log("presentation ", presentation);
+  // console.log("presentation ", presentation);
+
+  useEffect(() => {
+    document.getElementById("main").style.backgroundColor = "rgb(56, 18, 114)";
+  });
   return (
     <Styled>
       <Layout>
@@ -88,6 +92,9 @@ const SurveyPresentation = () => {
   const onChange = (e) => {
     setAnswer(e.target.value);
   };
+  useEffect(()=>{
+    document.getElementById("main").style.backgroundColor = "white";
+  });
   return (
     <div className="surveyPresentation-container">
       <img

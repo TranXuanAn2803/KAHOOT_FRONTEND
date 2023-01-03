@@ -46,8 +46,8 @@ export const Header = function (props) {
     return <DefaultHeader />;
   }
 
-  if (!currentUser) {
-    return <DefaultHeader />;
+  if (!currentUser || location.pathname.toLowerCase() == "presentations/public") {
+    return <div></div>;
   }
 
   return <MainHeader user={currentUser} />;

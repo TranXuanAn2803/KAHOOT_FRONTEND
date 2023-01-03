@@ -112,7 +112,7 @@ const SignUp = () => {
     }
   };
   useEffect(() => {
-    document.title = "Sign Up - KKahoot!";
+    document.title = "Sign Up - Realtime quiz-based learning";
     document.getElementById("root").style.backgroundImage = `url("./assets/images/universe.jpg")`;
     document.getElementById("root").style.backgroundSize = `cover`;
     document.getElementById("root").style.backgroundRepeat = `no-repeat`;
@@ -200,7 +200,7 @@ const SignUp = () => {
                     )}
                   </div>
                   <button type="submit" className="signup-btn">
-                    Sign upƯ
+                    Sign up
                   </button>
                 </form>
                 <div className="auth-split">

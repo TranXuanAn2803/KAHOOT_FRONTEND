@@ -52,20 +52,6 @@ export const ShowPresentation = (props) => {
       });
     // #endregion
   });
-  //   return (
-  //     <Styled>
-  //       <div className="show_presentation-container">
-  //         <BarChart width={430} height={500} data={dataChart}>
-  //           <CartesianGrid strokeDasharray="3 3" />
-  //           <XAxis dataKey="answer" />
-  //           <YAxis />
-  //           <Tooltip />
-  //           <Legend />
-  //           <Bar dataKey="total" fill="#8884d8" />
-  //         </BarChart>
-  //       </div>
-  //     </Styled>
-  //   );
   return <SlideShowForHost dataChart={dataChart} />;
 };
 
