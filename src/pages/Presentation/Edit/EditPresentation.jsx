@@ -1,4 +1,4 @@
-import { Layout, Divider } from "antd";
+import { Layout, Divider, Modal } from "antd";
 const { Header, Footer, Sider, Content } = Layout;
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
@@ -12,6 +12,7 @@ import PresentationContext from "../../../utils/PresentationContext";
 import { GetOnePresentation, savePresentationAPI } from "../API";
 export const EditPresentation = (props) => {
   let { presentationId } = useParams();
+  const [modal, contextHolder] = Modal.useModal();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [presentation, setPresentation] = useContext(PresentationContext);
 
@@ -123,6 +124,7 @@ export const EditPresentation = (props) => {
             setPresentation={setPresentation}
             savePresentation={savePresentation}
           />
+          {contextHolder}
         </Layout>
       </Layout>
     </>
