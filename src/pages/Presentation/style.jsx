@@ -210,6 +210,40 @@ const Styled = styled.div`
     height: 100vh;
     position: relative;
   }
+  .surveyPresentation-container {
+    background: #fff;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .survey-question {
+    background-image: url(https://static.pexels.com/photos/4827/nature-forest-trees-fog.jpeg);
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    color: #ffffff;
+    font-size: 5rem;
+    font-family: "Bungee", cursive;
+    animation: filling 3s ease forwards;
+  }
+  .ant-radio-wrapper {
+    font-size: 3rem;
+  }
+  .submit-button {
+    margin-top: 2rem;
+    width: 100%;
+    min-height: 4rem;
+    font-size: 2rem;
+  }
+  @keyframes filling {
+    from {
+      background-position: center 25%;
+    }
+    to {
+      background-position: center 50%;
+    }
+  }
   .pubPresentation-box {
     position: absolute;
     background-color: #fff;

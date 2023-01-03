@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Layout } from "antd";
+import { Layout, Radio, Space, Input, Button } from "antd";
 const { Header, Footer, Sider, Content } = Layout;
 import Styled from "../style";
 import PresentationContext from "../../../utils/PresentationContext";
 import { Sector } from "recharts";
+
 export const PublicPresentation = (props) => {
   const [username, setUsername] = useState("");
-  const [getUser, setGetUser] = useState(false);
+  const [getUser, setGetUser] = useState(true);
   const [presentation, setPresentation] = useContext(PresentationContext);
 
   const submitUsername = () => {
@@ -47,7 +48,7 @@ export const PublicPresentation = (props) => {
   );
 };
 const GetCode = () => {
-  const [submitGetCode, setSubmitGetCode] = useState(false);
+  const [submitGetCode, setSubmitGetCode] = useState(true);
   const [code, setCode] = useState("");
   const submitCode = () => {
     setSubmitGetCode(true);
@@ -77,9 +78,41 @@ const GetCode = () => {
           </div>
         </div>
       ) : (
-        <AnswerPresentation />
+        <SurveyPresentation />
       )}
     </>
   );
 };
-const AnswerPresentation = () => {};
+const SurveyPresentation = () => {
+  const [answer, setAnswer] = useState(1);
+  const onChange = (e) => {
+    setAnswer(e.target.value);
+  };
+  return (
+    <div className="surveyPresentation-container">
+      <img
+        id="logo"
+        src="/assets/images/kahoot.png"
+        style={{ maxWidth: "20rem", marginTop: "3rem" }}
+      />
+      <div className="survey-body">
+        <div className="survey-question">This is test question?</div>
+        <div className="survey-answer">
+          <Radio.Group onChange={onChange} value={answer}>
+            <Space direction="vertical">
+              <Radio value="1">Option A</Radio>
+              <Radio value="2">Option B</Radio>
+              <Radio value="3">Option C</Radio>
+              <Radio value="4">Option D</Radio>
+            </Space>
+          </Radio.Group>
+        </div>
+        <div className="survey-submit">
+          <Button type="primary" className="submit-button">
+            Submit
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
