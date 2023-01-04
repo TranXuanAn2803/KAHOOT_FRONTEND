@@ -4,7 +4,7 @@ const SlideType = {
   MultipleChoices: 0
 };
 export const PresentationProvider = ({ children }) => {
-  const [presentation, setPresentation] = React.useState({
+  const [presentationContext, setPresentationContext] = React.useState({
     name: "present 1",
     slideList: [
       {
@@ -16,7 +16,7 @@ export const PresentationProvider = ({ children }) => {
     ]
   });
 
-  let values = useMemo(() => [presentation, setPresentation], [presentation]);
+  let values = useMemo(() => [presentationContext, setPresentationContext], [presentationContext]);
   return <PresentationContext.Provider value={values}>{children}</PresentationContext.Provider>;
 };
 export default PresentationContext;

@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Header } from "../../components/Header";
 import Styled from "./style";
 import { Button, Tabs, Input } from "antd";
 import { QuestionCircleOutlined, CloseOutlined } from "@ant-design/icons";
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from "recharts";
 import { useMemo } from "react";
+import PresentationContext from "../../utils/PresentationContext";
 const Creator = (props) => {
   const { slide, currentSlide, presentation, setCurrentSlide, setPresentation, savePresentation } =
     props;
   const [slides, setSlides] = useState([1]);
-
+  const [presentationContext, setPresentationContext] = useContext(PresentationContext);
   const [dataChart, setDataChart] = useState([
     {
       answer: "A",
@@ -31,6 +32,8 @@ const Creator = (props) => {
   const [optionItems, setOptionsItem] = useState([]);
   useEffect(() => {
     // CHART
+    console.log("presentaion creator ", presentation);
+    console.log("presentation context ", presentationContext);
     const currentSlideArr = slide[currentSlide];
 
     const data = currentSlideArr.options.map((item, index) => {

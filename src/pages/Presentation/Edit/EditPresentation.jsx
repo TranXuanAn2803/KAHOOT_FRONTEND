@@ -14,7 +14,7 @@ export const EditPresentation = (props) => {
   let { presentationId } = useParams();
   const [modal, contextHolder] = Modal.useModal();
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [presentation, setPresentation] = useContext(PresentationContext);
+  const [presentationContext, setPresentationContext] = useContext(PresentationContext);
 
   // console.log("presentation.slideList", presentation.slideList, currentSlide);
   const GetPresentation = (id) => {
@@ -35,11 +35,11 @@ export const EditPresentation = (props) => {
   };
   const savePresentation = () => {
     // console.log("current presentation: " + JSON.stringify(presentation.slideList));
-    const arr = presentation.slideList;
+    const arr = presentationContext.slideList;
     setCurrentSlide(0);
     const request = {
       presentationId: presentationId,
-      slides: presentation.slideList
+      slides: presentationContext.slideList
     };
     savePresentationAPI(request)
       .then((values) => {
@@ -78,7 +78,7 @@ export const EditPresentation = (props) => {
   };
   const onPresent = () => {};
   useEffect(() => {
-    document.title = presentation.name;
+    document.title = presentationContext.name;
     const getDataForPresentation = async () => {
       const value = await GetOnePresentation(presentationId);
       const arrPresentation = value.data.data;
@@ -103,7 +103,7 @@ export const EditPresentation = (props) => {
         });
       }
       console.log("newPresentation ", newPresentation);
-      setPresentation(newPresentation);
+      setPresentationContext(newPresentation);
     };
     getDataForPresentation();
   }, []);
@@ -112,16 +112,16 @@ export const EditPresentation = (props) => {
     <>
       <Layout>
         <Header style={{ backgroundColor: "white", padding: "0" }}>
-          <EditHeader presentation={presentation} />
+          <EditHeader presentation={presentationContext} />
         </Header>
         <Divider type="horizontal" className="m-0" />
         <Layout>
           <EditContent
-            slide={presentation.slideList}
+            slide={presentationContext.slideList}
             currentSlide={currentSlide}
-            presentation={presentation}
+            presentation={presentationContext}
             setCurrentSlide={setCurrentSlide}
-            setPresentation={setPresentation}
+            setPresentation={setPresentationContext}
             savePresentation={savePresentation}
           />
           {contextHolder}
