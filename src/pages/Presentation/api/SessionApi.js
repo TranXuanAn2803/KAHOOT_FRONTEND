@@ -42,6 +42,41 @@ export const CreateNewPresentingSession = async (data) => {
   }
 };
 
+export const GetPresentingSession = async (data) => {
+  try {
+    const { Id } = data;
+    var requestData = {
+      Id
+    };
+    var request = {
+      Method: "GetSession",
+      RequestData: JSON.stringify(requestData)
+    };
+    const GetPresentingSessionResponse = await PostAsync("session", request);
+    return GetPresentingSessionResponse;
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-
-
+export const UpdatePresentingSession = async (data) => {
+  try {
+    const { Id, PresentationId, GroupId, HostId, ParticipantList, IsLive } = data;
+    var requestData = {
+      Id,
+      PresentationId,
+      GroupId,
+      HostId,
+      ParticipantList,
+      IsLive
+    };
+    var request = {
+      Method: "UpdateSession",
+      RequestData: JSON.stringify(requestData)
+    };
+    const GetPresentingSessionResponse = await PostAsync("session", request);
+    return GetPresentingSessionResponse;
+  } catch (error) {
+    console.error(error);
+  }
+};
