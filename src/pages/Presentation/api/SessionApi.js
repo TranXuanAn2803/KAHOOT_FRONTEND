@@ -74,8 +74,8 @@ export const UpdatePresentingSession = async (data) => {
       Method: "UpdateSession",
       RequestData: JSON.stringify(requestData)
     };
-    const GetPresentingSessionResponse = await PostAsync("session", request);
-    return GetPresentingSessionResponse;
+    const UpdatePresentingSessionResponse = await PostAsync("session", request);
+    return UpdatePresentingSessionResponse;
   } catch (error) {
     console.error(error);
   }
