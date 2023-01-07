@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ApiConfig as _ParamConfig } from "../../actions/constants";
+import { ApiConfig as _ParamConfig } from "../../../actions/constants";
 
 let AxiosInstance = axios.create({
   baseURL: _ParamConfig.serverUrl,
@@ -79,4 +79,60 @@ export const UpdatePresentingSession = async (data) => {
   } catch (error) {
     console.error(error);
   }
+};
+
+export const GetCurrentSlide = async (request) => {
+  let reqBodyData = {
+    sessionId: request.sessionId
+  };
+  var presentationId = request.presentationId;
+  const GetCurrentSlideResponse = await AxiosInstance.put(
+    `presentation//presenting/slide/${presentationId}`,
+    reqBodyData,
+    {
+      headers: {
+        x_authorization: localStorage.getItem("accessToken")
+      }
+    }
+  );
+  return GetCurrentSlideResponse;
+};
+
+export const GetSlideByPresentationAndIndex = async (request) => {
+  var index = request.slideIndex;
+  if(index < -1)
+  {
+    return {
+      success: false,
+      message: "Index is smaller than 0"
+    };
+  }
+  var presentationId = request.presentationId;
+  var GetSlideListResponse = await AxiosInstance.get(`slide/by-present/${presentationId}`, {
+    headers: {
+      x_authorization: localStorage.getItem("accessToken")
+    }
+  });
+
+  if (GetSlideListResponse.status != 200) {
+    return {
+      success: false,
+      message: "Failed"
+    };
+  }
+  var slideList = GetSlideListResponse.data.data.slides;
+  if (index < slideList.length) {
+    if(slideList[index].slide_type == "MULTIPLE_CHOICE")
+    {
+      slideList[index].type = 1;
+    }
+    return {
+      success: true,
+      slide: slideList[index]
+    };
+  }
+  return {
+    success: false,
+    message: "Failed"
+  };
 };
