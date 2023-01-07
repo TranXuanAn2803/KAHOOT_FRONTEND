@@ -11,6 +11,7 @@ import { Slider } from "@material-ui/core";
 import { GetCurrentSlide, GetSlideByPresentationAndIndex } from "../api/Session.Api";
 import { SocketContext } from "../../../components/Socket/socket-client";
 import { SlideType } from "../../../actions/SlideType";
+import { set } from "react-hook-form";
 
 export const PublicPresentation = (props) => {
   const [presentation, setPresentation] = useContext(PresentationContext);
@@ -21,7 +22,7 @@ export const PublicPresentation = (props) => {
   const [username, setUsername] = useState("");
   const [sessionId, setSessionId] = useState("");
   const [presentationId, setPresentationId] = useState("");
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(-1);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [currentSlide, setCurrentSlide] = useState({});
 
   const socket = useContext(SocketContext);
@@ -220,6 +221,7 @@ const MultipleChoicePresentation = (props) => {
   const { question, optionList, socket, presentationId, sessionId, username, ...others } = props;
   const [answer, setAnswer] = useState(null); // option_id
   const [hasSelect, setHasSelect] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   const onChange = (e) => {
     setAnswer(e.target.value);
     if (!hasSelect) {
@@ -234,7 +236,7 @@ const MultipleChoicePresentation = (props) => {
       username: username,
       options: new Array(answer)
     });
-
+    setHasSubmitted(true);
     // waiting screen or see chart.
   };
   useEffect(() => {
@@ -243,6 +245,12 @@ const MultipleChoicePresentation = (props) => {
   useEffect(() => {
     socket.on("get-answer-from-player", (response) => {
       console.log("Add options: ", response.data.options);
+    });
+    socket.on("slide-changed", (response) => {
+      if (response.status == 200) {
+        setHasSelect(false);
+        setHasSubmitted(false);
+      } 
     });
   }, [socket]);
   var OptionComponentList = optionList.map((option) => (
@@ -266,7 +274,7 @@ const MultipleChoicePresentation = (props) => {
         </div>
         <div className="survey-submit">
           <Button
-            disabled={!hasSelect}
+            disabled={!hasSelect || hasSubmitted}
             type="primary"
             className="submit-button"
             onClick={submitAnswer}>
@@ -274,6 +282,7 @@ const MultipleChoicePresentation = (props) => {
           </Button>
         </div>
       </div>
+      <div></div>
     </div>
   );
 };

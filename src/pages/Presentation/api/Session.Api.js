@@ -101,10 +101,10 @@ export const GetCurrentSlide = async (request) => {
 
 export const GetSlideByPresentationAndIndex = async (request) => {
   var index = request.slideIndex;
-  if (index < -1) {
+  if (Number.isNaN(index) || index < 0) {
     return {
       success: false,
-      message: "Index is smaller than 0"
+      message: "Index is invalid or smaller than 0"
     };
   }
   var presentationId = request.presentationId;
@@ -122,12 +122,12 @@ export const GetSlideByPresentationAndIndex = async (request) => {
   }
   var slideList = GetSlideListResponse.data.data.slides;
   if (index < slideList.length) {
-    if (slideList[index].slide_type == "MULTIPLE_CHOICE") {
-      slideList[index].type = SlideType.MultipleChoice;
+    if (slideList[index - 1].slide_type == "MULTIPLE_CHOICE") {
+      slideList[index - 1].type = SlideType.MultipleChoice;
     }
     return {
       success: true,
-      slide: slideList[index]
+      slide: slideList[index - 1]
     };
   }
   return {
