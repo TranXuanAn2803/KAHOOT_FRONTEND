@@ -37,10 +37,16 @@ function stringAvatar(name) {
 export const Header = function (props) {
   const [currentUser, setCurrentUser] = useContext(UserContext);
   var location = window.location;
+  console.log(location);
+  if(location.pathname.toLowerCase() == "/presentations/public")
+  {
+    return <></>;
+  }
   if (
     location.pathname.toLowerCase() == "signin" ||
     location.pathname.toLowerCase() == "login" ||
     location.pathname.toLowerCase() == "register" ||
+    location.pathname.toLowerCase() == "signup" ||
     location.pathname.toLowerCase() == "signup"
   ) {
     return <DefaultHeader />;
