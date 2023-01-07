@@ -32,7 +32,6 @@ export const PublicPresentation = (props) => {
           if (response.status != 200) {
             return;
           }
-          console.log("response ", response.data.data);
           setPresentationId(code);
           setSessionId(response.data.data.session);
           var request = {
