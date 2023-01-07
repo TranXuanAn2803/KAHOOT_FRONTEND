@@ -101,7 +101,6 @@ export const ShowPresentation = () => {
         }
       })
       .catch((err) => {
-        console.log("err ", err);
         const values = err.response.data;
         toast.error(values, {
           position: "top-right",
@@ -124,18 +123,15 @@ export const ShowPresentation = () => {
       socket.off("new-session-for-game");
       socket.off("slide-changed");
     };
-  }, []);
+  }, [socket]);
   useEffect(() => {
     const groupId = null;
     if (currentUser != undefined) {
       console.log("send socket ", presentationId, groupId, currentUser);
       socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
       getSessionId(presentationId).then((data) => {
-        console.log("getSessionId data ", data);
         const sessionId = data.data.data.session;
-        console.log("socket room ", socket.rooms, sessionId);
         setSessionId(sessionId);
-        socket.join(sessionId);
       });
     }
   }, [currentUser]);
@@ -156,7 +152,7 @@ export const ShowPresentation = () => {
     setCurrentSlide(currentSlide - 1);
   };
   const goToNextSlide = () => {
-    setCurrentSlide(currentSlide + 1);
+    ư;
   };
   const goBackToEdit = () => {
     let currentUrl = window.location.href;
