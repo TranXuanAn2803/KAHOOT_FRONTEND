@@ -194,6 +194,42 @@ export const addGroupMember = async (email, id, accessToken) => {
     console.log("err", err);
   }
 };
+export const sharePresentToGroup = async (id, groupId, accessToken) => {
+  try {
+    const response = await axios
+      .put(
+        `${URL}/presentation/share/${id}`,
+        {
+          groupId: groupId
+        },
+        {
+          headers: {
+            x_authorization: accessToken
+          }
+        }
+      )
+      .catch((error) => {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          const objectReturn = {
+            data: error.response.data,
+            status: error.response.status
+          };
+          return objectReturn;
+        }
+      });
+    const { data, status } = response;
+    const objectReturn = {
+      data: data,
+      status: status
+    };
+    return objectReturn;
+  } catch (err) {
+    console.log("err", err);
+  }
+};
+
 export const fetchGroupMember = async (id, accessToken) => {
   const { data } = await axios.get(`${URL}/group/member/${id}`, {
     headers: {
@@ -202,8 +238,26 @@ export const fetchGroupMember = async (id, accessToken) => {
   });
   return data;
 };
+export const fetchSharingPresent = async (id, accessToken) => {
+  const { data } = await axios.get(`${URL}/presentation/share/${id}`, {
+    headers: {
+      x_authorization: accessToken
+    }
+  });
+  return data;
+};
+
+
 export const fetchListUser = async (accessToken) => {
   const { data } = await axios.get(`${URL}/users/list`, {
+    headers: {
+      x_authorization: accessToken
+    }
+  });
+  return data;
+};
+export const fetchMyOwnPresent = async (accessToken) => {
+  const { data } = await axios.get(`${URL}/presentation/owner`, {
     headers: {
       x_authorization: accessToken
     }
@@ -246,6 +300,33 @@ export const toggleRole = async (newRole, id, accessToken) => {
     console.log("err", err);
   }
 };
+export const removeSharingPresent = async (id, accessToken) => {
+    const response = await axios
+      .delete(
+        `${URL}/presentation/share/${id}`,
+        {
+          headers: {
+            x_authorization: accessToken
+          }
+        }
+      )
+      .catch((error) => {
+        if (error.response) {
+          const objectReturn = {
+            data: error.response.data,
+            status: error.response.status
+          };
+          return objectReturn;
+        }
+      });
+    const { data, status } = response;
+    const objectReturn = {
+      data: data,
+      status: status
+    };
+    return objectReturn;
+};
+
 export const exitsGroup = async (id, accessToken) => {
   try {
     const response = await axios

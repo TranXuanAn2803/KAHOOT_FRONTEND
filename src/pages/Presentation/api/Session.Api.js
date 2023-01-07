@@ -133,6 +133,6 @@ export const GetSlideByPresentationAndIndex = async (request) => {
   }
   return {
     success: false,
-    message: "Failed"
+    message: "Oversize"
   };
 };
