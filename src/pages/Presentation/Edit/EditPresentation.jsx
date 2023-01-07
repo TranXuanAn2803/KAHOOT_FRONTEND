@@ -58,7 +58,6 @@ export const EditPresentation = (props) => {
         });
       });
   };
-  const onPresent = () => {};
   useEffect(() => {
     document.title = presentationContext.name;
     const getDataForPresentation = async () => {
@@ -136,7 +135,7 @@ const EditHeader = (props) => {
               <span style={{ marginLeft: "1rem" }}>Share</span>
             </StyledButton>
           </MenuBarItem>
-          <MenuBarItem to={`/presentations/${id}/show`}>
+          <MenuBarItem to={`/presentations/${presentationId}/show`}>
             <StyledButton>
               <PlayCircleOutlined style={{ fontSize: "2rem" }} />
               <span style={{ marginLeft: "1rem" }}>Present</span>

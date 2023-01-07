@@ -67,6 +67,7 @@ export const addCollaboratorAPI = async (data) => {
   };
 };
 export const toggleStatusPresentation = async (id, status) => {
+  console.log("toggleStatusPresentation status", id, status);
   var accessToken = localStorage.getItem("accessToken");
   var response = await AxiosInstance.put(
     `/presentation/toggleStatus/${id}`,
