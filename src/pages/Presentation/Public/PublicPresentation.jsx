@@ -10,6 +10,7 @@ import { printMessage } from "../../../utils/method";
 import { Slider } from "@material-ui/core";
 import { GetCurrentSlide, GetSlideByPresentationAndIndex } from "../api/Session.Api";
 import { SocketContext } from "../../../components/Socket/socket-client";
+import { SlideType } from "../../../actions/SlideType";
 
 export const PublicPresentation = (props) => {
   const [presentation, setPresentation] = useContext(PresentationContext);
@@ -72,7 +73,7 @@ export const PublicPresentation = (props) => {
   };
   useEffect(() => {
     document.getElementById("main").style.backgroundColor = "rgb(56, 18, 114)";
-  });
+  }, []);
   useEffect(() => {
     socket.emit("init-game", {
       id: presentationId,
@@ -90,6 +91,7 @@ export const PublicPresentation = (props) => {
     return () => {
       socket.off("connect");
       socket.off("slide-changed");
+      socket.off("get-answer-from-player");
     };
   }, [socket]);
   useEffect(() => {
@@ -178,25 +180,33 @@ export const PublicPresentation = (props) => {
   return (
     <Styled>
       <Layout>
-        <PresentForViewer slide={currentSlide} />
+        <PresentForViewer
+          slide={currentSlide}
+          socket={socket}
+          presentationId={presentationId}
+          username={username}
+        />
       </Layout>
     </Styled>
   );
 };
 
 const PresentForViewer = (props) => {
-  const { slide } = props;
-  const [answer, setAnswer] = useState(1);
-  const onChange = (e) => {
-    setAnswer(e.target.value);
-  };
+  const { socket, slide, presentationId, username } = props;
   useEffect(() => {
     document.getElementById("main").style.backgroundColor = "white";
-  });
-
+  }, []);
   switch (slide.type) {
     case SlideType.MultipleChoice:
-      return <MultipleChoicePresentation question={slide.question} optionList={slide.options} />;
+      return (
+        <MultipleChoicePresentation
+          question={slide.question}
+          optionList={slide.options}
+          socket={socket}
+          presentationId={presentationId}
+          username={username}
+        />
+      );
     case SlideType.Heading:
       return <HeadingPresentation content={slide.heading} />;
     case SlideType.Paragraph:
@@ -207,18 +217,34 @@ const PresentForViewer = (props) => {
 };
 
 const MultipleChoicePresentation = (props) => {
-  const { question, optionList, ...others } = props;
-  const [answer, setAnswer] = useState(null);
+  const { question, optionList, socket, presentationId, sessionId, username, ...others } = props;
+  const [answer, setAnswer] = useState(null); // option_id
+  const [hasSelect, setHasSelect] = useState(false);
   const onChange = (e) => {
     setAnswer(e.target.value);
+    if (!hasSelect) {
+      setHasSelect(true);
+    }
   };
   const submitAnswer = () => {
     // send socket
+    socket.emit("send-answer-to-host", {
+      id: sessionId,
+      presentationId: presentationId,
+      username: username,
+      options: new Array(answer)
+    });
+
     // waiting screen or see chart.
   };
   useEffect(() => {
     document.getElementById("main").style.backgroundColor = "white";
   });
+  useEffect(() => {
+    socket.on("get-answer-from-player", (response) => {
+      console.log("Add options: ", response.data.options);
+    });
+  }, [socket]);
   var OptionComponentList = optionList.map((option) => (
     <Radio key={option._id} value={option._id}>
       {option.content}
@@ -239,7 +265,11 @@ const MultipleChoicePresentation = (props) => {
           </Radio.Group>
         </div>
         <div className="survey-submit">
-          <Button type="primary" className="submit-button" onClick={submitAnswer}>
+          <Button
+            disabled={!hasSelect}
+            type="primary"
+            className="submit-button"
+            onClick={submitAnswer}>
             Submit
           </Button>
         </div>
@@ -410,9 +440,3 @@ const SurveyPresentation = (props) => {
 };
 
 */
-
-const SlideType = {
-  MultipleChoice: 1,
-  Heading: 2,
-  Paragraph: 3
-};

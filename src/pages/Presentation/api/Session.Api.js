@@ -1,5 +1,6 @@
 import axios from "axios";
 import { ApiConfig as _ParamConfig } from "../../../actions/constants";
+import { SlideType } from "../../../actions/SlideType";
 
 let AxiosInstance = axios.create({
   baseURL: _ParamConfig.serverUrl,
@@ -100,8 +101,7 @@ export const GetCurrentSlide = async (request) => {
 
 export const GetSlideByPresentationAndIndex = async (request) => {
   var index = request.slideIndex;
-  if(index < -1)
-  {
+  if (index < -1) {
     return {
       success: false,
       message: "Index is smaller than 0"
@@ -122,9 +122,8 @@ export const GetSlideByPresentationAndIndex = async (request) => {
   }
   var slideList = GetSlideListResponse.data.data.slides;
   if (index < slideList.length) {
-    if(slideList[index].slide_type == "MULTIPLE_CHOICE")
-    {
-      slideList[index].type = 1;
+    if (slideList[index].slide_type == "MULTIPLE_CHOICE") {
+      slideList[index].type = SlideType.MultipleChoice;
     }
     return {
       success: true,
