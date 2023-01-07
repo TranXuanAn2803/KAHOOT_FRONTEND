@@ -104,7 +104,6 @@ const SignUp = () => {
         theme: "light"
       });
       let cuser = await isAuthenticated();
-      // console.log("cuser ", cuser);
       if (cuser?.user != undefined) {
         setCurrentUser(cuser.user);
       }

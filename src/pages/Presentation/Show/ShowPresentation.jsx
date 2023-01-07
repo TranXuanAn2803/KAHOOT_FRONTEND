@@ -150,7 +150,6 @@ export const ShowPresentation = () => {
       }
     });
   }, [socket]);
-  useEffect(() => {}, [currentUser]);
   useEffect(() => {
     if (currentSlide != -1) {
       const currentArr = currentPresentation["slides"][currentSlide]["options"];
@@ -173,6 +172,7 @@ export const ShowPresentation = () => {
   };
 
   const stopPresentation = () => {
+    console.log("call stop presentation");
     toggleStatusPresentation(presentationId, 0)
       .then((values) => {
         console.log("values ", values);
@@ -187,6 +187,7 @@ export const ShowPresentation = () => {
             draggable: true,
             theme: "light"
           });
+          navigate(`/presentations/${presentationId}/edit`);
         } else {
           toast.error(values.message, {
             position: "top-right",
@@ -212,7 +213,6 @@ export const ShowPresentation = () => {
           theme: "light"
         });
       });
-    navigate(`/presentations/${presentationId}/edit`);
   };
   //id session, idpresentatioonId, user
   const startGame = () => {

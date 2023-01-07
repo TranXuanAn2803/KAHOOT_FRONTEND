@@ -17,7 +17,6 @@ export const UserProvider = ({ children }) => {
     // console.log("vao useEffect: " + currentUser);
     const checkLoggedIn = async () => {
       let cuser = await isAuthenticated();
-      console.log("cuser ", cuser);
       if (cuser?.user != undefined) {
         setCurrentUser(cuser.user);
       }

@@ -13,6 +13,7 @@ import { GetOnePresentation, savePresentationAPI } from "../api/Presentation.Api
 import { toggleStatusPresentation } from "../API";
 import { toast } from "react-toastify";
 import Styled from "./style";
+import PresentPresentation from "../Present/presentPresentation";
 export const EditPresentation = () => {
   const { presentationId } = useParams();
   const [modal, contextHolder] = Modal.useModal();
@@ -75,9 +76,63 @@ export const EditPresentation = () => {
     };
     getDataForPresentation();
   }, []);
-  const savePresentation = () => {
-    console.log("call savePresentation ");
+  const savePresentation = async () => {
+    console.log("call savePresentation ", presentationContext);
 
+    const request = {
+      presentationId: presentationId,
+      slides: presentationContext.slideList
+    };
+    const savePresentationResponse = await savePresentationAPI(request);
+    if (savePresentationResponse && savePresentationResponse.status == 200) {
+      // Gỉa sử delete thành công
+      modal.info({
+        title: "Notifications",
+        content: (
+          <>
+            <p>{`Save presentations successfully.`}</p>
+          </>
+        )
+      });
+    } else {
+      modal.error({
+        title: "Notifications",
+        content: (
+          <>
+            <p>{`Save presentations failed.`}</p>
+          </>
+        )
+      });
+    }
+    // change from 1 to 0
+    toggleStatusPresentation(presentationId, 0)
+      .then((values) => {
+        // Gỉa sử delete thành công
+        toast.success(values.message, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          theme: "light"
+        });
+        navigate("/presentations");
+      })
+      .catch((err) => {
+        const values = err.response.data;
+        toast.error(values, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          theme: "light"
+        });
+      });
+  };
+  const presentPresentation = () => {
     const request = {
       presentationId: presentationId,
       slides: presentationContext.slideList
@@ -142,14 +197,18 @@ export const EditPresentation = () => {
           theme: "light"
         });
       });
-    navigate("/presentations");
+    navigate(`/presentations/${presentationId}/show`);
   };
 
   return (
     <>
       <Layout>
         <Header style={{ backgroundColor: "white", padding: "0" }}>
-          <EditHeader presentation={presentationContext} savePresentation={savePresentation} />
+          <EditHeader
+            presentation={presentationContext}
+            savePresentation={savePresentation}
+            presentPresentation={presentPresentation}
+          />
         </Header>
         <Divider type="horizontal" className="m-0" />
         <Layout>
@@ -169,7 +228,7 @@ export const EditPresentation = () => {
 };
 
 const EditHeader = (props) => {
-  const { savePresentation, presentation } = props;
+  const { savePresentation, presentation, presentPresentation } = props;
   const { id, name, createdBy } = presentation;
   console.log("props presentation ", props.presentation);
   let { presentationId } = useParams();
@@ -192,12 +251,12 @@ const EditHeader = (props) => {
               <span style={{ marginLeft: "1rem" }}>Share</span>
             </StyledButton>
           </MenuBarItem>
-          <MenuBarItem to={`/presentations/${presentationId}/show`}>
+          <div onClick={() => presentPresentation()}>
             <StyledButton>
               <PlayCircleOutlined style={{ fontSize: "2rem" }} />
               <span style={{ marginLeft: "1rem" }}>Present</span>
             </StyledButton>
-          </MenuBarItem>
+          </div>
         </MenuList>
       </MenuBar>
     </Styled>
