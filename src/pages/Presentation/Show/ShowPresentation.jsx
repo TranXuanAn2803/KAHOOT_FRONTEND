@@ -89,7 +89,6 @@ export const ShowPresentation = () => {
     //change status presentation
     toggleStatusPresentation(presentationId, 3)
       .then((values) => {
-        console.log("values ", values);
         if (values && values.status == 200) {
           // Gỉa sử delete thành công
           toast.success(values.message, {
@@ -100,6 +99,11 @@ export const ShowPresentation = () => {
             pauseOnHover: false,
             draggable: true,
             theme: "light"
+          });
+          socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
+          getSessionId(presentationId).then((data) => {
+            const sessionId = data.data.data.session;
+            setSessionId(sessionId);
           });
         } else {
           toast.error(values.message, {
@@ -125,11 +129,6 @@ export const ShowPresentation = () => {
           theme: "light"
         });
       });
-    socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
-    getSessionId(presentationId).then((data) => {
-      const sessionId = data.data.data.session;
-      setSessionId(sessionId);
-    });
 
     return () => {
       socket.off("new-session-for-game");
