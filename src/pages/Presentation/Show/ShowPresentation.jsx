@@ -81,59 +81,54 @@ export const ShowPresentation = () => {
       .then((values) => {
         console.log("values ", values);
         setCurrentPresentation(values.data.data);
+        toggleStatusPresentation(presentationId, 3)
+          .then((values) => {
+            if (values && values.status == 200) {
+              // Gỉa sử delete thành công
+              toast.success(values.message, {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                theme: "light"
+              });
+              socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
+              getSessionId(presentationId).then((data) => {
+                const sessionId = data.data.data.session;
+                setSessionId(sessionId);
+              });
+            } else {
+              toast.error(values.message, {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                theme: "light"
+              });
+            }
+          })
+          .catch((err) => {
+            const values = err.response.data;
+            toast.error(values, {
+              position: "top-right",
+              autoClose: 2000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: false,
+              draggable: true,
+              theme: "light"
+            });
+          });
       })
       .catch((err) => {
         console.log("err ", err);
       });
 
     //change status presentation
-    toggleStatusPresentation(presentationId, 3)
-      .then((values) => {
-        if (values && values.status == 200) {
-          // Gỉa sử delete thành công
-          toast.success(values.message, {
-            position: "top-right",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            theme: "light"
-          });
-          socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
-          getSessionId(presentationId).then((data) => {
-            const sessionId = data.data.data.session;
-            setSessionId(sessionId);
-          });
-        } else {
-          toast.error(values.message, {
-            position: "top-right",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            theme: "light"
-          });
-        }
-      })
-      .catch((err) => {
-        const values = err.response.data;
-        toast.error(values, {
-          position: "top-right",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          theme: "light"
-        });
-      });
-
-    return () => {
-      socket.off("new-session-for-game");
-      socket.off("slide-changed");
-    };
   }, []);
   useEffect(() => {
     socket.on("new-session-for-game", (data) => {
@@ -149,6 +144,10 @@ export const ShowPresentation = () => {
         setCurrentSlide(slide);
       }
     });
+    return () => {
+      socket.off("new-session-for-game");
+      socket.off("slide-changed");
+    };
   }, [socket]);
   useEffect(() => {
     if (currentSlide != -1) {
@@ -171,48 +170,22 @@ export const ShowPresentation = () => {
     socket.emit("next-slide", { id: sessionId, presentationId, user: currentUser });
   };
 
-  const stopPresentation = () => {
+  const stopPresentation = async () => {
     console.log("call stop presentation");
-    toggleStatusPresentation(presentationId, 0)
-      .then((values) => {
-        console.log("values ", values);
-        if (values && values.status == 200) {
-          // Gỉa sử delete thành công
-          toast.success(values.message, {
-            position: "top-right",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            theme: "light"
-          });
-          navigate(`/presentations/${presentationId}/edit`);
-        } else {
-          toast.error(values.message, {
-            position: "top-right",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            theme: "light"
-          });
-        }
-      })
-      .catch((err) => {
-        console.log("err ", err);
-        const values = err.response.data;
-        toast.error(values, {
-          position: "top-right",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          theme: "light"
-        });
+    const toggleStatusResponse = await toggleStatusPresentation(presentationId, 0);
+    if (toggleStatusResponse && toggleStatusResponse.status == 200) {
+      // Gỉa sử delete thành công
+      toast.success(toggleStatusPresentation.message, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        theme: "light"
       });
+      navigate(`/presentations/${presentationId}/edit`);
+    }
   };
   //id session, idpresentatioonId, user
   const startGame = () => {
