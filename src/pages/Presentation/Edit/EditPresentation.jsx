@@ -9,7 +9,7 @@ import { ArrowLeftOutlined, PlayCircleOutlined, ShareAltOutlined } from "@ant-de
 import Creator from "../../Creator";
 import { useEffect, useContext } from "react";
 import PresentationContext from "../../../utils/PresentationContext";
-import { GetOnePresentation, savePresentationAPI } from "../API";
+import { GetOnePresentation, savePresentationAPI } from "../api/Presentation.Api";
 export const EditPresentation = (props) => {
   let { presentationId } = useParams();
   const [modal, contextHolder] = Modal.useModal();

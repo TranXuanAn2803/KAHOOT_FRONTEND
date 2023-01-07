@@ -22,7 +22,7 @@ import {
   addCollaboratorAPI,
   GetAllCollaboratorsAPI,
   deleteCollaboratorAPI
-} from "./API";
+} from "./api/Presentation.Api";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import Collaborators from "./Collaborators/Collaborators";
@@ -684,63 +684,4 @@ const AddPresentations = (props) => {
     </>
   );
 };
-// #endregion
-
-// #region Delete Presentation
-
-// const DeletePresentation = (props) => {
-//   const selectedPresentationList = props.selectedPresentationList;
-//   if (selectedPresentationList == null || selectedPresentationList.length == 0) {
-//     return;
-//   }
-//   return;
-//   <>
-//     <StyledButton
-//       variant="danger"
-//       className="d-flex align-items-center"
-//       onClick={() => setModalShow(true)}>
-//       <p>Delete</p>
-//     </StyledButton>
-//     <Modal
-//       width={800}
-//       open={open}
-//       title={<p style={{ fontSize: "2rem" }}>Create new presentation</p>}
-//       onCancel={handleCancel}
-//       footer={null}>
-//       <Form
-//         name="addNewPresentationForm"
-//         initialValues={{
-//           remember: true
-//         }}
-//         autoComplete="off"
-//         size="large"
-//         onFinish={handleSubmit}>
-//         <Form.Item
-//           name="presentationName"
-//           rules={[
-//             {
-//               required: true,
-//               message: "Enter a name for your presentation."
-//             }
-//           ]}
-//           style={{ marginBottom: "4rem" }}>
-//           <Input placeholder="Presentation name" />
-//         </Form.Item>
-//         <Form.Item className="text-center text-md-end">
-//           <StyledButton
-//             key="back"
-//             variant="secondary"
-//             onClick={handleCancel}
-//             style={{ marginRight: "1rem" }}>
-//             Cancel
-//           </StyledButton>
-//           <StyledButton key="submit" variant="primary" type="submit">
-//             Create presentation
-//           </StyledButton>
-//         </Form.Item>
-//       </Form>
-//     </Modal>
-//   </>;
-// };
-
 // #endregion
