@@ -5,5 +5,6 @@ export const FRONTEND_URL = "http://localhost:3001";
 
 export const ApiConfig = {
   serverUrl: process.env.REACT_APP_API_URL || "",
-  timeout: process.env.REACT_APP_TIMEOUT || 3000
+  timeout: process.env.REACT_APP_TIMEOUT || 3000,
+  socketUrl: process.env.REACT_APP_SOCKET_URL,
 };

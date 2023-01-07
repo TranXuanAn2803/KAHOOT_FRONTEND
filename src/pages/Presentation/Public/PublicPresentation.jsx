@@ -8,6 +8,7 @@ import { getSessionId } from "../API";
 import { printMessage } from "../../../utils/method";
 import { Slider } from "@material-ui/core";
 import { GetCurrentSlide, GetSlideByPresentationAndIndex } from "../api/Session.Api";
+import { SocketContext } from "../../../components/Socket/socket-client";
 
 export const PublicPresentation = (props) => {
   const [presentation, setPresentation] = useContext(PresentationContext);
@@ -20,6 +21,9 @@ export const PublicPresentation = (props) => {
   const [presentationId, setPresentationId] = useState("");
   const [currentSlideIndex, setCurrentSlideIndex] = useState(-1);
   const [currentSlide, setCurrentSlide] = useState({});
+
+  const socket = useContext(SocketContext);
+
   const submitUsername = () => {
     // console.log("username ", username);
     setGetUser(true);
@@ -41,7 +45,6 @@ export const PublicPresentation = (props) => {
           };
           GetCurrentSlide(request)
             .then((response) => {
-              console.log("current slide ", response.data.data);
               setCurrentSlideIndex(response.data.data.current_slide);
             })
             .catch((error) => {
@@ -60,57 +63,62 @@ export const PublicPresentation = (props) => {
     document.getElementById("main").style.backgroundColor = "rgb(56, 18, 114)";
   });
 
-  useEffect(() => {
-    if (presentationId == "" || presentationId.trim() == "" || currentSlideIndex < 0) {
-      return;
-    }
-    var request = {
-      slideIndex: currentSlideIndex,
-      presentationId: presentationId
-    };
-    GetSlideByPresentationAndIndex(request)
-      .then((response) => {
-        if (response.success == false) {
-          console.log("failed:", response.message);
-          return;
-        }
-        setCurrentSlide(response.slide);
-      })
-      .catch((error) => {
-        console.log("error:", error);
-      });
-  }, [currentSlideIndex]);
+  // useEffect(() => {
+  //   return () => {
+  //     socket.off("connect");
+  //     socket.off("slide-changed");
+  //   };
+  // }, []);
 
-  // return (
-  //   <Styled>
-  //     <Layout>
-  //       {getUser == false ? (
-  //         <div className="publicPresentation-container">
-  //           <div className="pubPresentation-box">
-  //             <label className="question-label" htmlFor="username">
-  //               Username
-  //             </label>
-  //             <input
-  //               type="text"
-  //               id="username"
-  //               className="publicquestion-input"
-  //               maxLength={150}
-  //               placeholder="Enter username"
-  //               value={username}
-  //               autoComplete="off"
-  //               onChange={(e) => setUsername(e.target.value)}
-  //             />
-  //             <button className="username-submit" onClick={() => submitUsername()}>
-  //               Enter
-  //             </button>
-  //           </div>
-  //         </div>
-  //       ) : (
-  //         <GetCode />
-  //       )}
-  //     </Layout>
-  //   </Styled>
-  // );
+  useEffect(() => {
+    socket.emit("init-game", {
+      id: presentationId,
+      groupId: null,
+      user: null
+    });
+  }, [sessionId]);
+
+  useEffect(() => {
+    socket.on("connect", () => {});
+    socket.on("slide-changed", (response) => {
+      if (response.status == 200) {
+        setCurrentSlideIndex(response.data.currentSlide);
+      }
+    });
+    return () => {
+      socket.off("connect");
+      socket.off("slide-changed");
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (
+      presentationId == "" ||
+      presentationId.trim() == "" ||
+      Number.isNaN(currentSlideIndex) ||
+      currentSlideIndex < 0
+    ) {
+      return;
+    } else {
+      var request = {
+        slideIndex: currentSlideIndex,
+        presentationId: presentationId
+      };
+      GetSlideByPresentationAndIndex(request)
+        .then((response) => {
+          console.log("request:", request);
+          if (response.success == false) {
+            console.log("failed:", response.message);
+            return;
+          }
+          console.log("get slide:", response.slide);
+          setCurrentSlide(response.slide);
+        })
+        .catch((error) => {
+          console.log("error:", error);
+        });
+    }
+  }, [currentSlideIndex]);
 
   if (getUser == false) {
     return (
