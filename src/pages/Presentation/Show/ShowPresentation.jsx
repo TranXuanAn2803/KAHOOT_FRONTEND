@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from "recharts";
 import { Styled, StyleMenu } from "./style";
-import { Layout, Menu } from "antd";
+import { Layout, Menu, Modal, Button } from "antd";
 import {
   ArrowsAltOutlined,
   ClockCircleOutlined,
@@ -12,64 +12,23 @@ import {
 } from "@ant-design/icons";
 import { Slide } from "../Slide";
 import { useParams, useLocation } from "react-router-dom";
-import { GetOnePresentation } from "../API";
+import { GetOnePresentation, getSessionId, toggleStatusPresentation } from "../API";
 import PresentationContext from "../../../utils/PresentationContext";
+import { toast } from "react-toastify";
+import { SocketContext } from "../../../components/Socket/socket-client";
+import UserContext from "../../../utils/UserContext";
+import { printMessage } from "../../../utils/method";
 
-const { Content, Sider } = Layout;
 var presentationName = "presentation";
-
-export const ShowPresentation = (props) => {
+export const ShowPresentation = () => {
+  const { Content } = Layout;
   const { presentationId } = useParams();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [sessionId, setSessionId] = useState("");
   const [presentationContext, setPresentationContext] = useContext(PresentationContext);
-  const [dataChart, setDataChart] = useState([
-    {
-      answer: "A",
-      total: 0
-    },
-    {
-      answer: "B",
-      total: 0
-    },
-    {
-      answer: "C",
-      total: 0
-    },
-    {
-      answer: "D",
-      total: 0
-    }
-  ]);
-  useEffect(() => {
-    document.title = `${presentationName} - Realtime quiz-based learning`;
-    const currentArr = presentationContext["slideList"][currentSlide]["options"];
-    const newArr = currentArr.map((value, index) => {
-      return {
-        answer: value,
-        total: 0
-      };
-    });
-    setDataChart(newArr);
-  }, [currentSlide]);
-  return (
-    <SlideShowForHost
-      currentSlide={currentSlide}
-      setCurrentSlide={setCurrentSlide}
-      dataChart={dataChart}
-    />
-  );
-};
-
-const SlideShowForHost = (props) => {
-  const [collapsed, setCollapsed] = useState(false);
-  const { dataChart, setCurrentSlide, currentSlide } = props;
-  const pathName = useLocation();
-  const goToPreviousSlide = () => {
-    setCurrentSlide(currentSlide - 1);
-  };
-  const goToNextSlide = () => {
-    setCurrentSlide(currentSlide + 1);
-  };
+  const [currentUser, setCurrentUser] = useContext(UserContext);
+  const socket = useContext(SocketContext);
+  const [dataChart, setDataChart] = useState({});
 
   const items = [
     {
@@ -113,13 +72,106 @@ const SlideShowForHost = (props) => {
       )
     }
   ];
+  useEffect(() => {
+    document.title = `${presentationName} - Realtime quiz-based learning`;
+    toggleStatusPresentation(presentationId, 3)
+      .then((values) => {
+        console.log("values ", values);
+        if (values && values.status == 200) {
+          // Gỉa sử delete thành công
+          toast.success(values.message, {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            theme: "light"
+          });
+        } else {
+          toast.error(values.message, {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            theme: "light"
+          });
+        }
+      })
+      .catch((err) => {
+        console.log("err ", err);
+        const values = err.response.data;
+        toast.error(values, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          theme: "light"
+        });
+      });
+    socket.on("new-session-for-game", (data) => {
+      console.log("new sesssion for game ", data);
+    });
+    socket.on("slide-changed", (values) => {
+      console.log("slide changed fe", values);
+      // printMessage(values.status, values.message);
+    });
+    return () => {
+      socket.off("new-session-for-game");
+      socket.off("slide-changed");
+    };
+  }, []);
+  useEffect(() => {
+    const groupId = null;
+    if (currentUser != undefined) {
+      console.log("send socket ", presentationId, groupId, currentUser);
+      socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
+      getSessionId(presentationId).then((data) => {
+        console.log("getSessionId data ", data);
+        const sessionId = data.data.data.session;
+        console.log("socket room ", socket.rooms, sessionId);
+        setSessionId(sessionId);
+        socket.join(sessionId);
+      });
+    }
+  }, [currentUser]);
+  useEffect(() => {
+    if (currentSlide != 0) {
+      const currentArr = presentationContext["slideList"][currentSlide]["options"];
+      const newArr = currentArr.map((value, index) => {
+        return {
+          answer: value,
+          total: 0
+        };
+      });
+      setDataChart(newArr);
+    }
+  }, [currentSlide]);
+
+  const goToPreviousSlide = () => {
+    setCurrentSlide(currentSlide - 1);
+  };
+  const goToNextSlide = () => {
+    setCurrentSlide(currentSlide + 1);
+  };
   const goBackToEdit = () => {
     let currentUrl = window.location.href;
-    console.log("url ", window.location.href);
     var to = currentUrl.lastIndexOf("/");
     currentUrl = currentUrl.substring(0, to) + "/" + "edit";
-    console.log("currentUrl ", currentUrl);
     window.location.href = currentUrl;
+  };
+  const stopPresentation = () => {
+    stopPresentation(presentationId, 0).then((values) => {
+      console.log("values stop presentation ", values);
+    });
+  };
+  //id session, idpresentatioonId, user
+  const startGame = () => {
+    socket.emit("next-slide", { id: sessionId, presentationId, user: currentUser });
   };
   return (
     <Styled>
@@ -137,10 +189,18 @@ const SlideShowForHost = (props) => {
               <a className="url_code" href={`/presentations/public`}>
                 this link{" "}
               </a>
-              and use code 123456
+              and use code {presentationId}
             </div>
+            <Button
+              type="primary"
+              onClick={() => startGame()}
+              disabled={currentSlide == 0 ? false : true}>
+              Start game
+            </Button>
+            <Button type="primary" danger onClick={() => stopPresentation()}>
+              Stop presentation
+            </Button>
           </div>
-
           <div className="show_presentation-container">
             <Slide dataChart={dataChart} />
           </div>
@@ -149,19 +209,3 @@ const SlideShowForHost = (props) => {
     </Styled>
   );
 };
-
-// #endregion
-
-// #region Slide show for the rest
-const SlideShowForMember = (props) => {
-  return (
-    <>
-      <Styled>
-        <div className="show_presentation-container">
-          <Slide dataChart={dataChart} />
-        </div>
-      </Styled>
-    </>
-  );
-};
-// #endregion

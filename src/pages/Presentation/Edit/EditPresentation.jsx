@@ -15,24 +15,6 @@ export const EditPresentation = (props) => {
   const [modal, contextHolder] = Modal.useModal();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [presentationContext, setPresentationContext] = useContext(PresentationContext);
-
-  // console.log("presentation.slideList", presentation.slideList, currentSlide);
-  const GetPresentation = (id) => {
-    GetOnePresentation(id)
-      .then((value) => {
-        console.log("value ", value);
-      })
-      .catch((error) => {
-        modal.error({
-          title: "Notifications",
-          content: (
-            <>
-              <p>{`get presentation failed. ${error}`}</p>
-            </>
-          )
-        });
-      });
-  };
   const savePresentation = () => {
     // console.log("current presentation: " + JSON.stringify(presentation.slideList));
     const arr = presentationContext.slideList;

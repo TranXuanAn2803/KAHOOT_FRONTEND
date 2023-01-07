@@ -32,8 +32,6 @@ const Creator = (props) => {
   const [optionItems, setOptionsItem] = useState([]);
   useEffect(() => {
     // CHART
-    console.log("presentaion creator ", presentation);
-    console.log("presentation context ", presentationContext);
     const currentSlideArr = slide[currentSlide];
 
     const data = currentSlideArr.options.map((item, index) => {

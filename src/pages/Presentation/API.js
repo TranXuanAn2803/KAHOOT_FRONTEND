@@ -66,6 +66,24 @@ export const addCollaboratorAPI = async (data) => {
     message: response.data.message || null
   };
 };
+export const toggleStatusPresentation = async (id, status) => {
+  var accessToken = localStorage.getItem("accessToken");
+  var response = await AxiosInstance.put(
+    `/presentation/toggleStatus/${id}`,
+    { status: status },
+    {
+      headers: {
+        x_authorization: accessToken
+      }
+    }
+  );
+  console.log("response startPresentation", response);
+  return {
+    status: response.status,
+    data: response.data.data,
+    message: response.data.message || null
+  };
+};
 export const GetOnePresentation = async (id) => {
   var accessToken = localStorage.getItem("accessToken");
   var response = await AxiosInstance.get(`/slide/by-present/${id}`, {
@@ -75,7 +93,15 @@ export const GetOnePresentation = async (id) => {
   });
   return response;
 };
-
+export const getSessionId = async (id) => {
+  var accessToken = localStorage.getItem("accessToken");
+  var response = await AxiosInstance.put(`/presentation/presenting/session/${id}`, {
+    headers: {
+      x_authorization: accessToken
+    }
+  });
+  return response;
+};
 export const getSlidesFromPresentation = async (id) => {
   var accessToken = localStorage.getItem("accessToken");
   var response = await AxiosInstance.get(`/slide/${id}`, {

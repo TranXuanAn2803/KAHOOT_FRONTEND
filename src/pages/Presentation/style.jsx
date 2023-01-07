@@ -218,6 +218,19 @@ const Styled = styled.div`
     flex-direction: column;
     align-items: center;
   }
+  .waitingPresentation-container {
+    background: #fff;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .waitingPresentation-container h3 {
+    font-weight: 700;
+    font-size: 22px;
+  }
   .survey-question {
     background-image: url(https://static.pexels.com/photos/4827/nature-forest-trees-fog.jpeg);
     -webkit-text-fill-color: transparent;

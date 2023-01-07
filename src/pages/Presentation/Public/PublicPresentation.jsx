@@ -4,6 +4,8 @@ const { Header, Footer, Sider, Content } = Layout;
 import Styled from "../style";
 import PresentationContext from "../../../utils/PresentationContext";
 import { Sector } from "recharts";
+import { getSessionId } from "../API";
+import { printMessage } from "../../../utils/method";
 
 export const PublicPresentation = (props) => {
   const [username, setUsername] = useState("");
@@ -45,17 +47,32 @@ export const PublicPresentation = (props) => {
             </div>
           </div>
         ) : (
-          <GetCode />
+          <GetCode username={username} />
         )}
       </Layout>
     </Styled>
   );
 };
-const GetCode = () => {
+const GetCode = (props) => {
+  const { username } = props;
   const [submitGetCode, setSubmitGetCode] = useState(false);
   const [code, setCode] = useState("");
-  const submitCode = () => {
-    setSubmitGetCode(true);
+  const [sessionId, setSessionId] = useState("");
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [dataCurrentSlide, setDataCurrentSlide] = useState("");
+  const submitCode = async () => {
+    console.log("username va ma code hien tai ", username, code);
+    await getSessionId(code)
+      .then((response) => {
+        console.log("submitCode ", response);
+        const sessionId = response.data.data.session;
+        setSessionId(sessionId);
+        setSubmitGetCode(true);
+      })
+      .catch((err) => {
+        const response = err.response;
+        printMessage(400, response.data);
+      });
   };
   return (
     <>
@@ -82,44 +99,53 @@ const GetCode = () => {
           </div>
         </div>
       ) : (
-        <SurveyPresentation />
+        <SurveyPresentation currentSlide={currentSlide} dataCurrentSlide={dataCurrentSlide} />
       )}
     </>
   );
 };
-const SurveyPresentation = () => {
+const SurveyPresentation = (props) => {
+  const { currentSlide, dataCurrentSlide } = props;
   const [answer, setAnswer] = useState(1);
   const onChange = (e) => {
     setAnswer(e.target.value);
   };
-  useEffect(()=>{
+  useEffect(() => {
     document.getElementById("main").style.backgroundColor = "white";
-  });
+  }, []);
   return (
-    <div className="surveyPresentation-container">
-      <img
-        id="logo"
-        src="/assets/images/kahoot.png"
-        style={{ maxWidth: "20rem", marginTop: "3rem" }}
-      />
-      <div className="survey-body">
-        <div className="survey-question">This is test question?</div>
-        <div className="survey-answer">
-          <Radio.Group onChange={onChange} value={answer}>
-            <Space direction="vertical">
-              <Radio value="1">Option A</Radio>
-              <Radio value="2">Option B</Radio>
-              <Radio value="3">Option C</Radio>
-              <Radio value="4">Option D</Radio>
-            </Space>
-          </Radio.Group>
+    <>
+      {currentSlide == 0 ? (
+        <div className="waitingPresentation-container">
+          <h3>Waiting for other people to join...</h3>
         </div>
-        <div className="survey-submit">
-          <Button type="primary" className="submit-button">
-            Submit
-          </Button>
+      ) : (
+        <div className="surveyPresentation-container">
+          <img
+            id="logo"
+            src="/assets/images/kahoot.png"
+            style={{ maxWidth: "20rem", marginTop: "3rem" }}
+          />
+          <div className="survey-body">
+            <div className="survey-question">This is test question?</div>
+            <div className="survey-answer">
+              <Radio.Group onChange={onChange} value={answer}>
+                <Space direction="vertical">
+                  <Radio value="1">Option A</Radio>
+                  <Radio value="2">Option B</Radio>
+                  <Radio value="3">Option C</Radio>
+                  <Radio value="4">Option D</Radio>
+                </Space>
+              </Radio.Group>
+            </div>
+            <div className="survey-submit">
+              <Button type="primary" className="submit-button">
+                Submit
+              </Button>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
