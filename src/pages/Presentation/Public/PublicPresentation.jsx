@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Layout, Radio, Space, Input, Button } from "antd";
+import { toast } from "react-toastify";
 const { Header, Footer, Sider, Content } = Layout;
 import Styled from "../style";
 import PresentationContext from "../../../utils/PresentationContext";
@@ -33,10 +34,10 @@ export const PublicPresentation = (props) => {
     if (username && code) {
       getSessionId(code)
         .then((response) => {
+          console.log("Get session response: ", response);
           if (response.status != 200) {
             return;
           }
-          console.log("response ", response.data.data);
           setPresentationId(code);
           setSessionId(response.data.data.session);
           var request = {
@@ -48,11 +49,21 @@ export const PublicPresentation = (props) => {
               setCurrentSlideIndex(response.data.data.current_slide);
             })
             .catch((error) => {
-              console.log("error ", err);
+              throw error;
             });
         })
         .catch((err) => {
-          console.log("error ", err);
+          setCode("");
+          setSubmitGetCode(false);
+          toast.error("Cannot join this presentation with code " + code, {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            theme: "light"
+          });
         });
     }
   };
@@ -62,14 +73,6 @@ export const PublicPresentation = (props) => {
   useEffect(() => {
     document.getElementById("main").style.backgroundColor = "rgb(56, 18, 114)";
   });
-
-  // useEffect(() => {
-  //   return () => {
-  //     socket.off("connect");
-  //     socket.off("slide-changed");
-  //   };
-  // }, []);
-
   useEffect(() => {
     socket.emit("init-game", {
       id: presentationId,
@@ -77,7 +80,6 @@ export const PublicPresentation = (props) => {
       user: null
     });
   }, [sessionId]);
-
   useEffect(() => {
     socket.on("connect", () => {});
     socket.on("slide-changed", (response) => {
@@ -90,7 +92,6 @@ export const PublicPresentation = (props) => {
       socket.off("slide-changed");
     };
   }, [socket]);
-
   useEffect(() => {
     if (
       presentationId == "" ||
@@ -106,12 +107,10 @@ export const PublicPresentation = (props) => {
       };
       GetSlideByPresentationAndIndex(request)
         .then((response) => {
-          console.log("request:", request);
           if (response.success == false) {
             console.log("failed:", response.message);
             return;
           }
-          console.log("get slide:", response.slide);
           setCurrentSlide(response.slide);
         })
         .catch((error) => {
@@ -119,7 +118,6 @@ export const PublicPresentation = (props) => {
         });
     }
   }, [currentSlideIndex]);
-
   if (getUser == false) {
     return (
       <Styled>
@@ -163,7 +161,6 @@ export const PublicPresentation = (props) => {
                 className="publicquestion-input"
                 maxLength={150}
                 placeholder="Enter code"
-                defaultValue=""
                 value={code}
                 autoComplete="off"
                 onChange={(e) => setCode(e.target.value)}
