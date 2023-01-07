@@ -224,6 +224,7 @@ export const ShowPresentation = () => {
     console.log("start game");
     socket.emit("next-slide", { id: sessionId, presentationId, user: currentUser });
   };
+  const showResult = () => {};
   return (
     <Styled>
       <Layout style={{ height: "100vh" }}>
@@ -247,6 +248,9 @@ export const ShowPresentation = () => {
               onClick={() => startGame()}
               disabled={currentSlide == -1 ? false : true}>
               Start game
+            </Button>
+            <Button type="primary" onClick={() => showResult()}>
+              Show result
             </Button>
             <Button type="primary" danger onClick={() => stopPresentation()}>
               Stop presentation

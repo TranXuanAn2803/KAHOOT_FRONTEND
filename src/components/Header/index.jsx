@@ -41,7 +41,6 @@ export const Header = function (props) {
     location.pathname.toLowerCase() == "signin" ||
     location.pathname.toLowerCase() == "login" ||
     location.pathname.toLowerCase() == "register" ||
-    location.pathname.toLowerCase() == "signup" ||
     location.pathname.toLowerCase() == "signup"
   ) {
     return <DefaultHeader />;
