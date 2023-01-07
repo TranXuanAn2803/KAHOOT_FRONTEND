@@ -11,7 +11,7 @@ import {
   ArrowLeftOutlined
 } from "@ant-design/icons";
 import { Slide } from "../Slide";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { GetOnePresentation, getSessionId, toggleStatusPresentation } from "../API";
 import PresentationContext from "../../../utils/PresentationContext";
 import { toast } from "react-toastify";
@@ -23,12 +23,14 @@ var presentationName = "presentation";
 export const ShowPresentation = () => {
   const { Content } = Layout;
   const { presentationId } = useParams();
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(-1);
   const [sessionId, setSessionId] = useState("");
-  const [presentationContext, setPresentationContext] = useContext(PresentationContext);
   const [currentUser, setCurrentUser] = useContext(UserContext);
   const socket = useContext(SocketContext);
   const [dataChart, setDataChart] = useState({});
+  const [currentPresentation, setCurrentPresentation] = useState({});
+  const navigate = useNavigate();
+  const groupId = null;
 
   const items = [
     {
@@ -74,6 +76,17 @@ export const ShowPresentation = () => {
   ];
   useEffect(() => {
     document.title = `${presentationName} - Realtime quiz-based learning`;
+    //list all presentations
+    GetOnePresentation(presentationId)
+      .then((values) => {
+        console.log("values ", values);
+        setCurrentPresentation(values.data.data);
+      })
+      .catch((err) => {
+        console.log("err ", err);
+      });
+
+    //change status presentation
     toggleStatusPresentation(presentationId, 3)
       .then((values) => {
         console.log("values ", values);
@@ -112,39 +125,44 @@ export const ShowPresentation = () => {
           theme: "light"
         });
       });
+    socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
+    getSessionId(presentationId).then((data) => {
+      const sessionId = data.data.data.session;
+      setSessionId(sessionId);
+    });
+
+    return () => {
+      socket.off("new-session-for-game");
+      socket.off("slide-changed");
+    };
+  }, []);
+  useEffect(() => {
     socket.on("new-session-for-game", (data) => {
       console.log("new sesssion for game ", data);
     });
     socket.on("slide-changed", (values) => {
       console.log("slide changed fe", values);
-      // printMessage(values.status, values.message);
+      if (values.status !== 200) {
+        printMessage(values.status, values.message);
+      } else {
+        const slide = values.data.currentSlide;
+        console.log("new session current slide ", slide);
+        setCurrentSlide(slide);
+      }
     });
-    return () => {
-      socket.off("new-session-for-game");
-      socket.off("slide-changed");
-    };
   }, [socket]);
+  useEffect(() => {}, [currentUser]);
   useEffect(() => {
-    const groupId = null;
-    if (currentUser != undefined) {
-      console.log("send socket ", presentationId, groupId, currentUser);
-      socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
-      getSessionId(presentationId).then((data) => {
-        const sessionId = data.data.data.session;
-        setSessionId(sessionId);
-      });
-    }
-  }, [currentUser]);
-  useEffect(() => {
-    if (currentSlide != 0) {
-      const currentArr = presentationContext["slideList"][currentSlide]["options"];
-      const newArr = currentArr.map((value, index) => {
+    if (currentSlide != -1) {
+      const currentArr = currentPresentation["slides"][currentSlide]["options"];
+      const newDataChart = currentArr.map((value, index) => {
         return {
-          answer: value,
+          answer: value.content,
           total: 0
         };
       });
-      setDataChart(newArr);
+      console.log("newDataChart ", newDataChart);
+      setDataChart(newDataChart);
     }
   }, [currentSlide]);
 
@@ -152,7 +170,7 @@ export const ShowPresentation = () => {
     setCurrentSlide(currentSlide - 1);
   };
   const goToNextSlide = () => {
-    ư;
+    socket.emit("next-slide", { id: sessionId, presentationId, user: currentUser });
   };
   const goBackToEdit = () => {
     let currentUrl = window.location.href;
@@ -161,12 +179,50 @@ export const ShowPresentation = () => {
     window.location.href = currentUrl;
   };
   const stopPresentation = () => {
-    stopPresentation(presentationId, 0).then((values) => {
-      console.log("values stop presentation ", values);
-    });
+    toggleStatusPresentation(presentationId, 0)
+      .then((values) => {
+        console.log("values ", values);
+        if (values && values.status == 200) {
+          // Gỉa sử delete thành công
+          toast.success(values.message, {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            theme: "light"
+          });
+        } else {
+          toast.error(values.message, {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            theme: "light"
+          });
+        }
+      })
+      .catch((err) => {
+        console.log("err ", err);
+        const values = err.response.data;
+        toast.error(values, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          theme: "light"
+        });
+      });
+    navigate(`/presentations/${presentationId}/edit`);
   };
   //id session, idpresentatioonId, user
   const startGame = () => {
+    console.log("start game");
     socket.emit("next-slide", { id: sessionId, presentationId, user: currentUser });
   };
   return (
@@ -190,7 +246,7 @@ export const ShowPresentation = () => {
             <Button
               type="primary"
               onClick={() => startGame()}
-              disabled={currentSlide == 0 ? false : true}>
+              disabled={currentSlide == -1 ? false : true}>
               Start game
             </Button>
             <Button type="primary" danger onClick={() => stopPresentation()}>
