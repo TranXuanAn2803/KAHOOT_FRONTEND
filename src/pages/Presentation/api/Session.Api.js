@@ -121,7 +121,7 @@ export const GetSlideByPresentationAndIndex = async (request) => {
     };
   }
   var slideList = GetSlideListResponse.data.data.slides;
-  if (index < slideList.length) {
+  if (index <= slideList.length) {
     if (slideList[index - 1].slide_type == "MULTIPLE_CHOICE") {
       slideList[index - 1].type = SlideType.MultipleChoice;
     }
