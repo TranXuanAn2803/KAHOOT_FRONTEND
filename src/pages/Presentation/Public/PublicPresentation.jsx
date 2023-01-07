@@ -11,7 +11,6 @@ import { Slider } from "@material-ui/core";
 import { GetCurrentSlide, GetSlideByPresentationAndIndex } from "../api/Session.Api";
 import { SocketContext } from "../../../components/Socket/socket-client";
 import { SlideType } from "../../../actions/SlideType";
-import { set } from "react-hook-form";
 
 export const PublicPresentation = (props) => {
   const [presentation, setPresentation] = useContext(PresentationContext);
@@ -250,7 +249,7 @@ const MultipleChoicePresentation = (props) => {
       if (response.status == 200) {
         setHasSelect(false);
         setHasSubmitted(false);
-      } 
+      }
     });
   }, [socket]);
   var OptionComponentList = optionList.map((option) => (

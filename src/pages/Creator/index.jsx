@@ -14,19 +14,19 @@ const Creator = (props) => {
   const [dataChart, setDataChart] = useState([
     {
       answer: "A",
-      total: 100
+      total: 0
     },
     {
       answer: "B",
-      total: 50
+      total: 0
     },
     {
       answer: "C",
-      total: 20
+      total: 0
     },
     {
       answer: "D",
-      total: 30
+      total: 0
     }
   ]);
   const [optionItems, setOptionsItem] = useState([]);

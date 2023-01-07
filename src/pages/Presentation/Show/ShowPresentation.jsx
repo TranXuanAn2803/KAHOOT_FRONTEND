@@ -171,12 +171,7 @@ export const ShowPresentation = () => {
   const goToNextSlide = () => {
     socket.emit("next-slide", { id: sessionId, presentationId, user: currentUser });
   };
-  const goBackToEdit = () => {
-    let currentUrl = window.location.href;
-    var to = currentUrl.lastIndexOf("/");
-    currentUrl = currentUrl.substring(0, to) + "/" + "edit";
-    window.location.href = currentUrl;
-  };
+
   const stopPresentation = () => {
     toggleStatusPresentation(presentationId, 0)
       .then((values) => {
@@ -233,7 +228,7 @@ export const ShowPresentation = () => {
           <div className="on-row">
             <ArrowLeftOutlined
               style={{ fontSize: "2.4rem", cursor: "pointer" }}
-              onClick={() => goBackToEdit()}
+              onClick={() => stopPresentation()}
             />
 
             <div className="codePublic">

@@ -1,7 +1,7 @@
 import { Layout, Divider, Modal } from "antd";
 const { Header, Footer, Sider, Content } = Layout;
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Slide } from "../Slide";
 import Container from "react-bootstrap/Container";
 import { MenuItem as MenuBarItem, MenuBar, MenuList, StyledButton } from "../style";
@@ -10,15 +10,74 @@ import Creator from "../../Creator";
 import { useEffect, useContext } from "react";
 import PresentationContext from "../../../utils/PresentationContext";
 import { GetOnePresentation, savePresentationAPI } from "../api/Presentation.Api";
-export const EditPresentation = (props) => {
-  let { presentationId } = useParams();
+import { toggleStatusPresentation } from "../API";
+import { toast } from "react-toastify";
+import Styled from "./style";
+export const EditPresentation = () => {
+  const { presentationId } = useParams();
   const [modal, contextHolder] = Modal.useModal();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [presentationContext, setPresentationContext] = useContext(PresentationContext);
+  const navigate = useNavigate();
+  useEffect(() => {
+    document.title = presentationContext.name;
+    toggleStatusPresentation(presentationId, 1)
+      .then((values) => {
+        // Gỉa sử delete thành công
+
+        toast.success(values.message, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          theme: "light"
+        });
+      })
+      .catch((err) => {
+        const values = err.response.data;
+        toast.error(values, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          theme: "light"
+        });
+      });
+    const getDataForPresentation = async () => {
+      const value = await GetOnePresentation(presentationId);
+      const arrPresentation = value.data.data;
+      let newPresentation = {
+        slideList: [],
+        id: "",
+        name: ""
+      };
+      newPresentation.id = arrPresentation._id;
+      newPresentation.name = arrPresentation.name;
+
+      for (let i = 0; i < arrPresentation.slides.length; i++) {
+        const listOptions = arrPresentation.slides[i].options;
+        let newListOptions = listOptions.map((item, index) => {
+          return item.content;
+        });
+        newPresentation["slideList"].push({
+          id: arrPresentation.slides[i].index,
+          type: arrPresentation.slides[i].slide_type,
+          question: arrPresentation.slides[i].question,
+          options: newListOptions
+        });
+      }
+      console.log("newPresentation ", newPresentation);
+      setPresentationContext(newPresentation);
+    };
+    getDataForPresentation();
+  }, []);
   const savePresentation = () => {
-    // console.log("current presentation: " + JSON.stringify(presentation.slideList));
-    const arr = presentationContext.slideList;
-    setCurrentSlide(0);
+    console.log("call savePresentation ");
+
     const request = {
       presentationId: presentationId,
       slides: presentationContext.slideList
@@ -57,43 +116,40 @@ export const EditPresentation = (props) => {
           )
         });
       });
+    // change from 1 to 0
+    toggleStatusPresentation(presentationId, 0)
+      .then((values) => {
+        // Gỉa sử delete thành công
+        toast.success(values.message, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          theme: "light"
+        });
+      })
+      .catch((err) => {
+        const values = err.response.data;
+        toast.error(values, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          theme: "light"
+        });
+      });
+    navigate("/presentations");
   };
-  useEffect(() => {
-    document.title = presentationContext.name;
-    const getDataForPresentation = async () => {
-      const value = await GetOnePresentation(presentationId);
-      const arrPresentation = value.data.data;
-      let newPresentation = {
-        slideList: [],
-        id: "",
-        name: ""
-      };
-      newPresentation.id = arrPresentation._id;
-      newPresentation.name = arrPresentation.name;
-
-      for (let i = 0; i < arrPresentation.slides.length; i++) {
-        const listOptions = arrPresentation.slides[i].options;
-        let newListOptions = listOptions.map((item, index) => {
-          return item.content;
-        });
-        newPresentation["slideList"].push({
-          id: arrPresentation.slides[i].index,
-          type: arrPresentation.slides[i].slide_type,
-          question: arrPresentation.slides[i].question,
-          options: newListOptions
-        });
-      }
-      console.log("newPresentation ", newPresentation);
-      setPresentationContext(newPresentation);
-    };
-    getDataForPresentation();
-  }, []);
 
   return (
     <>
       <Layout>
         <Header style={{ backgroundColor: "white", padding: "0" }}>
-          <EditHeader presentation={presentationContext} />
+          <EditHeader presentation={presentationContext} savePresentation={savePresentation} />
         </Header>
         <Divider type="horizontal" className="m-0" />
         <Layout>
@@ -113,21 +169,22 @@ export const EditPresentation = (props) => {
 };
 
 const EditHeader = (props) => {
-  const { id, name, createdBy } = props.presentation;
+  const { savePresentation, presentation } = props;
+  const { id, name, createdBy } = presentation;
   console.log("props presentation ", props.presentation);
   let { presentationId } = useParams();
 
   return (
-    <>
+    <Styled>
       <MenuBar id="menubar-horizontal" bg="light" className="d-flex justify-content-between">
-        <MenuList className="me-auto">
-          <MenuBarItem onClick={() => savePresentation()} to="/presentations">
+        <div className="me-auto header-left">
+          <div onClick={() => savePresentation()}>
             <ArrowLeftOutlined style={{ fontSize: "2.4rem" }} />
-          </MenuBarItem>
-          <MenuBarItem>
+          </div>
+          <div>
             <span style={{ fontSize: "1.4rem", fontWeight: "bold" }}>{name}</span>
-          </MenuBarItem>
-        </MenuList>
+          </div>
+        </div>
         <MenuList className="d-flex align-items-center justify-content-evenly">
           <MenuBarItem to="/share">
             <StyledButton variant="secondary">
@@ -143,7 +200,7 @@ const EditHeader = (props) => {
           </MenuBarItem>
         </MenuList>
       </MenuBar>
-    </>
+    </Styled>
   );
 };
 
