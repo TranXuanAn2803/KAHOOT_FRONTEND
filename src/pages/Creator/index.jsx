@@ -213,11 +213,7 @@ const Creator = (props) => {
                       <span>{index + 1}</span>
                     </div>
                     <div className="slide-image-container">
-                      <img
-                        className="slide-image"
-                        src="https://images.twinkl.co.uk/tw1n/image/private/t_630/u/ux/barchart_ver_1.jpg"
-                        alt="chart"
-                      />
+                      <img className="slide-image" src="/assets/images/barchart.jpg" alt="chart" />
                     </div>
                   </div>
                 );

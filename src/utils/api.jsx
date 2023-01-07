@@ -1,5 +1,6 @@
 import axios from "axios";
 import { ApiConfig as _ParamConfig } from "../actions/constants";
+import { toggleStatusPresentation } from "../pages/Presentation/API";
 const URL = _ParamConfig.serverUrl;
 export const fetchUsers = async (accessToken) => {
   const { data } = await axios.get(`${URL}/users`, {
@@ -247,7 +248,6 @@ export const fetchSharingPresent = async (id, accessToken) => {
   return data;
 };
 
-
 export const fetchListUser = async (accessToken) => {
   const { data } = await axios.get(`${URL}/users/list`, {
     headers: {
@@ -300,31 +300,75 @@ export const toggleRole = async (newRole, id, accessToken) => {
     console.log("err", err);
   }
 };
-export const removeSharingPresent = async (id, accessToken) => {
-    const response = await axios
-      .delete(
-        `${URL}/presentation/share/${id}`,
-        {
-          headers: {
-            x_authorization: accessToken
-          }
-        }
-      )
-      .catch((error) => {
-        if (error.response) {
-          const objectReturn = {
-            data: error.response.data,
-            status: error.response.status
-          };
-          return objectReturn;
-        }
-      });
+export const findGroupPresentation = async (id) => {
+  const accessToken = localStorage.getItem("accessToken");
+
+  try {
+    const response = await axios.get(`${URL}/groupPresentation/${id}`, {
+      headers: {
+        x_authorization: accessToken
+      }
+    });
+    console.log("response ", response);
     const { data, status } = response;
     const objectReturn = {
       data: data,
       status: status
     };
     return objectReturn;
+  } catch (error) {
+    console.log("error", error);
+
+    if (error.response) {
+      const objectReturn = {
+        data: error.response.message,
+        status: error.response.status
+      };
+      return objectReturn;
+    }
+  }
+};
+export const presentGroup = async (id) => {
+  try {
+    const response = await toggleStatusPresentation(id, 2);
+    const { data, status } = response;
+    const objectReturn = {
+      data: data,
+      status: status
+    };
+    return objectReturn;
+  } catch (error) {
+    if (error.response) {
+      const objectReturn = {
+        data: error.response.data,
+        status: error.response.status
+      };
+      return objectReturn;
+    }
+  }
+};
+export const removeSharingPresent = async (id, accessToken) => {
+  const response = await axios
+    .delete(`${URL}/presentation/share/${id}`, {
+      headers: {
+        x_authorization: accessToken
+      }
+    })
+    .catch((error) => {
+      if (error.response) {
+        const objectReturn = {
+          data: error.response.data,
+          status: error.response.status
+        };
+        return objectReturn;
+      }
+    });
+  const { data, status } = response;
+  const objectReturn = {
+    data: data,
+    status: status
+  };
+  return objectReturn;
 };
 
 export const exitsGroup = async (id, accessToken) => {

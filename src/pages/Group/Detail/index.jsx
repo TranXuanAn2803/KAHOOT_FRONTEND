@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useCallback, useContext } from "react";
 import AppBar from "@mui/material/AppBar";
 import {
   exitsGroup,
@@ -6,7 +6,9 @@ import {
   fetchMyOwnPresent,
   sharePresentToGroup,
   fetchSharingPresent,
-  removeSharingPresent
+  removeSharingPresent,
+  presentGroup,
+  findGroupPresentation
 } from "../../../utils/api";
 import Toolbar from "@mui/material/Toolbar";
 import { useLocation } from "react-router";
@@ -22,20 +24,19 @@ import { Header } from "../../../components/Header";
 import SideBar from "../SideBar";
 import { Tabs, Form, Button, Modal, Input, Card, Table, Space, Select } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
+import { getSessionId, toggleStatusPresentation } from "../../Presentation/API";
+import { printMessage } from "../../../utils/method";
+import { SocketContext } from "../../../components/Socket/socket-client";
+import UserContext from "../../../utils/UserContext";
 const { Column } = Table;
 const { Meta } = Card;
 
 export default function GroupDetail() {
   const [open, setOpen] = React.useState(false);
   const [openShareForm, setOpenShareForm] = React.useState(false);
-
   const { state } = useLocation();
   const [id, setId] = React.useState();
   const [shareForm] = Form.useForm();
-
-  const handleOpen = () => {
-    setOpen(true);
-  };
   const [data, setData] = React.useState([]);
   const [listPresent, setListPresent] = React.useState([]);
   const [form] = Form.useForm();
@@ -51,6 +52,13 @@ export default function GroupDetail() {
       key: "2"
     }
   ];
+  const [sessionId, setSessionId] = useState("");
+  const socket = useContext(SocketContext);
+  const [currentUser, setCurrentUser] = useContext(UserContext);
+  const [currentPresentation, setCurrentPresentation] = useState("");
+  const handleOpen = () => {
+    setOpen(true);
+  };
   const handleClose = () => {
     formik.setFieldValue("email", "");
     setOpen(false);
@@ -168,6 +176,15 @@ export default function GroupDetail() {
     verifyToken();
     reloadPresent();
   }, []);
+  useEffect(() => {
+    socket.on("new-session-for-game", (data) => {
+      console.log("new sesssion for game ", data);
+      if (data.status == 200) {
+        printMessage(data.status, data.data.message);
+        setSessionId(data.data.current_session);
+      }
+    });
+  }, [socket]);
 
   const formik = useFormik({
     initialValues: {
@@ -226,6 +243,7 @@ export default function GroupDetail() {
     for (let data of list.data) {
       let p = data.present;
       p.id = data._id;
+      p.key = data._id;
       p.username = p.created_by.username;
       present.push(p);
     }
@@ -260,18 +278,33 @@ export default function GroupDetail() {
       theme: "light"
     });
   };
-  const handleShowPresent = (rowId) => {
-    console.log(rowId);
+  const handleShowPresent = async (rowId) => {
+    console.log("rowId ", rowId);
+    const groupPresentation = await findGroupPresentation(rowId);
+    console.log("groupPresentation ", groupPresentation);
+    const presentationId = groupPresentation.data.data.presentation_id;
+    const groupId = groupPresentation.data.data.group_id;
+    const toggleStatus = await toggleStatusPresentation(presentationId, 2, groupId);
+    console.log(
+      "🚀 ~ file: index.jsx:272 ~ handleShowPresent ~ toggleStatusPresentation",
+      toggleStatus
+    );
+    if (toggleStatus.status === 200) {
+      printMessage(toggleStatus.status, toggleStatus.message);
+    } else {
+      printMessage(toggleStatus.status, toggleStatus.message);
+    }
+    socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
+    setCurrentPresentation(presentationId);
+    reloadPresent();
   };
   const PresentCard = () => {
     let cardData = null;
     let description = "";
-    console.log(data);
     for (let i = 0; i < data.length; i++) {
-      console.log(data[i]);
       if (data[i].status == 2) {
         cardData = data[i];
-        description = `The presentation name ${data[i].name} is starting`;
+        description = `The presentation name ${data[i].name} is starting. Use this code to join ${currentPresentationx} `;
       }
     }
     if (!cardData) {
@@ -281,12 +314,7 @@ export default function GroupDetail() {
         <Card
           className="main-content"
           style={{ width: 300, left: 300, margin: 10, position: "relative" }}
-          cover={
-            <img
-              alt="example"
-              src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-            />
-          }>
+          cover={<img alt="slide" src="/assets/images/barchart.jpg" />}>
           <Meta title="Slide title" description={description} />
         </Card>
       );

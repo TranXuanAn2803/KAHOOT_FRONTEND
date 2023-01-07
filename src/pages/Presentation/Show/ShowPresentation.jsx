@@ -171,11 +171,25 @@ export const ShowPresentation = () => {
   };
 
   const stopPresentation = async () => {
-    console.log("call stop presentation");
-    const toggleStatusResponse = await toggleStatusPresentation(presentationId, 0);
-    if (toggleStatusResponse && toggleStatusResponse.status == 200) {
-      // Gỉa sử delete thành công
-      toast.success(toggleStatusPresentation.message, {
+    try {
+      const toggleStatusResponse = await toggleStatusPresentation(presentationId, 0);
+      console.log("toggleStatusResponse", toggleStatusResponse);
+      if (toggleStatusResponse && toggleStatusResponse.status == 200) {
+        // Gỉa sử delete thành công
+        toast.success(toggleStatusPresentation.message, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          theme: "light"
+        });
+        navigate(`/presentations/${presentationId}/edit`);
+      }
+    } catch (err) {
+      console.log("error", err);
+      toast.error(err.message, {
         position: "top-right",
         autoClose: 2000,
         hideProgressBar: false,
@@ -184,7 +198,6 @@ export const ShowPresentation = () => {
         draggable: true,
         theme: "light"
       });
-      navigate(`/presentations/${presentationId}/edit`);
     }
   };
   //id session, idpresentatioonId, user
