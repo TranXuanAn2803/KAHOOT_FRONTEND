@@ -12,10 +12,12 @@ import { GetCurrentSlide, GetSlideByPresentationAndIndex } from "../api/Session.
 import { SocketContext } from "../../../components/Socket/socket-client";
 import { SlideType } from "../../../actions/SlideType";
 
+import LoadingScreen from "react-loading-screen";
+
 export const PublicPresentation = (props) => {
   const [presentation, setPresentation] = useContext(PresentationContext);
-  const [getUser, setGetUser] = useState(false);
   const [code, setCode] = useState("");
+  const [getUser, setGetUser] = useState(false);
   const [submitGetCode, setSubmitGetCode] = useState(false);
   const [answer, setAnswer] = useState(1);
   const [username, setUsername] = useState("");
@@ -189,6 +191,25 @@ export const PublicPresentation = (props) => {
   }
 
   return (
+    <LoadingScreen
+      loading={currentSlideIndex == 0}
+      bgColor="#fffff"
+      spinnerColor="#fff"
+      textColor="#fff"
+      text="Please waiting for the host to start">
+      <Styled>
+        <Layout>
+          <PresentForViewer
+            slide={currentSlide}
+            socket={socket}
+            presentationId={presentationId}
+            username={username}
+          />
+        </Layout>
+      </Styled>
+    </LoadingScreen>
+  );
+  return (
     <Styled>
       <Layout>
         <PresentForViewer
@@ -206,7 +227,7 @@ const PresentForViewer = (props) => {
   const { socket, slide, presentationId, username } = props;
   useEffect(() => {
     document.getElementById("main").style.backgroundColor = "white";
-  }, []);
+  });
   switch (slide.type) {
     case SlideType.MultipleChoice:
       return (
