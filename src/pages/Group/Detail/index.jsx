@@ -24,7 +24,7 @@ import { Header } from "../../../components/Header";
 import SideBar from "../SideBar";
 import { Tabs, Form, Button, Modal, Input, Card, Table, Space, Select } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
-import { getSessionId, toggleStatusPresentation } from "../../Presentation/API";
+import { getPresentingRole, getSessionId, toggleStatusPresentation } from "../../Presentation/API";
 import { printMessage } from "../../../utils/method";
 import { SocketContext } from "../../../components/Socket/socket-client";
 import UserContext from "../../../utils/UserContext";
@@ -52,6 +52,7 @@ export default function GroupDetail() {
       key: "2"
     }
   ];
+  const [groupId, setGroupId] = useState("");
   const [sessionId, setSessionId] = useState("");
   const socket = useContext(SocketContext);
   const [currentUser, setCurrentUser] = useContext(UserContext);
@@ -184,6 +185,9 @@ export default function GroupDetail() {
         setSessionId(data.data.current_session);
       }
     });
+    return () => {
+      socket.off("new-session-for-game");
+    };
   }, [socket]);
 
   const formik = useFormik({
@@ -239,6 +243,7 @@ export default function GroupDetail() {
   };
   const reloadPresent = async () => {
     const list = await fetchSharingPresent(state.id, accessToken);
+    console.log("reloadPresent list", list);
     let present = [];
     for (let data of list.data) {
       let p = data.present;
@@ -246,6 +251,11 @@ export default function GroupDetail() {
       p.key = data._id;
       p.username = p.created_by.username;
       present.push(p);
+      if (p.status === 2) {
+        setCurrentPresentation(p._id);
+        setSessionId(data.current_session);
+        setGroupId(data.group_id);
+      }
     }
     setData(present);
   };
@@ -284,7 +294,7 @@ export default function GroupDetail() {
     console.log("groupPresentation ", groupPresentation);
     const presentationId = groupPresentation.data.data.presentation_id;
     const groupId = groupPresentation.data.data.group_id;
-    const toggleStatus = await toggleStatusPresentation(presentationId, 2, groupId);        // 2: trạng thái chỉ trình chiếu chiếu trong group
+    const toggleStatus = await toggleStatusPresentation(presentationId, 2, groupId); // 2: trạng thái chỉ trình chiếu chiếu trong group
     console.log(
       "🚀 ~ file: index.jsx:272 ~ handleShowPresent ~ toggleStatusPresentation",
       toggleStatus
@@ -314,10 +324,27 @@ export default function GroupDetail() {
         <Card
           className="main-content"
           style={{ width: 300, left: 300, margin: 10, position: "relative" }}
-          cover={<img alt="slide" src="/assets/images/barchart.jpg" />}>
+          cover={
+            <img
+              alt="slide"
+              src="/assets/images/barchart.jpg"
+              onClick={() => presentCardPresentation()}
+            />
+          }>
           <Meta title="Slide title" description={description} />
         </Card>
       );
+    }
+  };
+  const presentCardPresentation = async () => {
+    const response = await getPresentingRole(currentPresentation, sessionId);
+    console.log("presentCardPresentation response ", response);
+    const role = response.data.role;
+    if (role == "admin") {
+      // presentationId / groupId
+      navigate(`/presentations/${currentPresentation}/show/${groupId}`);
+    } else {
+      navigate(`/presentations/public/${groupId}`);
     }
   };
 

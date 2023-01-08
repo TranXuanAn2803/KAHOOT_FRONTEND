@@ -33,6 +33,19 @@ export const GetAllCollaboratorsAPI = async () => {
     message: response.data.message || null
   };
 };
+export const getOneDetailPresentationAPI = async (id) => {
+  var accessToken = localStorage.getItem("accessToken");
+  var response = await AxiosInstance.get(`/presentation/${id}`, {
+    headers: {
+      x_authorization: accessToken
+    }
+  });
+  return {
+    status: response.status,
+    data: response.data.data,
+    message: response.data.message || null
+  };
+};
 export const deleteCollaboratorAPI = async (idPresentation, collaborator) => {
   var accessToken = localStorage.getItem("accessToken");
   var response = await AxiosInstance.delete(
@@ -66,6 +79,24 @@ export const addCollaboratorAPI = async (data) => {
     message: response.data.message || null
   };
 };
+export const getPresentingRole = async (id, sessionId) => {
+  var accessToken = localStorage.getItem("accessToken");
+  var response = await AxiosInstance.put(
+    `/presentation/presenting/role/${id}`,
+    { sessionId: sessionId },
+    {
+      headers: {
+        x_authorization: accessToken
+      }
+    }
+  );
+  console.log("response getPresentingRole", response);
+  return {
+    status: response.status,
+    data: response.data.data,
+    message: response.data.message || null
+  };
+};
 export const toggleStatusPresentation = async (id, status, groupId) => {
   var accessToken = localStorage.getItem("accessToken");
   var response = await AxiosInstance.put(
@@ -78,7 +109,6 @@ export const toggleStatusPresentation = async (id, status, groupId) => {
       }
     }
   );
-  console.log("response startPresentation", response);
   return {
     status: response.status,
     data: response.data.data,
@@ -94,13 +124,17 @@ export const GetOnePresentation = async (id) => {
   });
   return response;
 };
-export const getSessionId = async (id) => {
+export const getSessionId = async (id, groupId) => {
   var accessToken = localStorage.getItem("accessToken");
-  var response = await AxiosInstance.put(`/presentation/presenting/session/${id}`, {
-    headers: {
-      x_authorization: accessToken
+  var response = await AxiosInstance.put(
+    `/presentation/presenting/session/${id}`,
+    { groupId: groupId },
+    {
+      headers: {
+        x_authorization: accessToken
+      }
     }
-  });
+  );
   return response;
 };
 export const getSlidesFromPresentation = async (id) => {

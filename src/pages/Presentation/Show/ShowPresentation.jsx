@@ -12,7 +12,12 @@ import {
 } from "@ant-design/icons";
 import { Slide } from "../Slide";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import { GetOnePresentation, getSessionId, toggleStatusPresentation } from "../API";
+import {
+  getOneDetailPresentationAPI,
+  GetOnePresentation,
+  getSessionId,
+  toggleStatusPresentation
+} from "../API";
 import { toast } from "react-toastify";
 import { SocketContext } from "../../../components/Socket/socket-client";
 import UserContext from "../../../utils/UserContext";
@@ -21,7 +26,7 @@ import { printMessage } from "../../../utils/method";
 var presentationName = "presentation";
 export const ShowPresentation = () => {
   const { Content } = Layout;
-  const { presentationId } = useParams();
+  const { presentationId, groupId } = useParams();
   const [currentSlide, setCurrentSlide] = useState(-1);
   const [sessionId, setSessionId] = useState("");
   const [currentUser, setCurrentUser] = useContext(UserContext);
@@ -29,7 +34,6 @@ export const ShowPresentation = () => {
   const [dataChart, setDataChart] = useState({});
   const [currentPresentation, setCurrentPresentation] = useState({});
   const navigate = useNavigate();
-  const groupId = null;
 
   const items = [
     {
@@ -76,56 +80,99 @@ export const ShowPresentation = () => {
   useEffect(() => {
     document.title = `${presentationName} - Realtime quiz-based learning`;
     //list all presentations
-    GetOnePresentation(presentationId)
-      .then((values) => {
-        console.log("values ", values);
-        setCurrentPresentation(values.data.data);
-        toggleStatusPresentation(presentationId, 3)
-          .then((values) => {
-            if (values && values.status == 200) {
-              // Gỉa sử delete thành công
-              toast.success(values.message, {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true,
-                theme: "light"
-              });
-              socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
-              getSessionId(presentationId).then((data) => {
-                const sessionId = data.data.data.session;
-                setSessionId(sessionId);
-              });
-            } else {
-              toast.error(values.message, {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true,
-                theme: "light"
-              });
-            }
-          })
-          .catch((err) => {
-            const values = err.response.data;
-            toast.error(values, {
-              position: "top-right",
-              autoClose: 2000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: false,
-              draggable: true,
-              theme: "light"
+    const getInfo = async () => {
+      const GetOnePresentationData = await GetOnePresentation(presentationId);
+      if (GetOnePresentationData.status == 200) {
+        setCurrentPresentation(GetOnePresentationData.data.data);
+        const presentationValue = await getOneDetailPresentationAPI(presentationId);
+        if (presentationValue.data.status != 2) {
+          toggleStatusPresentation(presentationId, 3)
+            .then((values) => {
+              if (values && values.status == 200) {
+                // Gỉa sử delete thành công
+                toast.success(values.message, {
+                  position: "top-right",
+                  autoClose: 2000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: false,
+                  draggable: true,
+                  theme: "light"
+                });
+                socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
+                getSessionId(presentationId).then((data) => {
+                  console.log("getSessionId return ", data);
+                  const sessionId = data.data.data.session;
+                  setSessionId(sessionId);
+                });
+              } else {
+                printMessage(400, values.message);
+              }
+            })
+            .catch((err) => {
+              const values = err.response.data;
+              printMessage(400, values);
             });
+        } else {
+          console.log("showPresentation status: 2", presentationId, groupId, currentUser);
+          socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
+          getSessionId(presentationId, groupId).then((data) => {
+            const sessionId = data.data.data.session;
+            setSessionId(sessionId);
           });
-      })
-      .catch((err) => {
-        console.log("err ", err);
-      });
+        }
+      }
+    };
+    getInfo();
+    // GetOnePresentation(presentationId)
+    //   .then((values) => {
+    //     setCurrentPresentation(values.data.data);
+    //     toggleStatusPresentation(presentationId, 3)
+    //       .then((values) => {
+    //         if (values && values.status == 200) {
+    //           // Gỉa sử delete thành công
+    //           toast.success(values.message, {
+    //             position: "top-right",
+    //             autoClose: 2000,
+    //             hideProgressBar: false,
+    //             closeOnClick: true,
+    //             pauseOnHover: false,
+    //             draggable: true,
+    //             theme: "light"
+    //           });
+    //           socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
+    //           getSessionId(presentationId).then((data) => {
+    //             const sessionId = data.data.data.session;
+    //             setSessionId(sessionId);
+    //           });
+    //         } else {
+    //           toast.error(values.message, {
+    //             position: "top-right",
+    //             autoClose: 2000,
+    //             hideProgressBar: false,
+    //             closeOnClick: true,
+    //             pauseOnHover: false,
+    //             draggable: true,
+    //             theme: "light"
+    //           });
+    //         }
+    //       })
+    //       .catch((err) => {
+    //         const values = err.response.data;
+    //         toast.error(values, {
+    //           position: "top-right",
+    //           autoClose: 2000,
+    //           hideProgressBar: false,
+    //           closeOnClick: true,
+    //           pauseOnHover: false,
+    //           draggable: true,
+    //           theme: "light"
+    //         });
+    //       });
+    //   })
+    //   .catch((err) => {
+    //     console.log("err ", err);
+    //   });
     //change status presentation
   }, []);
   useEffect(() => {
@@ -216,6 +263,7 @@ export const ShowPresentation = () => {
   };
   //id session, idpresentatioonId, user
   const startGame = () => {
+    console.log("startGame ", sessionId, presentationId, currentUser);
     socket.emit("next-slide", { id: sessionId, presentationId, user: currentUser });
   };
   const showResult = () => {};

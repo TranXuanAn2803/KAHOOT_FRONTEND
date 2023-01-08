@@ -14,9 +14,10 @@ import { SlideType } from "../../../actions/SlideType";
 
 import LoadingScreen from "react-loading-screen";
 import { StyleContainer, StyledNavLink } from "./style";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export const PublicPresentation = (props) => {
+  const { groupId } = useParams();
   const [presentation, setPresentation] = useContext(PresentationContext);
   const [code, setCode] = useState("");
   const [getUser, setGetUser] = useState(false);
@@ -48,7 +49,8 @@ export const PublicPresentation = (props) => {
     }
     setSubmitGetCode(true);
     if (username && code) {
-      getSessionId(code)
+      console.log("send getSessionId ", code, groupId);
+      getSessionId(code, groupId)
         .then((response) => {
           console.log("Get session response: ", response);
           if (response.status != 200) {
@@ -71,7 +73,8 @@ export const PublicPresentation = (props) => {
         .catch((err) => {
           setCode("");
           setSubmitGetCode(false);
-          toast.error("Cannot join this presentation with code " + code, {
+          console.log("err ", err);
+          toast.error(err.response.data.message, {
             position: "top-right",
             autoClose: 2000,
             hideProgressBar: false,

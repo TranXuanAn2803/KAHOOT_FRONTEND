@@ -83,7 +83,9 @@ const App = () => {
                       <Route path="all" element={<MyPresentations />} />
                       <Route path=":presentationId/edit" element={<EditPresentation />} />
                       <Route path=":presentationId/show" element={<ShowPresentation />} />
+                      <Route path=":presentationId/show/:groupId" element={<ShowPresentation />} />
                       <Route path="public" element={<PublicPresentation />} />
+                      <Route path="public/:groupId" element={<PublicPresentation />} />
                     </Route>
 
                     <Route path="/forgot-password" element={<ForgotPassword />} />
