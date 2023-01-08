@@ -128,6 +128,7 @@ export const PublicPresentation = (props) => {
             console.log("failed:", response.message);
             return;
           }
+          setIsFinalSlide(isFinalSlide);
           setCurrentSlide(response.slide);
         })
         .catch((error) => {
