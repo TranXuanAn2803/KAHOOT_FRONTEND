@@ -73,7 +73,7 @@ export const PublicPresentation = (props) => {
   };
   useEffect(() => {
     document.getElementById("main").style.backgroundColor = "rgb(56, 18, 114)";
-  }, []);
+  });
   useEffect(() => {
     socket.emit("init-game", {
       id: presentationId,
@@ -99,7 +99,7 @@ export const PublicPresentation = (props) => {
       presentationId == "" ||
       presentationId.trim() == "" ||
       Number.isNaN(currentSlideIndex) ||
-      currentSlideIndex < 0
+      currentSlideIndex < 1
     ) {
       return;
     } else {
