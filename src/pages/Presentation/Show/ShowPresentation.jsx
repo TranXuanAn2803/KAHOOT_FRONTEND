@@ -139,7 +139,6 @@ export const ShowPresentation = () => {
       } else {
         printMessage(values.status, values.message);
         const slide = values.data.currentSlide;
-        console.log("new session current slide ", slide);
         setCurrentSlide(slide - 1);
       }
     });
@@ -156,7 +155,6 @@ export const ShowPresentation = () => {
             total: value.total
           };
         });
-        console.log("newDataChart ", newDataChart);
         setDataChart(newDataChart);
       }
     });
@@ -168,7 +166,6 @@ export const ShowPresentation = () => {
   }, [socket]);
   useEffect(() => {
     if (currentSlide != -1) {
-      console.log("currentPresentation ", currentPresentation);
       const currentArr = currentPresentation["slides"][currentSlide]["options"];
       const newDataChart = currentArr.map((value, index) => {
         return {
@@ -176,7 +173,6 @@ export const ShowPresentation = () => {
           total: 0
         };
       });
-      console.log("newDataChart ", newDataChart);
       setDataChart(newDataChart);
     }
   }, [currentSlide]);
@@ -220,7 +216,6 @@ export const ShowPresentation = () => {
   };
   //id session, idpresentatioonId, user
   const startGame = () => {
-    console.log("Start game ");
     socket.emit("next-slide", { id: sessionId, presentationId, user: currentUser });
   };
   const showResult = () => {};
