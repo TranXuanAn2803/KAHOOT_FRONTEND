@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { Layout, Radio, Space, Input, Button } from "antd";
 import { toast } from "react-toastify";
 const { Header, Footer, Sider, Content } = Layout;
-import Styled from "../style";
+import Styled, { StyledButton } from "../style";
 import PresentationContext from "../../../utils/PresentationContext";
 import { Sector } from "recharts";
 import { getSessionId } from "../API";
@@ -13,6 +13,8 @@ import { SocketContext } from "../../../components/Socket/socket-client";
 import { SlideType } from "../../../actions/SlideType";
 
 import LoadingScreen from "react-loading-screen";
+import { StyleContainer, StyledNavLink } from "./style";
+import { useNavigate } from "react-router-dom";
 
 export const PublicPresentation = (props) => {
   const [presentation, setPresentation] = useContext(PresentationContext);
@@ -25,6 +27,7 @@ export const PublicPresentation = (props) => {
   const [presentationId, setPresentationId] = useState("");
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [currentSlide, setCurrentSlide] = useState({});
+  const [isFinalSlide, setIsFinalSlide] = useState(true);
   const socket = useContext(SocketContext);
 
   const submitUsername = () => {
@@ -32,6 +35,17 @@ export const PublicPresentation = (props) => {
     setGetUser(true);
   };
   const submitCode = () => {
+    if (code == "" || code.trim() == "") {
+      toast.error("Please enter PIN to join a presentation", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        theme: "light"
+      });
+    }
     setSubmitGetCode(true);
     if (username && code) {
       getSessionId(code)
@@ -204,27 +218,17 @@ export const PublicPresentation = (props) => {
             socket={socket}
             presentationId={presentationId}
             username={username}
+            isFinalSlide={isFinalSlide}
+            sessionId={sessionId}
           />
         </Layout>
       </Styled>
     </LoadingScreen>
   );
-  return (
-    <Styled>
-      <Layout>
-        <PresentForViewer
-          slide={currentSlide}
-          socket={socket}
-          presentationId={presentationId}
-          username={username}
-        />
-      </Layout>
-    </Styled>
-  );
 };
 
 const PresentForViewer = (props) => {
-  const { socket, slide, presentationId, username } = props;
+  const { socket, slide, presentationId, username, isFinalSlide, sessionId } = props;
   useEffect(() => {
     document.getElementById("main").style.backgroundColor = "white";
   });
@@ -237,6 +241,8 @@ const PresentForViewer = (props) => {
           socket={socket}
           presentationId={presentationId}
           username={username}
+          isFinalSlide={isFinalSlide}
+          sessionId={sessionId}
         />
       );
     case SlideType.Heading:
@@ -249,11 +255,21 @@ const PresentForViewer = (props) => {
 };
 
 const MultipleChoicePresentation = (props) => {
-  const { question, optionList, socket, presentationId, username, ...others } = props;
+  const {
+    question,
+    optionList,
+    socket,
+    presentationId,
+    username,
+    isFinalSlide,
+    sessionId,
+    ...others
+  } = props;
   const [answer, setAnswer] = useState(null); // option_id
-  const [hasSelect, setHasSelect] = useState(false);
+  // const [hasSelect, setHasSelect] = useState(false);
+  const [hasSelect, setHasSelect] = useState(true);
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [sessionId, setSessionId] = useState("");
+  const navigate = useNavigate();
   const onChange = (e) => {
     setAnswer(e.target.value);
     if (!hasSelect) {
@@ -273,14 +289,11 @@ const MultipleChoicePresentation = (props) => {
   };
   useEffect(() => {
     document.getElementById("main").style.backgroundColor = "white";
-    getSessionId(presentationId).then((data) => {
-      const sessionId = data.data.data.session;
-      setSessionId(sessionId);
-    });
-  }, []);
+  });
   useEffect(() => {
+    console.log("socket", socket);
     socket.on("get-answer-from-player", (response) => {
-      console.log("Add options: ", response.data.options);
+      console.log("Add options: ", response.data);
     });
     socket.on("slide-changed", (response) => {
       if (response.status == 200) {
@@ -294,32 +307,70 @@ const MultipleChoicePresentation = (props) => {
       {option.content}
     </Radio>
   ));
-  return (
-    <div className="surveyPresentation-container">
-      <img
-        id="logo"
-        src="/assets/images/kahoot.png"
-        style={{ maxWidth: "20rem", marginTop: "3rem" }}
-      />
-      <div className="survey-body">
-        <div className="survey-question">{question}</div>
-        <div className="survey-answer">
-          <Radio.Group onChange={onChange} value={answer}>
-            <Space direction="vertical">{OptionComponentList}</Space>
-          </Radio.Group>
+  if (isFinalSlide && hasSubmitted) {
+    return (
+      <>
+        <div
+          className="d-flex flex-column justify-content-center align-items-stretch"
+          style={{
+            height: "100vh",
+            position: "relative",
+            top: "0",
+            left: "0",
+            background: "white"
+          }}>
+          <img className="mx-auto" src="/assets/images/kahoot.png" style={{ maxWidth: "30rem" }} />
+          <h2 className="mx-auto my-4 py-2" style={{ fontSize: "2.8rem", fontWeight: "bold" }}>
+            Thank you for your participation!
+          </h2>
+          <div className="d-flex flex-column align-items-stretch">
+            <StyledNavLink to="/signup" className="mx-auto">
+              <StyledButton variant="success">
+                <div>Sign up and become a member</div>
+              </StyledButton>
+            </StyledNavLink>
+            <StyledNavLink onClick={() => navigate(0)} className="mx-auto">
+              <StyledButton variant="secondary">
+                <div>Join Another Presentation</div>
+              </StyledButton>
+            </StyledNavLink>
+          </div>
         </div>
-        <div className="survey-submit">
-          <Button
-            disabled={!hasSelect || hasSubmitted}
-            type="primary"
-            className="submit-button"
-            onClick={submitAnswer}>
-            Submit
-          </Button>
+      </>
+    );
+  }
+  return (
+    <LoadingScreen
+      loading={hasSubmitted}
+      bgColor="#fffff"
+      spinnerColor="#fff"
+      textColor="#fff"
+      text="Please wait for the presenter to show the next slide.">
+      <div className="surveyPresentation-container">
+        <img
+          id="logo"
+          src="/assets/images/kahoot.png"
+          style={{ maxWidth: "20rem", marginTop: "3rem" }}
+        />
+        <div className="survey-body">
+          <div className="survey-question">{question}</div>
+          <div className="survey-answer">
+            <Radio.Group onChange={onChange} value={answer}>
+              <Space direction="vertical">{OptionComponentList}</Space>
+            </Radio.Group>
+          </div>
+          <div className="survey-submit">
+            <Button
+              disabled={!hasSelect || hasSubmitted}
+              type="primary"
+              className="submit-button"
+              onClick={submitAnswer}>
+              Submit
+            </Button>
+          </div>
         </div>
       </div>
-      <div></div>
-    </div>
+    </LoadingScreen>
   );
 };
 

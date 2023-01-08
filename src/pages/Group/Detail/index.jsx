@@ -284,7 +284,7 @@ export default function GroupDetail() {
     console.log("groupPresentation ", groupPresentation);
     const presentationId = groupPresentation.data.data.presentation_id;
     const groupId = groupPresentation.data.data.group_id;
-    const toggleStatus = await toggleStatusPresentation(presentationId, 2, groupId);
+    const toggleStatus = await toggleStatusPresentation(presentationId, 2, groupId);        // 2: trạng thái chỉ trình chiếu chiếu trong group
     console.log(
       "🚀 ~ file: index.jsx:272 ~ handleShowPresent ~ toggleStatusPresentation",
       toggleStatus
@@ -304,7 +304,7 @@ export default function GroupDetail() {
     for (let i = 0; i < data.length; i++) {
       if (data[i].status == 2) {
         cardData = data[i];
-        description = `The presentation name ${data[i].name} is starting. Use this code to join ${currentPresentationx} `;
+        description = `The presentation name ${data[i].name} is starting. Use this code to join ${currentPresentation} `;
       }
     }
     if (!cardData) {
@@ -330,7 +330,6 @@ export default function GroupDetail() {
           <button type="button" onClick={handleOpenShareForm} className="create-group-button">
             Share Present
           </button>
-
           <button type="button" onClick={handleOpen} className="create-group-button">
             Invite
           </button>
@@ -347,7 +346,6 @@ export default function GroupDetail() {
             items={items}
           />
           <PresentCard />
-
           <Table
             dataSource={[...data]}
             style={{

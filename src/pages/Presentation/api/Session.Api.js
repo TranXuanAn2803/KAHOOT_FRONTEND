@@ -127,6 +127,7 @@ export const GetSlideByPresentationAndIndex = async (request) => {
     }
     return {
       success: true,
+      isFinalSlide: index == slideList.Length, // đã hết slide
       slide: slideList[index - 1]
     };
   }
