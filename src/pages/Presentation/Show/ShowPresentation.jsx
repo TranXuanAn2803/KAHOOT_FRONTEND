@@ -13,7 +13,6 @@ import {
 import { Slide } from "../Slide";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { GetOnePresentation, getSessionId, toggleStatusPresentation } from "../API";
-import PresentationContext from "../../../utils/PresentationContext";
 import { toast } from "react-toastify";
 import { SocketContext } from "../../../components/Socket/socket-client";
 import UserContext from "../../../utils/UserContext";
@@ -127,7 +126,6 @@ export const ShowPresentation = () => {
       .catch((err) => {
         console.log("err ", err);
       });
-
     //change status presentation
   }, []);
   useEffect(() => {
@@ -139,18 +137,38 @@ export const ShowPresentation = () => {
       if (values.status !== 200) {
         printMessage(values.status, values.message);
       } else {
+        printMessage(values.status, values.message);
         const slide = values.data.currentSlide;
         console.log("new session current slide ", slide);
-        setCurrentSlide(slide);
+        setCurrentSlide(slide - 1);
+      }
+    });
+    socket.on("get-answer-from-player", (values) => {
+      if (values.status !== 200) {
+        printMessage(values.status, values.message);
+      } else {
+        printMessage(values.status, values.message);
+        const dataAnswer = values.data;
+        const total = dataAnswer.total;
+        const newDataChart = total.map((value, index) => {
+          return {
+            answer: value.content,
+            total: value.total
+          };
+        });
+        console.log("newDataChart ", newDataChart);
+        setDataChart(newDataChart);
       }
     });
     return () => {
       socket.off("new-session-for-game");
       socket.off("slide-changed");
+      socket.off("get-answer-from-player");
     };
   }, [socket]);
   useEffect(() => {
     if (currentSlide != -1) {
+      console.log("currentPresentation ", currentPresentation);
       const currentArr = currentPresentation["slides"][currentSlide]["options"];
       const newDataChart = currentArr.map((value, index) => {
         return {
@@ -202,7 +220,7 @@ export const ShowPresentation = () => {
   };
   //id session, idpresentatioonId, user
   const startGame = () => {
-    console.log("start game");
+    console.log("Start game ");
     socket.emit("next-slide", { id: sessionId, presentationId, user: currentUser });
   };
   const showResult = () => {};

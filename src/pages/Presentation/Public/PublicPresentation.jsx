@@ -23,7 +23,6 @@ export const PublicPresentation = (props) => {
   const [presentationId, setPresentationId] = useState("");
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [currentSlide, setCurrentSlide] = useState({});
-
   const socket = useContext(SocketContext);
 
   const submitUsername = () => {
@@ -120,6 +119,16 @@ export const PublicPresentation = (props) => {
         });
     }
   }, [currentSlideIndex]);
+  const handleSubmitUserName = (e) => {
+    if (e.keyCode === 13) {
+      submitUsername();
+    }
+  };
+  const handleSubmitCode = (e) => {
+    if (e.keyCode === 13) {
+      submitCode();
+    }
+  };
   if (getUser == false) {
     return (
       <Styled>
@@ -137,6 +146,7 @@ export const PublicPresentation = (props) => {
                 placeholder="Enter username"
                 value={username}
                 autoComplete="off"
+                onKeyDown={handleSubmitUserName}
                 onChange={(e) => setUsername(e.target.value)}
               />
               <button className="username-submit" onClick={() => submitUsername()}>
@@ -165,6 +175,7 @@ export const PublicPresentation = (props) => {
                 placeholder="Enter code"
                 value={code}
                 autoComplete="off"
+                onKeyDown={handleSubmitCode}
                 onChange={(e) => setCode(e.target.value)}
               />
               <button className="username-submit" onClick={() => submitCode()}>
@@ -217,10 +228,11 @@ const PresentForViewer = (props) => {
 };
 
 const MultipleChoicePresentation = (props) => {
-  const { question, optionList, socket, presentationId, sessionId, username, ...others } = props;
+  const { question, optionList, socket, presentationId, username, ...others } = props;
   const [answer, setAnswer] = useState(null); // option_id
   const [hasSelect, setHasSelect] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [sessionId, setSessionId] = useState("");
   const onChange = (e) => {
     setAnswer(e.target.value);
     if (!hasSelect) {
@@ -240,7 +252,11 @@ const MultipleChoicePresentation = (props) => {
   };
   useEffect(() => {
     document.getElementById("main").style.backgroundColor = "white";
-  });
+    getSessionId(presentationId).then((data) => {
+      const sessionId = data.data.data.session;
+      setSessionId(sessionId);
+    });
+  }, []);
   useEffect(() => {
     socket.on("get-answer-from-player", (response) => {
       console.log("Add options: ", response.data.options);
