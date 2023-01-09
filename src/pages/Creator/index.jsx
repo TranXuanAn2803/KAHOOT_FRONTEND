@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Header } from "../../components/Header";
 import Styled from "./style";
-import { Button, Tabs, Input } from "antd";
+import { Button, Tabs, Input, Select } from "antd";
 import { QuestionCircleOutlined, CloseOutlined } from "@ant-design/icons";
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from "recharts";
 import { useMemo } from "react";
 import PresentationContext from "../../utils/PresentationContext";
+import { SlideType } from "../../actions/constants";
 const Creator = (props) => {
   const { slide, currentSlide, presentation, setCurrentSlide, setPresentation, savePresentation } =
     props;
@@ -30,6 +31,20 @@ const Creator = (props) => {
     }
   ]);
   const [optionItems, setOptionsItem] = useState([]);
+  const slideOptions = [
+    {
+      label: "Popular question types",
+      options: [{ label: "MultipleChoice", value: SlideType.MultipleChoice }]
+    },
+    {
+      label: "Content slides",
+      options: [
+        { label: "Heading ", value: SlideType.Heading },
+        { label: "Paragraph ", value: SlideType.Paragraph }
+      ]
+    }
+  ];
+  const [currentSlideType, setCurrentSlideType] = useState(SlideType.MultipleChoice);
   useEffect(() => {
     // CHART
     const currentSlideArr = slide[currentSlide];
@@ -57,7 +72,9 @@ const Creator = (props) => {
     //intialize arr
     // setSlides(new Array(presentation.slideList.length));
   }, [presentation, currentSlide]);
-
+  useEffect(() => {
+    console.log("slide ", slide);
+  }, [slide]);
   const createNewOption = () => {
     let currentSlideList = presentation.slideList;
     let currentOptions = presentation.slideList[currentSlide].options;
@@ -103,86 +120,131 @@ const Creator = (props) => {
       setCurrentSlide(currentSlide - 1);
     }
   };
-  const itemsInTab = useMemo(
-    () => [
-      {
-        label: "Content",
-        key: "1",
-        children: (
-          <>
-            <form method="post" action="/slide">
-              <div className="item-container">
-                <div className="item-question">
-                  <label htmlFor="question-name" className="question-text">
-                    Your question
-                  </label>
-                  <span className="question-icon">
-                    <QuestionCircleOutlined />
-                  </span>
-                </div>
-                <div className="item-answer">
-                  <input
-                    id="question-name"
-                    type="text"
-                    className="question-input"
-                    maxLength={150}
-                    placeholder="Multiple Choice"
-                    value={slide[currentSlide].question}
-                    // key={`question-input`}
-                    onChange={(e) => changeQuestionOfSlide(e.target.value)}
-                  />
-                </div>
-              </div>
-              <div className="item-container">
-                <div className="item-question">
-                  <label htmlFor="answers" className="question-text">
-                    Options
-                  </label>
-                  <span className="question-icon">
-                    <QuestionCircleOutlined />
-                  </span>
-                </div>
-                {optionItems.map((item, index) => {
-                  return (
-                    <div className="item-answer" key={`item-answer-${index}`}>
-                      <input
-                        id="answers"
-                        name="answers[]"
-                        type="text"
-                        className="question-input option-input"
-                        placeholder="Option"
-                        value={item.name}
-                        // key={`changeitemname-${item.name}`}
-                        onChange={(e) => ChangeOptionValue(index, e.target.value)}
-                      />
-                      <div className="item-close" onClick={(e) => removeOption(index)}>
-                        <CloseOutlined />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="button-creator-container">
-                <Button type="text" onClick={() => createNewOption()}>
-                  + Add option
-                </Button>
-                <Button type="primary" onClick={() => savePresentation()}>
-                  Save presentation
-                </Button>
-              </div>
-            </form>
-          </>
-        )
-      },
-      {
-        label: "Customize",
-        key: "2",
-        children: "content of Tab Pane 2"
-      }
-    ],
-    [optionItems]
-  );
 
+  const handleChooseSlide = (value) => {
+    console.log("slide selected ", value);
+    setCurrentSlideType(value);
+  };
+  const EditCurrentPresentation = () => {
+    if (currentSlideType == SlideType.MultipleChoice) {
+      return (
+        <form method="post" action="/slide">
+          <div className="item-container">
+            <div className="item-question">
+              <label htmlFor="question-name" className="question-text">
+                Your question
+              </label>
+              <span className="question-icon">
+                <QuestionCircleOutlined />
+              </span>
+            </div>
+            <div className="item-answer">
+              <input
+                id="question-name"
+                type="text"
+                className="question-input"
+                maxLength={150}
+                placeholder="Multiple Choice"
+                value={slide[currentSlide].question}
+                // key={`question-input`}
+                onChange={(e) => changeQuestionOfSlide(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="item-container">
+            <div className="item-question">
+              <label htmlFor="answers" className="question-text">
+                Options
+              </label>
+              <span className="question-icon">
+                <QuestionCircleOutlined />
+              </span>
+            </div>
+            {optionItems.map((item, index) => {
+              return (
+                <div className="item-answer" key={`item-answer-${index}`}>
+                  <input
+                    id="answers"
+                    name="answers[]"
+                    type="text"
+                    className="question-input option-input"
+                    placeholder="Option"
+                    value={item.name}
+                    // key={`changeitemname-${item.name}`}
+                    onChange={(e) => ChangeOptionValue(index, e.target.value)}
+                  />
+                  <div className="item-close" onClick={(e) => removeOption(index)}>
+                    <CloseOutlined />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="button-creator-container">
+            <Button type="text" onClick={() => createNewOption()}>
+              + Add option
+            </Button>
+            <Button type="primary" onClick={() => savePresentation()}>
+              Save presentation
+            </Button>
+          </div>
+        </form>
+      );
+    } else if (currentSlideType == SlideType.Heading) {
+      return (
+        <form method="post" action="/slide">
+          <div className="item-container">
+            <div className="item-question">
+              <label htmlFor="heading" className="question-text">
+                Heading
+              </label>
+              <span className="question-icon">
+                <QuestionCircleOutlined />
+              </span>
+            </div>
+            <div className="item-answer">
+              <input
+                id="heading"
+                type="text"
+                className="question-input"
+                maxLength={150}
+                placeholder="Heading"
+                value={slide[currentSlide].heading}
+                // key={`question-input`}
+                onChange={(e) => changeQuestionOfSlide(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="item-container">
+            <div className="item-question">
+              <label htmlFor="subHeading" className="question-text">
+                SubHeading
+              </label>
+              <span className="question-icon">
+                <QuestionCircleOutlined />
+              </span>
+            </div>
+            <div className="item-answer">
+              <input
+                id="subHeading"
+                type="text"
+                className="question-input"
+                maxLength={150}
+                placeholder="SubHeading"
+                value={slide[currentSlide].subHeading}
+                style={{ minHeight: "50px" }}
+              />
+            </div>
+          </div>
+          <div className="button-creator-container">
+            <Button type="primary" onClick={() => savePresentation()}>
+              Save presentation
+            </Button>
+          </div>
+        </form>
+      );
+    }
+  };
   return (
     <Styled>
       <Header />
@@ -233,7 +295,18 @@ const Creator = (props) => {
             </div>
           </div>
           <div className="body-right">
-            <Tabs defaultActiveKey="1" items={itemsInTab} />
+            <div className="slide-type-container">
+              <h4>Slide type</h4>
+              <div className="slide-select">
+                <Select
+                  defaultValue={SlideType.MultipleChoice}
+                  style={{ width: "100%", marginBottom: "20px" }}
+                  onChange={handleChooseSlide}
+                  options={slideOptions}
+                />
+              </div>
+            </div>
+            <EditCurrentPresentation />
           </div>
         </div>
       </div>

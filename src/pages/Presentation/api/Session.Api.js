@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ApiConfig as _ParamConfig } from "../../../actions/constants";
-import { SlideType } from "../../../actions/SlideType";
+import { SlideType } from "../../../actions/constants";
 
 let AxiosInstance = axios.create({
   baseURL: _ParamConfig.serverUrl,

@@ -10,7 +10,7 @@ import { printMessage } from "../../../utils/method";
 import { Slider } from "@material-ui/core";
 import { GetCurrentSlide, GetSlideByPresentationAndIndex } from "../api/Session.Api";
 import { SocketContext } from "../../../components/Socket/socket-client";
-import { SlideType } from "../../../actions/SlideType";
+import { SlideType } from "../../../actions/constants";
 
 import LoadingScreen from "react-loading-screen";
 import { StyleContainer, StyledNavLink } from "./style";

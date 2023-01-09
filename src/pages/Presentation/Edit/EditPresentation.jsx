@@ -106,8 +106,6 @@ export const EditPresentation = () => {
     };
   }, []);
   const savePresentation = async () => {
-    console.log("call savePresentation ", presentationContext);
-
     const request = {
       presentationId: presentationId,
       slides: presentationContext.slideList
@@ -166,40 +164,40 @@ export const EditPresentation = () => {
       presentationId: presentationId,
       slides: presentationContext.slideList
     };
-    savePresentationAPI(request)
-      .then((values) => {
-        console.log(values);
-        if (values && values.status == 200) {
-          // Gỉa sử delete thành công
-          modal.info({
-            title: "Notifications",
-            content: (
-              <>
-                <p>{`Save presentations successfully.`}</p>
-              </>
-            )
-          });
-        } else {
-          modal.error({
-            title: "Notifications",
-            content: (
-              <>
-                <p>{`Save presentations failed.`}</p>
-              </>
-            )
-          });
-        }
-      })
-      .catch((error) => {
-        modal.error({
-          title: "Notifications",
-          content: (
-            <>
-              <p>{`Delete presentations failed. ${error}`}</p>
-            </>
-          )
-        });
-      });
+    // savePresentationAPI(request)
+    //   .then((values) => {
+    //     console.log(values);
+    //     if (values && values.status == 200) {
+    //       // Gỉa sử delete thành công
+    //       modal.info({
+    //         title: "Notifications",
+    //         content: (
+    //           <>
+    //             <p>{`Save presentations successfully.`}</p>
+    //           </>
+    //         )
+    //       });
+    //     } else {
+    //       modal.error({
+    //         title: "Notifications",
+    //         content: (
+    //           <>
+    //             <p>{`Save presentations failed.`}</p>
+    //           </>
+    //         )
+    //       });
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     modal.error({
+    //       title: "Notifications",
+    //       content: (
+    //         <>
+    //           <p>{`Delete presentations failed. ${error}`}</p>
+    //         </>
+    //       )
+    //     });
+    //   });
     // change from 1 to 0
     toggleStatusPresentation(presentationId, 0)
       .then((values) => {
@@ -241,7 +239,7 @@ export const EditPresentation = () => {
         </Header>
         <Divider type="horizontal" className="m-0" />
         <Layout>
-          <EditContent
+          <Creator
             slide={presentationContext.slideList}
             currentSlide={currentSlide}
             presentation={presentationContext}
@@ -266,7 +264,7 @@ const EditHeader = (props) => {
     <Styled>
       <MenuBar id="menubar-horizontal" bg="light" className="d-flex justify-content-between">
         <div className="me-auto header-left">
-          <div onClick={() => savePresentation()}>
+          <div>
             <ArrowLeftOutlined style={{ fontSize: "2.4rem" }} />
           </div>
           <div>
@@ -289,20 +287,5 @@ const EditHeader = (props) => {
         </MenuList>
       </MenuBar>
     </Styled>
-  );
-};
-
-const EditContent = (props) => {
-  const { slide, currentSlide, presentation, setCurrentSlide, setPresentation, savePresentation } =
-    props;
-  return (
-    <Creator
-      slide={slide}
-      currentSlide={currentSlide}
-      presentation={presentation}
-      setCurrentSlide={setCurrentSlide}
-      setPresentation={setPresentation}
-      savePresentation={savePresentation}
-    />
   );
 };
