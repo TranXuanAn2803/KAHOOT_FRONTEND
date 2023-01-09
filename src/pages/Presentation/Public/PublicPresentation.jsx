@@ -28,7 +28,7 @@ export const PublicPresentation = (props) => {
   const [presentationId, setPresentationId] = useState("");
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [currentSlide, setCurrentSlide] = useState({});
-  const [isFinalSlide, setIsFinalSlide] = useState(true);
+  const [isFinalSlide, setIsFinalSlide] = useState(false);
   const socket = useContext(SocketContext);
 
   const submitUsername = () => {
