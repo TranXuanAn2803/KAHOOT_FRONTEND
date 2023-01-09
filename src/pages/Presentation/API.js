@@ -124,7 +124,7 @@ export const GetOnePresentation = async (id) => {
   });
   return response;
 };
-export const getSessionId = async (id, groupId) => {
+export const getSessionId = async (id, groupId = null) => {
   var accessToken = localStorage.getItem("accessToken");
   var response = await AxiosInstance.put(
     `/presentation/presenting/session/${id}`,
