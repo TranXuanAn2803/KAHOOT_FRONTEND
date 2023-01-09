@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Header } from "../../components/Header";
 import Styled from "./style";
 import { Button, Tabs, Input, Select } from "antd";
 import { QuestionCircleOutlined, CloseOutlined } from "@ant-design/icons";
-import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from "recharts";
-import { useMemo } from "react";
 import PresentationContext from "../../utils/PresentationContext";
 import { SlideType } from "../../actions/constants";
+import { Slide } from "../Presentation/Slide";
 const Creator = (props) => {
-  const { slide, currentSlide, presentation, setCurrentSlide, setPresentation, savePresentation } =
-    props;
-  const [slides, setSlides] = useState([1]);
+  //slide chua cac slide hien tai (slideList)
+  //curentaSlide chua so thu tu cua slide hien tai
+
+  const { currentSlide, setCurrentSlide, savePresentation } = props;
   const [presentationContext, setPresentationContext] = useContext(PresentationContext);
   const [dataChart, setDataChart] = useState([
     {
@@ -47,18 +47,16 @@ const Creator = (props) => {
   const [currentSlideType, setCurrentSlideType] = useState(SlideType.MultipleChoice);
   useEffect(() => {
     // CHART
-    const currentSlideArr = slide[currentSlide];
+    const currentSlideArr = presentationContext.slideList[currentSlide];
 
     const data = currentSlideArr.options.map((item, index) => {
       return {
         answer: item,
-        // total: Math.floor(Math.random() * (100 - 20)) + 20,
         total: 0
       };
     });
     setDataChart(data);
 
-    //options answers
     const optionsItem = currentSlideArr.options.map((item, index) => {
       return {
         id: index,
@@ -67,53 +65,50 @@ const Creator = (props) => {
     });
 
     setOptionsItem(optionsItem);
-    // const testArr = ;
-    setSlides(new Array(presentation.slideList.length).fill(1));
-    //intialize arr
-    // setSlides(new Array(presentation.slideList.length));
-  }, [presentation, currentSlide]);
+  }, [presentationContext, currentSlide]);
   useEffect(() => {
-    console.log("slide ", slide);
-  }, [slide]);
-  const createNewOption = () => {
-    let currentSlideList = presentation.slideList;
-    let currentOptions = presentation.slideList[currentSlide].options;
+    console.log("presentationContext change in creator ", presentationContext);
+  }, [presentationContext]);
+  const creteNewOption = () => {
+    let currentSlideList = presentationContext.slideList;
+    let currentOptions = presentationContext.slideList[currentSlide].options;
     currentSlideList[currentSlide].options.push(currentOptions[currentOptions.length - 1]);
-    setPresentation({ ...presentation, slideList: currentSlideList });
+    setPresentationContext({ ...presentationContext, slideList: currentSlideList });
   };
   const removeOption = (index) => {
-    let currentSlideList = presentation.slideList;
+    let currentSlideList = presentationContext.slideList;
     currentSlideList[currentSlide].options.splice(index, 1);
-    setPresentation({ ...presentation, slideList: currentSlideList });
+    setPresentationContext({ ...presentationContext, slideList: currentSlideList });
   };
   const ChangeOptionValue = (index, value) => {
-    let currentSlideList = presentation.slideList;
+    let currentSlideList = presentationContext.slideList;
     console.log("currentSLide List", currentSlideList, currentSlide);
     currentSlideList[currentSlide].options[index] = value;
     console.log("currentSlide List after change ", currentSlideList);
-    setPresentation({ ...presentation, slideList: currentSlideList });
+    setPresentationContext({ ...presentationContext, slideList: currentSlideList });
   };
-  const changeQuestionOfSlide = (value) => {
+  const changeTextOfSlide = (type, value) => {
     console.log("change question of slide");
-    let currentSlideList = presentation.slideList;
-    currentSlideList[currentSlide].question = value;
-    setPresentation({ ...presentation, slideList: currentSlideList });
+    let currentSlideList = presentationContext.slideList;
+    currentSlideList[currentSlide][type] = value;
+    setPresentationContext({ ...presentationContext, slideList: currentSlideList });
   };
+
   const createNewSlide = () => {
     console.log("new slide");
-    let currentSlideList = presentation.slideList;
+    let currentSlideList = presentationContext.slideList;
     let lastElement = currentSlideList[currentSlideList.length - 1];
     lastElement = JSON.parse(JSON.stringify(lastElement));
     lastElement.id = lastElement.id += 1;
     console.log("last element ", lastElement);
     currentSlideList.push(lastElement);
-    setPresentation({ ...presentation, slideList: currentSlideList });
+    setPresentationContext({ ...presentationContext, slideList: currentSlideList });
   };
   const deleteSlide = () => {
-    let currentSlideList = presentation.slideList;
+    let currentSlideList = presentationContext.slideList;
     currentSlideList.splice(currentSlide, 1);
     console.log("new slide list", currentSlideList, currentSlide);
-    setPresentation({ ...presentation, slideList: currentSlideList });
+    setPresentationContext({ ...presentationContext, slideList: currentSlideList });
 
     if (currentSlide == currentSlideList.length) {
       console.log("change current slide", currentSlide);
@@ -125,8 +120,37 @@ const Creator = (props) => {
     console.log("slide selected ", value);
     setCurrentSlideType(value);
   };
+  const SlideSelect = () => {
+    return (
+      <Select
+        defaultValue={presentationContext.slideList[currentSlide].type}
+        style={{ width: "100%", marginBottom: "20px" }}
+        onChange={handleChooseSlide}
+        options={slideOptions}
+      />
+    );
+  };
+  const CenterDraw = () => {
+    if (presentationContext.slideList[currentSlide].type === SlideType.MultipleChoice) {
+      return <Slide dataChart={dataChart} />;
+    } else if (presentationContext.slideList[currentSlide].type === SlideType.Heading) {
+      return (
+        <div className="drawText-container">
+          <h3 className="drawText-header">{presentationContext.slideList[currentSlide].heading}</h3>
+          <p className="drawText-body">{presentationContext.slideList[currentSlide].subHeading}</p>
+        </div>
+      );
+    } else {
+      return (
+        <div className="drawText-container">
+          <h3 className="drawText-header">{presentationContext.slideList[currentSlide].heading}</h3>
+          <p className="drawText-body">{presentationContext.slideList[currentSlide].paragraph}</p>
+        </div>
+      );
+    }
+  };
   const EditCurrentPresentation = () => {
-    if (currentSlideType == SlideType.MultipleChoice) {
+    if (presentationContext.slideList[currentSlide].type == SlideType.MultipleChoice) {
       return (
         <form method="post" action="/slide">
           <div className="item-container">
@@ -145,9 +169,9 @@ const Creator = (props) => {
                 className="question-input"
                 maxLength={150}
                 placeholder="Multiple Choice"
-                value={slide[currentSlide].question}
+                defaultValue={presentationContext.slideList[currentSlide].question}
                 // key={`question-input`}
-                onChange={(e) => changeQuestionOfSlide(e.target.value)}
+                onBlur={(e) => changeTextOfSlide("question", e.target.value)}
               />
             </div>
           </div>
@@ -169,9 +193,9 @@ const Creator = (props) => {
                     type="text"
                     className="question-input option-input"
                     placeholder="Option"
-                    value={item.name}
+                    defaultValue={item.name}
                     // key={`changeitemname-${item.name}`}
-                    onChange={(e) => ChangeOptionValue(index, e.target.value)}
+                    onBlur={(e) => ChangeOptionValue(index, e.target.value)}
                   />
                   <div className="item-close" onClick={(e) => removeOption(index)}>
                     <CloseOutlined />
@@ -190,7 +214,7 @@ const Creator = (props) => {
           </div>
         </form>
       );
-    } else if (currentSlideType == SlideType.Heading) {
+    } else if (presentationContext.slideList[currentSlide].type == SlideType.Heading) {
       return (
         <form method="post" action="/slide">
           <div className="item-container">
@@ -209,9 +233,8 @@ const Creator = (props) => {
                 className="question-input"
                 maxLength={150}
                 placeholder="Heading"
-                value={slide[currentSlide].heading}
-                // key={`question-input`}
-                onChange={(e) => changeQuestionOfSlide(e.target.value)}
+                defaultValue={presentationContext.slideList[currentSlide].heading}
+                onBlur={(e) => changeTextOfSlide("heading", e.target.value)}
               />
             </div>
           </div>
@@ -229,10 +252,62 @@ const Creator = (props) => {
                 id="subHeading"
                 type="text"
                 className="question-input"
-                maxLength={150}
                 placeholder="SubHeading"
-                value={slide[currentSlide].subHeading}
+                defaultValue={presentationContext.slideList[currentSlide].subHeading}
                 style={{ minHeight: "50px" }}
+                onBlur={(e) => changeTextOfSlide("subHeading", e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="button-creator-container">
+            <Button type="primary" onClick={() => savePresentation()}>
+              Save presentation
+            </Button>
+          </div>
+        </form>
+      );
+    } else {
+      return (
+        <form method="post" action="/slide">
+          <div className="item-container">
+            <div className="item-question">
+              <label htmlFor="heading" className="question-text">
+                Heading
+              </label>
+              <span className="question-icon">
+                <QuestionCircleOutlined />
+              </span>
+            </div>
+            <div className="item-answer">
+              <input
+                id="heading"
+                type="text"
+                className="question-input"
+                maxLength={150}
+                placeholder="Heading"
+                defaultValue={presentationContext.slideList[currentSlide].heading}
+                onBlur={(e) => changeTextOfSlide("heading", e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="item-container">
+            <div className="item-question">
+              <label htmlFor="paragraph" className="question-text">
+                Paragraph
+              </label>
+              <span className="question-icon">
+                <QuestionCircleOutlined />
+              </span>
+            </div>
+            <div className="item-answer">
+              <input
+                id="paragraph"
+                type="text"
+                className="question-input"
+                placeholder="Paragraph"
+                defaultValue={presentationContext.slideList[currentSlide].paragraph}
+                style={{ minHeight: "50px" }}
+                onBlur={(e) => changeTextOfSlide("paragraph", e.target.value)}
               />
             </div>
           </div>
@@ -262,7 +337,7 @@ const Creator = (props) => {
         <div className="creator-body">
           <div className="body-left-container">
             <div className="body-left-list">
-              {slides.map((item, index) => {
+              {presentationContext.slideList.map((item, index) => {
                 return (
                   <div
                     key={`slide-thumbail-${index}`}
@@ -284,26 +359,14 @@ const Creator = (props) => {
           </div>
           <div className="body-center">
             <div className="center-draw">
-              <BarChart width={430} height={500} data={dataChart}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="answer" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="total" fill="#8884d8" />
-              </BarChart>
+              <CenterDraw />
             </div>
           </div>
           <div className="body-right">
             <div className="slide-type-container">
               <h4>Slide type</h4>
               <div className="slide-select">
-                <Select
-                  defaultValue={SlideType.MultipleChoice}
-                  style={{ width: "100%", marginBottom: "20px" }}
-                  onChange={handleChooseSlide}
-                  options={slideOptions}
-                />
+                <SlideSelect />
               </div>
             </div>
             <EditCurrentPresentation />

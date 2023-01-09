@@ -99,6 +99,29 @@ const Styled = styled.div`
     align-items: center;
     justify-content: center;
   }
+  .drawText-container {
+    margin: 0 auto;
+    background-color: #fff;
+    min-height: 50%;
+    min-width: 50%;
+    text-align: center;
+  }
+  .drawText-header{
+    font-weight: 700;
+    font-size: 30px;
+    padding-top: 100px;
+    margin-bottom: 20px;
+    max-width: 80%;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  
+  }
+  .drawText-body {
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+  }
   .body-right {
     width: 100%;
     height: 100%;
@@ -182,6 +205,7 @@ const Styled = styled.div`
   .ant-tabs-content-holder {
     min-height: 492px;
   }
+ 
 `;
 
 export default Styled;

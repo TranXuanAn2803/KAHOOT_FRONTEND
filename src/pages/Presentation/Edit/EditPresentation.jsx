@@ -50,6 +50,7 @@ export const EditPresentation = () => {
       });
     const getDataForPresentation = async () => {
       const value = await GetOnePresentation(presentationId);
+      console.log("getDataForPresentation value ", value);
       const arrPresentation = value.data.data;
       let newPresentation = {
         slideList: [],
@@ -68,7 +69,10 @@ export const EditPresentation = () => {
           id: arrPresentation.slides[i].index,
           type: arrPresentation.slides[i].slide_type,
           question: arrPresentation.slides[i].question,
-          options: newListOptions
+          options: newListOptions,
+          heading: arrPresentation.slides[i].heading,
+          subHeading: arrPresentation.slides[i].sub_heading,
+          paragraph: arrPresentation.slides[i].paragraph
         });
       }
       console.log("newPresentation ", newPresentation);
@@ -110,6 +114,7 @@ export const EditPresentation = () => {
       presentationId: presentationId,
       slides: presentationContext.slideList
     };
+    console.log("request savePresentation ", request);
     const savePresentationResponse = await savePresentationAPI(request);
     if (savePresentationResponse && savePresentationResponse.status == 200) {
       // Gỉa sử delete thành công
@@ -240,11 +245,8 @@ export const EditPresentation = () => {
         <Divider type="horizontal" className="m-0" />
         <Layout>
           <Creator
-            slide={presentationContext.slideList}
             currentSlide={currentSlide}
-            presentation={presentationContext}
             setCurrentSlide={setCurrentSlide}
-            setPresentation={setPresentationContext}
             savePresentation={savePresentation}
           />
           {contextHolder}
@@ -257,7 +259,6 @@ export const EditPresentation = () => {
 const EditHeader = (props) => {
   const { savePresentation, presentation, presentPresentation } = props;
   const { id, name, createdBy } = presentation;
-  console.log("props presentation ", props.presentation);
   let { presentationId } = useParams();
 
   return (
