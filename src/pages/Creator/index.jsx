@@ -69,7 +69,7 @@ const Creator = (props) => {
   useEffect(() => {
     console.log("presentationContext change in creator ", presentationContext);
   }, [presentationContext]);
-  const creteNewOption = () => {
+  const createNewOption = () => {
     let currentSlideList = presentationContext.slideList;
     let currentOptions = presentationContext.slideList[currentSlide].options;
     currentSlideList[currentSlide].options.push(currentOptions[currentOptions.length - 1]);
@@ -87,10 +87,10 @@ const Creator = (props) => {
     console.log("currentSlide List after change ", currentSlideList);
     setPresentationContext({ ...presentationContext, slideList: currentSlideList });
   };
-  const changeTextOfSlide = (type, value) => {
+  const changeTextOfSlide = (typeOfSlide, value) => {
     console.log("change question of slide");
     let currentSlideList = presentationContext.slideList;
-    currentSlideList[currentSlide][type] = value;
+    currentSlideList[currentSlide][typeOfSlide] = value;
     setPresentationContext({ ...presentationContext, slideList: currentSlideList });
   };
 
@@ -117,8 +117,10 @@ const Creator = (props) => {
   };
 
   const handleChooseSlide = (value) => {
-    console.log("slide selected ", value);
-    setCurrentSlideType(value);
+    console.log("change question of slide");
+    let currentSlideList = presentationContext.slideList;
+    currentSlideList[currentSlide]["type"] = value;
+    setPresentationContext({ ...presentationContext, slideList: currentSlideList });
   };
   const SlideSelect = () => {
     return (

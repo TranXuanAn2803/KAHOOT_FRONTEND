@@ -136,33 +136,33 @@ export const EditPresentation = () => {
         )
       });
     }
-    // change from 1 to 0
-    toggleStatusPresentation(presentationId, 0)
-      .then((values) => {
-        // Gỉa sử delete thành công
-        toast.success(values.message, {
-          position: "top-right",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          theme: "light"
-        });
-        navigate("/presentations");
-      })
-      .catch((err) => {
-        const values = err.response.data;
-        toast.error(values, {
-          position: "top-right",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          theme: "light"
-        });
-      });
+    // // change from 1 to 0
+    // toggleStatusPresentation(presentationId, 0)
+    //   .then((values) => {
+    //     // Gỉa sử delete thành công
+    //     toast.success(values.message, {
+    //       position: "top-right",
+    //       autoClose: 2000,
+    //       hideProgressBar: false,
+    //       closeOnClick: true,
+    //       pauseOnHover: false,
+    //       draggable: true,
+    //       theme: "light"
+    //     });
+    //     navigate("/presentations");
+    //   })
+    //   .catch((err) => {
+    //     const values = err.response.data;
+    //     toast.error(values, {
+    //       position: "top-right",
+    //       autoClose: 2000,
+    //       hideProgressBar: false,
+    //       closeOnClick: true,
+    //       pauseOnHover: false,
+    //       draggable: true,
+    //       theme: "light"
+    //     });
+    //   });
   };
   const presentPresentation = () => {
     const request = {
@@ -260,12 +260,15 @@ const EditHeader = (props) => {
   const { savePresentation, presentation, presentPresentation } = props;
   const { id, name, createdBy } = presentation;
   let { presentationId } = useParams();
-
+  const navigate = useNavigate();
+  const goBackToList = () => {
+    navigate("/presentations");
+  };
   return (
     <Styled>
       <MenuBar id="menubar-horizontal" bg="light" className="d-flex justify-content-between">
         <div className="me-auto header-left">
-          <div>
+          <div onClick={() => goBackToList()}>
             <ArrowLeftOutlined style={{ fontSize: "2.4rem" }} />
           </div>
           <div>

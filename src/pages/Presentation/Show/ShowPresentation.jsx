@@ -246,7 +246,7 @@ export const ShowPresentation = () => {
           draggable: true,
           theme: "light"
         });
-        navigate(`/presentations/${presentationId}/edit`);
+        navigate(`/presentations`);
       }
     } catch (err) {
       console.log("error", err);

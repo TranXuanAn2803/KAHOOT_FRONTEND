@@ -163,18 +163,26 @@ export const savePresentationAPI = async (request) => {
     return {
       index: item.id,
       question: item.question,
-      options: item.options
+      options: item.options,
+      slideType: item.type,
+      heading: item.heading,
+      subHeading: item.subHeading,
+      paragraph: item.paragraph
     };
   });
-  var requestData = {
-    slides: newSlides
-  };
-  console.log("request data ", requestData);
-  var response = await AxiosInstance.post(`slide/${presentationId}`, requestData, {
-    headers: {
-      x_authorization: localStorage.getItem("accessToken")
+  console.log("savePresentationAPI newSlides", newSlides);
+  var response = await AxiosInstance.post(
+    `slide/${presentationId}`,
+    {
+      slides: newSlides
+    },
+
+    {
+      headers: {
+        x_authorization: localStorage.getItem("accessToken")
+      }
     }
-  });
+  );
   return {
     status: response.status,
     data: response.data.data,
