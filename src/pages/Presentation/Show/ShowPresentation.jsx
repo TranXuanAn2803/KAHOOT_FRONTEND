@@ -233,7 +233,7 @@ export const ShowPresentation = () => {
 
   const stopPresentation = async () => {
     try {
-      const toggleStatusResponse = await toggleStatusPresentation(presentationId, 0);
+      const toggleStatusResponse = await toggleStatusPresentation(presentationId, 0, groupId);
       console.log("toggleStatusResponse", toggleStatusResponse);
       if (toggleStatusResponse && toggleStatusResponse.status == 200) {
         // Gỉa sử delete thành công

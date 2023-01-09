@@ -52,7 +52,6 @@ export const PublicPresentation = (props) => {
       console.log("send getSessionId ", code, groupId);
       getSessionId(code, groupId)
         .then((response) => {
-          console.log("Get session response: ", response);
           if (response.status != 200) {
             return;
           }
@@ -102,6 +101,7 @@ export const PublicPresentation = (props) => {
   useEffect(() => {
     socket.on("connect", () => {});
     socket.on("slide-changed", (response) => {
+      console.log("response ", response);
       if (response.status == 200) {
         setCurrentSlideIndex(response.data.currentSlide);
       }

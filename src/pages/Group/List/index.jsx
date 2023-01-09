@@ -80,7 +80,6 @@ function GroupsPage({ typeOfGroup }) {
   });
   const reloadGroup = async () => {
     let list = [];
-    console.log(typeOfGroup);
     switch (typeOfGroup) {
       case "1": {
         list = await fetchGroup("", accessToken);

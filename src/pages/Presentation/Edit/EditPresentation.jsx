@@ -75,6 +75,35 @@ export const EditPresentation = () => {
       setPresentationContext(newPresentation);
     };
     getDataForPresentation();
+    return () => {
+      console.log("destroy editPresentation");
+      toggleStatusPresentation(presentationId, 0)
+        .then((values) => {
+          // Gỉa sử delete thành công
+
+          toast.success(values.message, {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            theme: "light"
+          });
+        })
+        .catch((err) => {
+          const values = err.response.data;
+          toast.error(values, {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            theme: "light"
+          });
+        });
+    };
   }, []);
   const savePresentation = async () => {
     console.log("call savePresentation ", presentationContext);
