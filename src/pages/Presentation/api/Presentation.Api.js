@@ -49,6 +49,25 @@ export const deleteCollaboratorAPI = async (idPresentation, collaborator) => {
     message: response.data.message || null
   };
 };
+export const getMessageAPI = async (presentationId, sessionId) => {
+  var accessToken = localStorage.getItem("accessToken");
+  var response = await AxiosInstance.put(
+    `/chat/${presentationId}`,
+    {
+      sessionId: sessionId
+    },
+    {
+      headers: {
+        x_authorization: accessToken
+      }
+    }
+  );
+  return {
+    status: response.status,
+    data: response.data.data,
+    message: response.data.message || null
+  };
+};
 export const addCollaboratorAPI = async (data) => {
   var requestData = {
     idPresentation: data.idPresentation,

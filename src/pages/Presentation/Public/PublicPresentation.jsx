@@ -16,6 +16,8 @@ import LoadingScreen from "react-loading-screen";
 import { StyleContainer, StyledChatScreen, StyledNavLink, StyledPresentForViewer } from "./style";
 import { useNavigate, useParams } from "react-router-dom";
 import ScrollToBottom from "react-scroll-to-bottom";
+import { getMessageAPI } from "../api/Presentation.Api";
+import { ConsoleSqlOutlined } from "@ant-design/icons";
 
 export const PublicPresentation = (props) => {
   const { groupId } = useParams();
@@ -57,6 +59,7 @@ export const PublicPresentation = (props) => {
           if (response.status != 200) {
             return;
           }
+          console.log("response getsessionId ", response);
           setPresentationId(code);
           setSessionId(response.data.data.session);
           var request = {
@@ -102,10 +105,15 @@ export const PublicPresentation = (props) => {
         setCurrentSlideIndex(response.data.currentSlide);
       }
     });
+    socket.on("user-adding-message-chat", (response) => {
+      console.log("user-adding-message-chat response ", response);
+      setMessageList(response.data.newChat);
+    });
     return () => {
       socket.off("connect");
       socket.off("slide-changed");
       socket.off("get-answer-from-player");
+      socket.off("user-adding-message-chat");
     };
   }, [socket]);
   useEffect(() => {
@@ -125,11 +133,16 @@ export const PublicPresentation = (props) => {
       GetSlideByPresentationAndIndex(request)
         .then((response) => {
           if (response.success == false) {
-            console.log("failed:", response.message);
             return;
           }
           setIsFinalSlide(isFinalSlide);
           setCurrentSlide(response.slide);
+          getMessageAPI(presentationId, sessionId).then((response) => {
+            console.log("getMessageAPI ", response);
+            if (response.status === 200) {
+              setMessageList(response.data);
+            }
+          });
         })
         .catch((error) => {
           console.log("error:", error);
@@ -144,6 +157,17 @@ export const PublicPresentation = (props) => {
   const handleSubmitCode = (e) => {
     if (e.keyCode === 13) {
       submitCode();
+    }
+  };
+  const sendMessage = () => {
+    console.log("currentMessage ", currentMessage);
+    if (currentMessage.trim() !== "") {
+      socket.emit("add-chat-message", {
+        id: sessionId,
+        presentationId,
+        username,
+        message: currentMessage
+      });
     }
   };
   if (getUser == false) {
@@ -227,6 +251,7 @@ export const PublicPresentation = (props) => {
             setCurrentMessage={setCurrentMessage}
             messageList={messageList}
             setMessageList={setMessageList}
+            sendMessage={sendMessage}
           />
         </Layout>
       </Styled>
@@ -234,10 +259,11 @@ export const PublicPresentation = (props) => {
   );
 };
 const ChatScreen = (props) => {
-  const { currentMessage, setCurrentMessage, messageList, setMessageList } = props;
+  const { currentMessage, setCurrentMessage, messageList, setMessageList, sendMessage } = props;
   return (
     <StyledChatScreen>
       <div className="chat-window">
+        <h2>Chat window</h2>
         <div className="chat-header">
           <p>Live Chat</p>
         </div>
@@ -246,28 +272,27 @@ const ChatScreen = (props) => {
             {messageList.map((value, index) => {
               return (
                 <div className="message" key={`message-${index}`}>
-                  <div className="message-content">{value.message}</div>
-                  <div className="message-meta">
-                    <p id="author">{value.author}</p>
-                  </div>
-                  <div className="chat-footer">
-                    <input
-                      type="text"
-                      value={currentMessage}
-                      placeholder="Type your message "
-                      onChange={(event) => {
-                        setCurrentMessage(event.target.value);
-                      }}
-                      onKeyPress={(event) => {
-                        event.key === "Enter" && sendMessage();
-                      }}
-                    />
-                    <button onClick={sendMessage}>&#9658;</button>
+                  <div>
+                    <div className="message-content">{value.message}</div>
+                    <div className="message-meta">
+                      <p id="author">{value.created_by}</p>
+                    </div>
                   </div>
                 </div>
               );
             })}
           </ScrollToBottom>
+        </div>
+        <div className="chat-footer">
+          <input
+            type="text"
+            value={currentMessage}
+            placeholder="Type your message "
+            onChange={(event) => {
+              setCurrentMessage(event.target.value);
+            }}
+          />
+          <button onClick={sendMessage}>&#9658;</button>
         </div>
       </div>
       ;
