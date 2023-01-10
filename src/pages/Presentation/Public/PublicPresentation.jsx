@@ -13,8 +13,9 @@ import { SocketContext } from "../../../components/Socket/socket-client";
 import { SlideType } from "../../../actions/constants";
 
 import LoadingScreen from "react-loading-screen";
-import { StyleContainer, StyledNavLink } from "./style";
+import { StyleContainer, StyledChatScreen, StyledNavLink, StyledPresentForViewer } from "./style";
 import { useNavigate, useParams } from "react-router-dom";
+import ScrollToBottom from "react-scroll-to-bottom";
 
 export const PublicPresentation = (props) => {
   const { groupId } = useParams();
@@ -30,7 +31,8 @@ export const PublicPresentation = (props) => {
   const [currentSlide, setCurrentSlide] = useState({});
   const [isFinalSlide, setIsFinalSlide] = useState(false);
   const socket = useContext(SocketContext);
-
+  const [messageList, setMessageList] = useState([{message: "Hello",author: "a"}]);
+  const [currentMessage, setCurrentMessage] = useState("");
   const submitUsername = () => {
     // console.log("username ", username);
     setGetUser(true);
@@ -85,12 +87,6 @@ export const PublicPresentation = (props) => {
         });
     }
   };
-  const onChange = (e) => {
-    setAnswer(e.target.value);
-  };
-  useEffect(() => {
-    document.getElementById("main").style.backgroundColor = "rgb(56, 18, 114)";
-  });
   useEffect(() => {
     socket.emit("init-game", {
       id: presentationId,
@@ -113,6 +109,7 @@ export const PublicPresentation = (props) => {
     };
   }, [socket]);
   useEffect(() => {
+    document.getElementById("main").style.backgroundColor = "rgb(56, 18, 114)";
     if (
       presentationId == "" ||
       presentationId.trim() == "" ||
@@ -225,12 +222,56 @@ export const PublicPresentation = (props) => {
             isFinalSlide={isFinalSlide}
             sessionId={sessionId}
           />
+          <ChatScreen currentMessage={currentMessage}
+            setCurrentMessage={setCurrentMessage}
+          />
         </Layout>
       </Styled>
     </LoadingScreen>
   );
 };
-
+const ChatScreen = (props) => {\
+  const {currentMessage, setCurrentMessage} = props;
+  return (
+    <StyledChatScreen>
+      <div className="chat-window">
+        <div className="chat-header">
+          <p>Live Chat</p>
+        </div>
+        <div className="chat-body">
+          <ScrollToBottom className="message-container">
+            {messageList.map((value,index)=>{
+              return (
+                <div className="message" key={`message-${index}`}>
+                  <div className="message-content">
+                    {value.message}
+                  </div>
+                  <div className="message-meta">
+                    <p id="author">{value.author}</p>
+                  </div>
+                  <div className="chat-footer">
+                  <input
+                    type="text"
+                    value={currentMessage}
+                    placeholder="Type your message "
+                    onChange={(event) => {
+                      setCurrentMessage(event.target.value);
+                    }}
+                    onKeyPress={(event) => {
+                      event.key === "Enter" && sendMessage();
+                    }}
+                  />
+                  <button onClick={sendMessage}>&#9658;</button>
+                </div>
+                </div>
+              )
+            })}
+          </ScrollToBottom>
+        </div>
+      </div>;
+    </StyledChatScreen>
+  );
+};
 const PresentForViewer = (props) => {
   const { socket, slide, presentationId, username, isFinalSlide, sessionId } = props;
   useEffect(() => {

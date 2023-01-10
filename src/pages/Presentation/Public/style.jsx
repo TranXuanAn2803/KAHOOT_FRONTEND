@@ -33,3 +33,9 @@ export const StyleContainer = styled.div`
   background-color: white;
   height: 100%;
 `;
+export const StyledChatScreen = styled.div`
+  position: relative;
+  .chat-window {
+    margin-top: 20px;
+  }
+`;
