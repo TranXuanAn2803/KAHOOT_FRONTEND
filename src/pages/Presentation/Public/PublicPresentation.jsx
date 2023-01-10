@@ -13,12 +13,12 @@ import { SocketContext } from "../../../components/Socket/socket-client";
 import { SlideType } from "../../../actions/constants";
 
 import LoadingScreen from "react-loading-screen";
-import { StyleContainer, StyledChatScreen, StyledNavLink, StyledPresentForViewer } from "./style";
+import { StyledChatScreen, StyledNavLink, StyledQuestionScreen } from "./style";
 import { useNavigate, useParams } from "react-router-dom";
 import ScrollToBottom from "react-scroll-to-bottom";
-import { getMessageAPI } from "../api/Presentation.Api";
-import { ConsoleSqlOutlined } from "@ant-design/icons";
-
+import { getMessageAPI, getQuestionAPI } from "../api/Presentation.Api";
+import { LikeOutlined, StarOutlined, LikeFilled, StarFilled } from "@ant-design/icons";
+import { fetchUsers } from "../../../utils/api";
 export const PublicPresentation = (props) => {
   const { groupId } = useParams();
   const [presentation, setPresentation] = useContext(PresentationContext);
@@ -33,10 +33,107 @@ export const PublicPresentation = (props) => {
   const [currentSlide, setCurrentSlide] = useState({});
   const [isFinalSlide, setIsFinalSlide] = useState(false);
   const socket = useContext(SocketContext);
-  const [messageList, setMessageList] = useState([{ message: "Hello", author: "a" }]);
+  const [messageList, setMessageList] = useState([]);
+  const [questionList, setQuestionList] = useState([]);
   const [currentMessage, setCurrentMessage] = useState("");
+  const [currentQuestion, setCurrentQuestion] = useState("");
+
+  useEffect(() => {
+    socket.emit("init-game", {
+      id: presentationId,
+      groupId: null,
+      user: null
+    });
+  }, [sessionId]);
+  useEffect(() => {
+    socket.on("connect", () => {});
+    socket.on("slide-changed", (response) => {
+      console.log("response ", response);
+      if (response.status == 200) {
+        setCurrentSlideIndex(response.data.currentSlide);
+      }
+    });
+    socket.on("user-adding-message-chat", (response) => {
+      console.log("user-adding-message-chat response ", response);
+      if (response.status == 200) {
+        setMessageList(response.data.newChat);
+      } else {
+        printMessage(response.status, response.message);
+      }
+    });
+    socket.on("user-adding-question", (response) => {
+      console.log("user-adding-question response ", response);
+      if (response.status == 200) {
+        setQuestionList(response.data.newQuestion);
+      } else {
+        printMessage(response.status, response.message);
+      }
+    });
+    socket.on("user-voting-question", (response) => {
+      console.log("user-voting-question response ", response);
+      if (response.status == 200) {
+        setQuestionList(response.data.newVote);
+      } else {
+        printMessage(response.status, response.message);
+      }
+    });
+    socket.on("host-mark-question", (response) => {
+      if (response.status == 200) {
+        setQuestionList(response.data.newQuestion);
+      } else {
+        printMessage(response.status, response.message);
+      }
+    });
+    return () => {
+      socket.off("connect");
+      socket.off("slide-changed");
+      socket.off("get-answer-from-player");
+      socket.off("user-adding-message-chat");
+      socket.off("user-adding-question");
+      socket.off("user-voting-question");
+      socket.off("host-mark-question");
+    };
+  }, [socket]);
+  useEffect(() => {
+    document.getElementById("main").style.backgroundColor = "rgb(56, 18, 114)";
+    if (
+      presentationId == "" ||
+      presentationId.trim() == "" ||
+      Number.isNaN(currentSlideIndex) ||
+      currentSlideIndex < 1
+    ) {
+      return;
+    } else {
+      var request = {
+        slideIndex: currentSlideIndex,
+        presentationId: presentationId
+      };
+      GetSlideByPresentationAndIndex(request)
+        .then((response) => {
+          if (response.success == false) {
+            return;
+          }
+          setIsFinalSlide(isFinalSlide);
+          setCurrentSlide(response.slide);
+          getMessageAPI(presentationId, sessionId).then((response) => {
+            console.log("getMessageAPI ", response);
+            if (response.status === 200) {
+              setMessageList(response.data);
+            }
+          });
+          getQuestionAPI(presentationId, sessionId).then((response) => {
+            console.log("getQuestionAPI ", response);
+            if (response.status === 200) {
+              setQuestionList(response.data);
+            }
+          });
+        })
+        .catch((error) => {
+          console.log("error:", error);
+        });
+    }
+  }, [currentSlideIndex]);
   const submitUsername = () => {
-    // console.log("username ", username);
     setGetUser(true);
   };
   const submitCode = () => {
@@ -90,65 +187,6 @@ export const PublicPresentation = (props) => {
         });
     }
   };
-  useEffect(() => {
-    socket.emit("init-game", {
-      id: presentationId,
-      groupId: null,
-      user: null
-    });
-  }, [sessionId]);
-  useEffect(() => {
-    socket.on("connect", () => {});
-    socket.on("slide-changed", (response) => {
-      console.log("response ", response);
-      if (response.status == 200) {
-        setCurrentSlideIndex(response.data.currentSlide);
-      }
-    });
-    socket.on("user-adding-message-chat", (response) => {
-      console.log("user-adding-message-chat response ", response);
-      setMessageList(response.data.newChat);
-    });
-    return () => {
-      socket.off("connect");
-      socket.off("slide-changed");
-      socket.off("get-answer-from-player");
-      socket.off("user-adding-message-chat");
-    };
-  }, [socket]);
-  useEffect(() => {
-    document.getElementById("main").style.backgroundColor = "rgb(56, 18, 114)";
-    if (
-      presentationId == "" ||
-      presentationId.trim() == "" ||
-      Number.isNaN(currentSlideIndex) ||
-      currentSlideIndex < 1
-    ) {
-      return;
-    } else {
-      var request = {
-        slideIndex: currentSlideIndex,
-        presentationId: presentationId
-      };
-      GetSlideByPresentationAndIndex(request)
-        .then((response) => {
-          if (response.success == false) {
-            return;
-          }
-          setIsFinalSlide(isFinalSlide);
-          setCurrentSlide(response.slide);
-          getMessageAPI(presentationId, sessionId).then((response) => {
-            console.log("getMessageAPI ", response);
-            if (response.status === 200) {
-              setMessageList(response.data);
-            }
-          });
-        })
-        .catch((error) => {
-          console.log("error:", error);
-        });
-    }
-  }, [currentSlideIndex]);
   const handleSubmitUserName = (e) => {
     if (e.keyCode === 13) {
       submitUsername();
@@ -169,6 +207,34 @@ export const PublicPresentation = (props) => {
         message: currentMessage
       });
     }
+  };
+  const sendQuestion = () => {
+    console.log("currentQuestion ", currentQuestion);
+    if (currentQuestion.trim() !== "") {
+      socket.emit("add-question", {
+        id: sessionId,
+        presentationId,
+        username,
+        content: currentQuestion
+      });
+    }
+  };
+  const upVote = (questionId) => {
+    if (questionId != undefined && questionId != "") {
+      socket.emit("upvote-question", { id: sessionId, presentationId, questionId });
+    }
+  };
+  const markQuestion = async (questionId) => {
+    console.log("questionId ", questionId);
+    const accessToken = localStorage.getItem("accessToken");
+    const user = await fetchUsers(accessToken);
+    console.log("markQuestion user ", user);
+    socket.emit("mark-answered-question", {
+      id: sessionId,
+      presentationId,
+      questionId,
+      user: user.user
+    });
   };
   if (getUser == false) {
     return (
@@ -253,6 +319,15 @@ export const PublicPresentation = (props) => {
             setMessageList={setMessageList}
             sendMessage={sendMessage}
           />
+          <QuestionScreen
+            questionList={questionList}
+            setQuestionList={setQuestionList}
+            currentQuestion={currentQuestion}
+            setCurrentQuestion={setCurrentQuestion}
+            sendQuestion={sendQuestion}
+            upVote={upVote}
+            markQuestion={markQuestion}
+          />
         </Layout>
       </Styled>
     </LoadingScreen>
@@ -297,6 +372,61 @@ const ChatScreen = (props) => {
       </div>
       ;
     </StyledChatScreen>
+  );
+};
+const QuestionScreen = (props) => {
+  const {
+    questionList,
+    setQuestionList,
+    currentQuestion,
+    setCurrentQuestion,
+    sendQuestion,
+    upVote,
+    markQuestion
+  } = props;
+  return (
+    <StyledQuestionScreen>
+      <div className="question-window">
+        <h2>Question window</h2>
+        <div className="chat-header">
+          <p>Question List</p>
+        </div>
+        <div className="chat-body">
+          <ScrollToBottom className="message-container">
+            {questionList.map((value, index) => {
+              return (
+                <div className="message" key={`message-${index}`}>
+                  <div style={{ width: "100%" }}>
+                    <div className="message-content">{value.question}</div>
+                    <div className="message-meta">
+                      <div className="like-container" onClick={() => upVote(value._id)}>
+                        {value.vote > 0 ? <LikeFilled /> : <LikeOutlined />}
+                        <p id="like-count">{value.vote}</p>
+                      </div>
+                      <div className="mark-question" onClick={() => markQuestion(value._id)}>
+                        {value.is_answered == true ? <StarFilled /> : <StarOutlined />}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </ScrollToBottom>
+        </div>
+        <div className="chat-footer">
+          <input
+            type="text"
+            value={currentQuestion}
+            placeholder="Type your question "
+            onChange={(event) => {
+              setCurrentQuestion(event.target.value);
+            }}
+          />
+          <button onClick={sendQuestion}>&#9658;</button>
+        </div>
+      </div>
+      ;
+    </StyledQuestionScreen>
   );
 };
 const PresentForViewer = (props) => {
