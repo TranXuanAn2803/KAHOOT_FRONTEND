@@ -24,7 +24,6 @@ import ResetPassword from "./pages/ResetPassword";
 import Collaborators from "./pages/Presentation/Collaborators/Collaborators";
 import { PublicPresentation } from "./pages/Presentation/Viewer/PublicPresentation";
 import { SocketContext, SocketContextProvider } from "./components/Socket/socket-client";
-import { GroupPresentation } from "./pages/Presentation/Viewer/GroupPresentation";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -86,7 +85,7 @@ const App = () => {
                       <Route path=":presentationId/show" element={<ShowPresentation />} />
                       <Route path=":presentationId/show/:groupId" element={<ShowPresentation />} />
                       <Route path="public" element={<PublicPresentation />} />
-                      <Route path="public/:groupId/:presentationId" element={<GroupPresentation />} />
+                      {/* <Route path="public/:groupId/:presentationId" element={<GroupPresentation />} /> */}
                     </Route>
 
                     <Route path="/forgot-password" element={<ForgotPassword />} />
