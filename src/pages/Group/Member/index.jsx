@@ -7,7 +7,8 @@ import {
   fetchGroupMember,
   toggleRole,
   fetchListUser,
-  exitsGroup
+  exitsGroup,
+  removeMember
 } from "../../../utils/api";
 import { useQuery, QueryClient, QueryClientProvider } from "react-query";
 // import { onLogout } from "../../utils/method";
@@ -251,6 +252,34 @@ function MemberPage() {
         break;
     }
   };
+  const handleRemoveMember = async (rowId) => {
+    const data = await removeMember(rowId);
+    console.log("data ", rowId);
+    if (data.status != 200) {
+      // alert(data.data);
+      toast.error(data.data, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        theme: "light"
+      });
+      return;
+    }
+    reloadMember();
+    const msg = `Removing present is successful `;
+    toast.success(msg, {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      theme: "light"
+    });
+  }
 
   return (
     <>
@@ -298,6 +327,15 @@ function MemberPage() {
                         }}>
                         Change Role
                       </Button>
+                      <Button
+                        type="primary"
+                        danger
+                        onClick={() => {
+                          handleRemoveMember(record);
+                        }}>
+                        Remove
+                      </Button>
+
                     </Space>
                   )}
                 />

@@ -370,6 +370,53 @@ export const removeSharingPresent = async (id, accessToken) => {
   return objectReturn;
 };
 
+export const removeGroup = async (id, accessToken) => {
+  const response = await axios
+    .delete(`${URL}/group/${id}`, {
+      headers: {
+        x_authorization: accessToken
+      }
+    })
+    .catch((error) => {
+      if (error.response) {
+        const objectReturn = {
+          data: error.response.data,
+          status: error.response.status
+        };
+        return objectReturn;
+      }
+    });
+  const { data, status } = response;
+  const objectReturn = {
+    data: data,
+    status: status
+  };
+  return objectReturn;
+};
+export const removeMember = async (id, accessToken) => {
+  const response = await axios
+    .delete(`${URL}/group/member/${id}`, {
+      headers: {
+        x_authorization: accessToken
+      }
+    })
+    .catch((error) => {
+      if (error.response) {
+        const objectReturn = {
+          data: error.response.data,
+          status: error.response.status
+        };
+        return objectReturn;
+      }
+    });
+  const { data, status } = response;
+  const objectReturn = {
+    data: data,
+    status: status
+  };
+  return objectReturn;
+};
+
 export const exitsGroup = async (id, accessToken) => {
   try {
     const response = await axios

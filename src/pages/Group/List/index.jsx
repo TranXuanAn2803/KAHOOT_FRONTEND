@@ -1,7 +1,7 @@
 import React, { useEffect, useContext } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
-import { createGroup, fetchGroup } from "../../../utils/api";
+import { createGroup, fetchGroup, removeGroup } from "../../../utils/api";
 import GroupsIcon from "@mui/icons-material/Groups";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
@@ -118,7 +118,34 @@ function GroupsPage({ typeOfGroup }) {
   const getGroupDetail = (groupId) => {
     navigate("/group-detail", { state: { id: groupId } });
   };
-
+  const handleRemoveGroup = async (rowId) => {
+    const data = await removeGroup(rowId);
+    console.log("data ", rowId);
+    if (data.status != 200) {
+      // alert(data.data);
+      toast.error(data.data, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        theme: "light"
+      });
+      return;
+    }
+    reloadGroup();
+    const msg = `Removing present is successful `;
+    toast.success(msg, {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      theme: "light"
+    });
+  }
   return (
     <>
       <Header />
@@ -151,6 +178,15 @@ function GroupsPage({ typeOfGroup }) {
                   }}>
                   More
                 </Button>
+                <Button
+                    type="primary"
+                    danger
+                    onClick={() => {
+                      handleRemoveGroup(record);
+                    }}>
+                    Remove
+                  </Button>
+
               </Space>
             )}
           />
