@@ -1,10 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Layout, Radio, Space, Input, Button } from "antd";
 import { toast } from "react-toastify";
-const { Header, Footer, Sider, Content } = Layout;
 import Styled, { StyledButton } from "../style";
-// import PresentationContext from "../../../utils/PresentationContext";
-import { Sector } from "recharts";
 import { getSessionId } from "../API";
 import { printMessage } from "../../../utils/method";
 import { Slider } from "@material-ui/core";
@@ -23,7 +20,6 @@ export const PublicPresentation = (props) => {
   const [code, setCode] = useState("");
   const [getUser, setGetUser] = useState(false);
   const [submitGetCode, setSubmitGetCode] = useState(false);
-  const [answer, setAnswer] = useState(1);
   const [username, setUsername] = useState("");
   const [sessionId, setSessionId] = useState("");
   const [presentationId, setPresentationId] = useState("");
@@ -78,7 +74,6 @@ export const PublicPresentation = (props) => {
           };
           GetCurrentSlide(request)
             .then((response) => {
-              setIs;
               setCurrentSlideIndex(response.data.data.current_slide);
             })
             .catch((error) => {
@@ -113,7 +108,7 @@ export const PublicPresentation = (props) => {
     socket.on("slide-changed", (response) => {
       console.log("response ", response);
       if (response.status == 200) {
-        setCurrentSlideIndex(response.data.currentSlide);
+        setCurrentSlideIndex(response.data.current_slide);
       }
     });
     return () => {
@@ -142,6 +137,7 @@ export const PublicPresentation = (props) => {
             console.log("failed:", response.message);
             return;
           }
+          console.log(response);
           setIsFinalSlide(response.isFinalSlide);
           setCurrentSlide(response.slide);
         })
