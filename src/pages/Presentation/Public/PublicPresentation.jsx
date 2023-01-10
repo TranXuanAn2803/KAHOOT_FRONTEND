@@ -13,12 +13,17 @@ import { SocketContext } from "../../../components/Socket/socket-client";
 import { SlideType } from "../../../actions/constants";
 
 import LoadingScreen from "react-loading-screen";
-import { StyleContainer, StyledChatScreen, StyledNavLink, StyledPresentForViewer } from "./style";
+import {
+  StyledChatScreen,
+  StyledNavLink,
+  StyledQuestionScreen
+} from "./style";
 import { useNavigate, useParams } from "react-router-dom";
 import ScrollToBottom from "react-scroll-to-bottom";
-import { getMessageAPI } from "../api/Presentation.Api";
+import { getMessageAPI, getQuestionAPI } from "../api/Presentation.Api";
 import { ConsoleSqlOutlined } from "@ant-design/icons";
-
+import { LikeOutlined, StarOutlined, LikeFilled, StarFilled } from "@ant-design/icons";
+import { upVote } from "../../../../../kahoot-backend/src/question/question.method";
 export const PublicPresentation = (props) => {
   const { groupId } = useParams();
   const [presentation, setPresentation] = useContext(PresentationContext);
@@ -33,8 +38,10 @@ export const PublicPresentation = (props) => {
   const [currentSlide, setCurrentSlide] = useState({});
   const [isFinalSlide, setIsFinalSlide] = useState(false);
   const socket = useContext(SocketContext);
-  const [messageList, setMessageList] = useState([{ message: "Hello", author: "a" }]);
+  const [messageList, setMessageList] = useState([]);
+  const [questionList, setQuestionList] = useState([]);
   const [currentMessage, setCurrentMessage] = useState("");
+  const [currentQuestion, setCurrentQuestion] = useState("");
   const submitUsername = () => {
     // console.log("username ", username);
     setGetUser(true);
@@ -107,13 +114,26 @@ export const PublicPresentation = (props) => {
     });
     socket.on("user-adding-message-chat", (response) => {
       console.log("user-adding-message-chat response ", response);
-      setMessageList(response.data.newChat);
+      if (response.status == 200) {
+        setMessageList(response.data.newChat);
+      } else {
+        printMessage(response.status, response.message);
+      }
+    });
+    socket.on("user-adding-question", (response) => {
+      console.log("user-adding-question response ", response);
+      if (response.status == 200) {
+        setQuestionList(response.data.newQuestion);
+      } else {
+        printMessage(response.status, response.message);
+      }
     });
     return () => {
       socket.off("connect");
       socket.off("slide-changed");
       socket.off("get-answer-from-player");
       socket.off("user-adding-message-chat");
+      socket.off("user-adding-question");
     };
   }, [socket]);
   useEffect(() => {
@@ -143,6 +163,12 @@ export const PublicPresentation = (props) => {
               setMessageList(response.data);
             }
           });
+          getQuestionAPI(presentationId, sessionId).then((response) => {
+            console.log("getQuestionAPI ", response);
+            if (response.status === 200) {
+              setQuestionList(response.data);
+            }
+          });
         })
         .catch((error) => {
           console.log("error:", error);
@@ -170,6 +196,19 @@ export const PublicPresentation = (props) => {
       });
     }
   };
+  const sendQuestion = () => {
+    console.log("currentQuestion ", currentQuestion);
+    if (currentQuestion.trim() !== "") {
+      socket.emit("add-question", {
+        id: sessionId,
+        presentationId,
+        username,
+        content: currentQuestion
+      });
+    }
+  };
+  const upVote = () => {};
+  const markQuestion = () => {};
   if (getUser == false) {
     return (
       <Styled>
@@ -253,6 +292,15 @@ export const PublicPresentation = (props) => {
             setMessageList={setMessageList}
             sendMessage={sendMessage}
           />
+          <QuestionScreen
+            questionList={questionList}
+            setQuestionList={setQuestionList}
+            currentQuestion={currentQuestion}
+            setCurrentQuestion={setCurrentQuestion}
+            sendQuestion={sendQuestion}
+            upVote={upVote}
+            markQuestion={markQuestion}
+          />
         </Layout>
       </Styled>
     </LoadingScreen>
@@ -297,6 +345,61 @@ const ChatScreen = (props) => {
       </div>
       ;
     </StyledChatScreen>
+  );
+};
+const QuestionScreen = (props) => {
+  const {
+    questionList,
+    setQuestionList,
+    currentQuestion,
+    setCurrentQuestion,
+    sendQuestion,
+    upVote,
+    markQuestion
+  } = props;
+  return (
+    <StyledQuestionScreen>
+      <div className="question-window">
+        <h2>Question window</h2>
+        <div className="chat-header">
+          <p>Question List</p>
+        </div>
+        <div className="chat-body">
+          <ScrollToBottom className="message-container">
+            {questionList.map((value, index) => {
+              return (
+                <div className="message" key={`message-${index}`}>
+                  <div style={{ width: "100%" }}>
+                    <div className="message-content">{value.question}</div>
+                    <div className="message-meta">
+                      <div className="like-container" onClick={() => upVote()}>
+                        {value.vote > 0 ? <LikeFilled /> : <LikeOutlined />}
+                        <p id="like-count">{value.vote}</p>
+                      </div>
+                      <div className="mark-question" onClick={() => markQuestion()}>
+                        {value.is_answered == true ? <StarFilled /> : <StarOutlined />}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </ScrollToBottom>
+        </div>
+        <div className="chat-footer">
+          <input
+            type="text"
+            value={currentQuestion}
+            placeholder="Type your question "
+            onChange={(event) => {
+              setCurrentQuestion(event.target.value);
+            }}
+          />
+          <button onClick={sendQuestion}>&#9658;</button>
+        </div>
+      </div>
+      ;
+    </StyledQuestionScreen>
   );
 };
 const PresentForViewer = (props) => {
