@@ -227,14 +227,17 @@ export const PublicPresentation = (props) => {
   const markQuestion = async (questionId) => {
     console.log("questionId ", questionId);
     const accessToken = localStorage.getItem("accessToken");
-    const user = await fetchUsers(accessToken);
-    console.log("markQuestion user ", user);
-    socket.emit("mark-answered-question", {
-      id: sessionId,
-      presentationId,
-      questionId,
-      user: user.user
-    });
+    if (!accessToken || accessToken == "") {
+      printMessage(400, "Sorry you must be owner or co-owner to mark this question");
+    } else {
+      const user = await fetchUsers(accessToken);
+      socket.emit("mark-answered-question", {
+        id: sessionId,
+        presentationId,
+        questionId,
+        user: user.user
+      });
+    }
   };
   if (getUser == false) {
     return (
