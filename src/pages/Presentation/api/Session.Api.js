@@ -88,7 +88,7 @@ export const GetCurrentSlide = async (request) => {
   };
   var presentationId = request.presentationId;
   const GetCurrentSlideResponse = await AxiosInstance.put(
-    `presentation//presenting/slide/${presentationId}`,
+    `presentation/presenting/slide/${presentationId}`,
     reqBodyData,
     {
       headers: {

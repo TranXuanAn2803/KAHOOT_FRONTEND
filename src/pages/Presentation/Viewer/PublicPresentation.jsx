@@ -3,7 +3,7 @@ import { Layout, Radio, Space, Input, Button } from "antd";
 import { toast } from "react-toastify";
 const { Header, Footer, Sider, Content } = Layout;
 import Styled, { StyledButton } from "../style";
-import PresentationContext from "../../../utils/PresentationContext";
+// import PresentationContext from "../../../utils/PresentationContext";
 import { Sector } from "recharts";
 import { getSessionId } from "../API";
 import { printMessage } from "../../../utils/method";
@@ -16,10 +16,11 @@ import LoadingScreen from "react-loading-screen";
 import { StyleContainer, StyledChatScreen, StyledNavLink, StyledPresentForViewer } from "./style";
 import { useNavigate, useParams } from "react-router-dom";
 import ScrollToBottom from "react-scroll-to-bottom";
+import { PresentForViewer } from "./component";
 
 export const PublicPresentation = (props) => {
   const { groupId } = useParams();
-  const [presentation, setPresentation] = useContext(PresentationContext);
+  // const [presentation, setPresentation] = useContext(PresentationContext);
   const [code, setCode] = useState("");
   const [getUser, setGetUser] = useState(false);
   const [submitGetCode, setSubmitGetCode] = useState(false);
@@ -31,9 +32,21 @@ export const PublicPresentation = (props) => {
   const [currentSlide, setCurrentSlide] = useState({});
   const [isFinalSlide, setIsFinalSlide] = useState(false);
   const socket = useContext(SocketContext);
-  const [messageList, setMessageList] = useState([{ message: "Hello", author: "a" }]);
+  const [messageList, setMessageList] = useState([{message: "Hello",author: "a"}]);
   const [currentMessage, setCurrentMessage] = useState("");
   const submitUsername = () => {
+    if (username == "" || username.trim() == "") {
+      toast.error("Please enter nick name to join a presentation", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        theme: "light"
+      });
+      return;
+    }
     // console.log("username ", username);
     setGetUser(true);
   };
@@ -48,6 +61,7 @@ export const PublicPresentation = (props) => {
         draggable: true,
         theme: "light"
       });
+      return;
     }
     setSubmitGetCode(true);
     if (username && code) {
@@ -65,6 +79,7 @@ export const PublicPresentation = (props) => {
           };
           GetCurrentSlide(request)
             .then((response) => {
+              setIs;
               setCurrentSlideIndex(response.data.data.current_slide);
             })
             .catch((error) => {
@@ -128,7 +143,7 @@ export const PublicPresentation = (props) => {
             console.log("failed:", response.message);
             return;
           }
-          setIsFinalSlide(isFinalSlide);
+          setIsFinalSlide(response.isFinalSlide);
           setCurrentSlide(response.slide);
         })
         .catch((error) => {
@@ -207,7 +222,7 @@ export const PublicPresentation = (props) => {
 
   return (
     <LoadingScreen
-      loading={currentSlideIndex == 0}
+      loading={currentSlideIndex < 1}
       bgColor="#fffff"
       spinnerColor="#fff"
       textColor="#fff"
@@ -222,19 +237,16 @@ export const PublicPresentation = (props) => {
             isFinalSlide={isFinalSlide}
             sessionId={sessionId}
           />
-          <ChatScreen
-            currentMessage={currentMessage}
+          <ChatScreen currentMessage={currentMessage}
             setCurrentMessage={setCurrentMessage}
-            messageList={messageList}
-            setMessageList={setMessageList}
           />
         </Layout>
       </Styled>
     </LoadingScreen>
   );
 };
-const ChatScreen = (props) => {
-  const { currentMessage, setCurrentMessage } = props;
+const ChatScreen = (props) => {\
+  const {currentMessage, setCurrentMessage} = props;
   return (
     <StyledChatScreen>
       <div className="chat-window">
@@ -243,34 +255,35 @@ const ChatScreen = (props) => {
         </div>
         <div className="chat-body">
           <ScrollToBottom className="message-container">
-            {messageList.map((value, index) => {
+            {messageList.map((value,index)=>{
               return (
                 <div className="message" key={`message-${index}`}>
-                  <div className="message-content">{value.message}</div>
+                  <div className="message-content">
+                    {value.message}
+                  </div>
                   <div className="message-meta">
                     <p id="author">{value.author}</p>
                   </div>
                   <div className="chat-footer">
-                    <input
-                      type="text"
-                      value={currentMessage}
-                      placeholder="Type your message "
-                      onChange={(event) => {
-                        setCurrentMessage(event.target.value);
-                      }}
-                      onKeyPress={(event) => {
-                        event.key === "Enter" && sendMessage();
-                      }}
-                    />
-                    <button onClick={sendMessage}>&#9658;</button>
-                  </div>
+                  <input
+                    type="text"
+                    value={currentMessage}
+                    placeholder="Type your message "
+                    onChange={(event) => {
+                      setCurrentMessage(event.target.value);
+                    }}
+                    onKeyPress={(event) => {
+                      event.key === "Enter" && sendMessage();
+                    }}
+                  />
+                  <button onClick={sendMessage}>&#9658;</button>
                 </div>
-              );
+                </div>
+              )
             })}
           </ScrollToBottom>
         </div>
-      </div>
-      ;
+      </div>;
     </StyledChatScreen>
   );
 };

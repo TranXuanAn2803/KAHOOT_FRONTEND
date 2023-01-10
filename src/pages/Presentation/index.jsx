@@ -154,6 +154,7 @@ export const MyPresentations = (props) => {
                 </p>
                 <div className="mb-5">
                   <TableOfPresentations
+                    setCollaboratorsList={setCollaboratorsList}
                     handleOpenAddCollaborators={handleOpenAddCollaborators}
                     // handleHasSelectedPresentation={setHasSelectedPresentation}
                   />
@@ -183,6 +184,7 @@ export const MyPresentations = (props) => {
 
 const TableOfPresentations = (props) => {
   const handleOpenAddCollaborators = props.handleOpenAddCollaborators;
+  const { setCollaboratorsList } = props;
   const [modal, contextHolder] = Modal.useModal();
   const [presentationList, setPresentationList] = React.useState([]);
   const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);

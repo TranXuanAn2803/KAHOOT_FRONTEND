@@ -344,7 +344,7 @@ export default function GroupDetail() {
       // presentationId / groupId
       navigate(`/presentations/${currentPresentation}/show/${groupId}`);
     } else {
-      navigate(`/presentations/public/${groupId}`);
+      navigate(`/presentations/public/${groupId}/${currentPresentation}`);
     }
   };
 
