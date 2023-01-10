@@ -234,7 +234,7 @@ export const PublicPresentation = (props) => {
   );
 };
 const ChatScreen = (props) => {
-  const { currentMessage, setCurrentMessage } = props;
+  const { currentMessage, setCurrentMessage, messageList, setMessageList } = props;
   return (
     <StyledChatScreen>
       <div className="chat-window">
