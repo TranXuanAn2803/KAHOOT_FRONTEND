@@ -24,6 +24,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Collaborators from "./pages/Presentation/Collaborators/Collaborators";
 import { SocketContext, SocketContextProvider } from "./components/Socket/socket-client";
 import { PublicPresentation } from "./pages/Presentation/Public/PublicPresentation";
+import { GroupPresentation } from "./pages/Presentation/Viewer/GroupPresentation";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

@@ -17,231 +17,6 @@ import { StyleContainer, StyledChatScreen, StyledNavLink, StyledPresentForViewer
 import { useNavigate, useParams } from "react-router-dom";
 import ScrollToBottom from "react-scroll-to-bottom";
 
-export const PublicPresentation = (props) => {
-  const { groupId } = useParams();
-  // const [presentation, setPresentation] = useContext(PresentationContext);
-  const [code, setCode] = useState("");
-  const [getUser, setGetUser] = useState(false);
-  const [submitGetCode, setSubmitGetCode] = useState(false);
-  const [answer, setAnswer] = useState(1);
-  const [username, setUsername] = useState("");
-  const [sessionId, setSessionId] = useState("");
-  const [presentationId, setPresentationId] = useState("");
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const [currentSlide, setCurrentSlide] = useState({});
-  const [isFinalSlide, setIsFinalSlide] = useState(false);
-  const socket = useContext(SocketContext);
-  const [messageList, setMessageList] = useState([{ message: "Hello", author: "a" }]);
-  const [currentMessage, setCurrentMessage] = useState("");
-  const submitUsername = () => {
-    if (username == "" || username.trim() == "") {
-      toast.error("Please enter nick name to join a presentation", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        theme: "light"
-      });
-      return;
-    }
-    // console.log("username ", username);
-    setGetUser(true);
-  };
-  const submitCode = () => {
-    if (code == "" || code.trim() == "") {
-      toast.error("Please enter PIN to join a presentation", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        theme: "light"
-      });
-      return;
-    }
-    setSubmitGetCode(true);
-    if (username && code) {
-      console.log("send getSessionId ", code, groupId);
-      getSessionId(code, groupId)
-        .then((response) => {
-          if (response.status != 200) {
-            return;
-          }
-          setPresentationId(code);
-          setSessionId(response.data.data.session);
-          var request = {
-            sessionId: sessionId,
-            presentationId: code
-          };
-          GetCurrentSlide(request)
-            .then((response) => {
-              setIs;
-              setCurrentSlideIndex(response.data.data.current_slide);
-            })
-            .catch((error) => {
-              throw error;
-            });
-        })
-        .catch((err) => {
-          setCode("");
-          setSubmitGetCode(false);
-          console.log("err ", err);
-          toast.error(err.response.data.message, {
-            position: "top-right",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            theme: "light"
-          });
-        });
-    }
-  };
-  useEffect(() => {
-    socket.emit("init-game", {
-      id: presentationId,
-      groupId: null,
-      user: null
-    });
-  }, [sessionId]);
-  useEffect(() => {
-    socket.on("connect", () => {});
-    socket.on("slide-changed", (response) => {
-      console.log("response ", response);
-      if (response.status == 200) {
-        setCurrentSlideIndex(response.data.currentSlide);
-      }
-    });
-    return () => {
-      socket.off("connect");
-      socket.off("slide-changed");
-      socket.off("get-answer-from-player");
-    };
-  }, [socket]);
-  useEffect(() => {
-    document.getElementById("main").style.backgroundColor = "rgb(56, 18, 114)";
-    if (
-      presentationId == "" ||
-      presentationId.trim() == "" ||
-      Number.isNaN(currentSlideIndex) ||
-      currentSlideIndex < 1
-    ) {
-      return;
-    } else {
-      var request = {
-        slideIndex: currentSlideIndex,
-        presentationId: presentationId
-      };
-      GetSlideByPresentationAndIndex(request)
-        .then((response) => {
-          if (response.success == false) {
-            console.log("failed:", response.message);
-            return;
-          }
-          setIsFinalSlide(response.isFinalSlide);
-          setCurrentSlide(response.slide);
-        })
-        .catch((error) => {
-          console.log("error:", error);
-        });
-    }
-  }, [currentSlideIndex]);
-  const handleSubmitUserName = (e) => {
-    if (e.keyCode === 13) {
-      submitUsername();
-    }
-  };
-  const handleSubmitCode = (e) => {
-    if (e.keyCode === 13) {
-      submitCode();
-    }
-  };
-  if (getUser == false) {
-    return (
-      <Styled>
-        <Layout>
-          <div className="publicPresentation-container">
-            <div className="pubPresentation-box">
-              <label className="question-label" htmlFor="username">
-                Username
-              </label>
-              <input
-                type="text"
-                id="username"
-                className="publicquestion-input"
-                maxLength={150}
-                placeholder="Enter username"
-                value={username}
-                autoComplete="off"
-                onKeyDown={handleSubmitUserName}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-              <button className="username-submit" onClick={() => submitUsername()}>
-                Enter
-              </button>
-            </div>
-          </div>
-        </Layout>
-      </Styled>
-    );
-  }
-  if (submitGetCode == false) {
-    return (
-      <Styled>
-        <Layout>
-          <div className="publicPresentation-container">
-            <div className="pubPresentation-box">
-              <label className="question-label" htmlFor="username">
-                Code
-              </label>
-              <input
-                type="text"
-                id="code"
-                className="publicquestion-input"
-                maxLength={150}
-                placeholder="Enter code"
-                value={code}
-                autoComplete="off"
-                onKeyDown={handleSubmitCode}
-                onChange={(e) => setCode(e.target.value)}
-              />
-              <button className="username-submit" onClick={() => submitCode()}>
-                Enter
-              </button>
-            </div>
-          </div>
-        </Layout>
-      </Styled>
-    );
-  }
-
-  return (
-    <LoadingScreen
-      loading={currentSlideIndex < 1}
-      bgColor="#fffff"
-      spinnerColor="#fff"
-      textColor="#fff"
-      text="Please waiting for the host to start">
-      <Styled>
-        <Layout>
-          <PresentForViewer
-            slide={currentSlide}
-            socket={socket}
-            presentationId={presentationId}
-            username={username}
-            isFinalSlide={isFinalSlide}
-            sessionId={sessionId}
-          />
-          <ChatScreen currentMessage={currentMessage} setCurrentMessage={setCurrentMessage} />
-        </Layout>
-      </Styled>
-    </LoadingScreen>
-  );
-};
 const ChatScreen = (props) => {
   const { currentMessage, setCurrentMessage } = props;
   return (
@@ -309,7 +84,6 @@ const PresentForViewer = (props) => {
       break;
   }
 };
-
 const MultipleChoicePresentation = (props) => {
   const {
     question,
@@ -439,156 +213,150 @@ const ParagraphPresentation = (props) => {
   const { content } = props;
   return <p>{content}</p>;
 };
-/*
 
-const PublicPresentation = (props) => {
-  const [presentation, setPresentation] = useContext(PresentationContext);
-  const [username, setUsername] = useState("");
-  const [getUser, setGetUser] = useState(false);
-  const [submitGetCode, setSubmitGetCode] = useState(false);
-  const [code, setCode] = useState("");
-  const [answer, setAnswer] = useState(1);
+// import React, { useEffect, useState, useContext } from "react";
+// import { Layout, Radio, Space, Input, Button } from "antd";
+// import { toast } from "react-toastify";
+// import Styled, { StyledButton } from "../style";
+// import { GetCurrentSlide, GetSlideByPresentationAndIndex } from "../api/Session.Api";
+// import { SocketContext } from "../../../components/Socket/socket-client";
+// import { SlideType } from "../../../actions/constants";
 
-  const submitUsername = () => {
-    // console.log("username ", username);
-    setGetUser(true);
-  };
-  const submitCode = () => {
-    setSubmitGetCode(true);
-  };
-  const onChange = (e) => {
-    setAnswer(e.target.value);
-  };
+// import LoadingScreen from "react-loading-screen";
+// import { StyleContainer, StyledNavLink } from "./style";
+// import { useNavigate, useParams } from "react-router-dom";
+// import { PresentForViewer } from "./component";
+// import { getSessionId } from "../API";
+import UserContext from "../../../utils/UserContext";
+import { fetchUsers } from "../../../utils/api";
+
+export const GroupPresentation = (props) => {
+  const { groupId, presentationId } = useParams();
+  const [user, setUser] = useState({});
+  const [sessionId, setSessionId] = useState("");
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(1);
+  const [currentSlide, setCurrentSlide] = useState(null);
+  const [isFinalSlide, setIsFinalSlide] = useState(false);
+  const socket = useContext(SocketContext);
+  const navigate = useNavigate();
+
+  if (!user) {
+    navigate("/signin");
+  }
+
   useEffect(() => {
     document.getElementById("main").style.backgroundColor = "rgb(56, 18, 114)";
+    return () => {
+      document.getElementById("main").style.backgroundColor = "white";
+    };
   });
-  return (
-    <Styled>
-      <Layout>
-        {getUser == false ? (
-          <div className="publicPresentation-container">
-            <div className="pubPresentation-box">
-              <label className="question-label" htmlFor="username">
-                Username
-              </label>
-              <input
-                type="text"
-                id="username"
-                className="publicquestion-input"
-                maxLength={150}
-                placeholder="Enter username"
-                value={username}
-                autoComplete="off"
-                onChange={(e) => setUsername(e.target.value)}
-              />
-              <button className="username-submit" onClick={() => submitUsername()}>
-                Enter
-              </button>
-            </div>
-          </div>
-        ) : (
-          <GetCode username={username} />
-        )}
-      </Layout>
-    </Styled>
-  );
-};
-const GetCode = (props) => {
-  const { username } = props;
-  const [submitGetCode, setSubmitGetCode] = useState(false);
-  const [code, setCode] = useState("");
-  const [sessionId, setSessionId] = useState("");
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [dataCurrentSlide, setDataCurrentSlide] = useState("");
-  const submitCode = async () => {
-    console.log("username va ma code hien tai ", username, code);
-    await getSessionId(code)
-      .then((response) => {
-        console.log("submitCode ", response);
-        const sessionId = response.data.data.session;
-        setSessionId(sessionId);
-        setSubmitGetCode(true);
+  useEffect(() => {
+    const SetUser = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+        return null;
+      }
+      const response = await fetchUsers(accessToken);
+      if (response && response.user != null) {
+        setUser(response.user);
+      }
+    };
+    getSessionId(presentationId, groupId)
+      .then((getSessionIdResponse) => {
+        console.log("getSessionId response", getSessionIdResponse);
+        if (getSessionIdResponse.status != 200) {
+          throw new Error("Fail to get session");
+        }
+        setSessionId(getSessionIdResponse.data.data.session);
+        var request = {
+          sessionId: getSessionIdResponse.data.data.session,
+          presentationId: presentationId
+        };
+        GetCurrentSlide(request)
+          .then((GetCurrentSlideResponse) => {
+            setCurrentSlideIndex(GetCurrentSlideResponse.data.data.current_slide);
+          })
+          .catch((error) => {
+            console.log("GetCurrentSlide error:", error.message);
+            throw new Error("cant get current slide");
+          });
       })
-      .catch((err) => {
-        const response = err.response;
-        printMessage(400, response.data);
+      .catch((error) => {
+        console.log("getSessionId error:", error.message);
       });
-  };
-  return (
-    <>
-      {submitGetCode == false ? (
-        <div className="publicPresentation-container">
-          <div className="pubPresentation-box">
-            <label className="question-label" htmlFor="username">
-              Code
-            </label>
-            <input
-              type="text"
-              id="code"
-              className="publicquestion-input"
-              maxLength={150}
-              placeholder="Enter code"
-              defaultValue=""
-              value={code}
-              autoComplete="off"
-              onChange={(e) => setCode(e.target.value)}
-            />
-            <button className="username-submit" onClick={() => submitCode()}>
-              Enter
-            </button>
-          </div>
-        </div>
-      ) : (
-        <SurveyPresentation currentSlide={currentSlide} dataCurrentSlide={dataCurrentSlide} />
-      )}
-    </>
-  );
-};
-const SurveyPresentation = (props) => {
-  const { currentSlide, dataCurrentSlide } = props;
-  const [answer, setAnswer] = useState(1);
-  const onChange = (e) => {
-    setAnswer(e.target.value);
-  };
-  useEffect(() => {
-  useEffect(() => {
-    document.getElementById("main").style.backgroundColor = "white";
-  }, []);
-  return (
-    <>
-      {currentSlide == 0 ? (
-        <div className="waitingPresentation-container">
-          <h3>Waiting for other people to join...</h3>
-        </div>
-      ) : (
-        <div className="surveyPresentation-container">
-          <img
-            id="logo"
-            src="/assets/images/kahoot.png"
-            style={{ maxWidth: "20rem", marginTop: "3rem" }}
-          />
-          <div className="survey-body">
-            <div className="survey-question">This is test question?</div>
-            <div className="survey-answer">
-              <Radio.Group onChange={onChange} value={answer}>
-                <Space direction="vertical">
-                  <Radio value="1">Option A</Radio>
-                  <Radio value="2">Option B</Radio>
-                  <Radio value="3">Option C</Radio>
-                  <Radio value="4">Option D</Radio>
-                </Space>
-              </Radio.Group>
-            </div>
-            <div className="survey-submit">
-              <Button type="primary" className="submit-button">
-                Submit
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
 
-*/
+    SetUser();
+  }, []);
+  useEffect(() => {
+    socket.emit("init-game", {
+      id: presentationId,
+      groupId: groupId,
+      user: user
+    });
+    console.log("init game");
+  }, [sessionId]);
+  useEffect(() => {
+    socket.on("connect", () => {});
+    socket.on("slide-changed", (response) => {
+      console.log("response ", response);
+      if (response.status == 200) {
+        setCurrentSlideIndex(response.data.current_slide);
+      }
+    });
+    return () => {
+      socket.off("connect");
+      socket.off("slide-changed");
+      socket.off("get-answer-from-player");
+    };
+  }, [socket]);
+  useEffect(() => {
+    if (
+      presentationId == "" ||
+      presentationId.trim() == "" ||
+      Number.isNaN(currentSlideIndex) ||
+      currentSlideIndex < 1
+    ) {
+      return;
+    } else {
+      console.log("get slide by current");
+      var request = {
+        slideIndex: currentSlideIndex,
+        presentationId: presentationId
+      };
+      GetSlideByPresentationAndIndex(request)
+        .then((response) => {
+          if (response.success == false) {
+            console.log("failed:", response.message);
+            return;
+          }
+          setIsFinalSlide(response.isFinalSlide);
+          setCurrentSlide(response.slide);
+        })
+        .catch((error) => {
+          console.log("error:", error);
+        });
+    }
+  }, [currentSlideIndex]);
+
+  return (
+    <LoadingScreen
+      loading={currentSlideIndex < 1}
+      bgColor="#fffff"
+      spinnerColor="#fff"
+      textColor="#fff"
+      text="Please waiting for the host to start">
+      <Styled>
+        <Layout>
+          <PresentForViewer
+            slide={currentSlide}
+            socket={socket}
+            presentationId={presentationId}
+            username={user.username || ""}
+            isFinalSlide={isFinalSlide}
+            sessionId={sessionId}
+          />
+        </Layout>
+      </Styled>
+    </LoadingScreen>
+  );
+};
