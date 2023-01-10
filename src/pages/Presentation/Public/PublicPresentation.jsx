@@ -361,10 +361,6 @@ const ChatScreen = (props) => {
   const [clicked, setClicked] = useState(false);
   const [hovered, setHovered] = useState(false);
 
-  const hide = () => {
-    setClicked(false);
-    setHovered(false);
-  };
   const handleHoverChange = (open) => {
     setHovered(open);
     setClicked(false);
@@ -377,7 +373,7 @@ const ChatScreen = (props) => {
   const hoverContent = <div>Chatbox</div>;
   const clickContent = (
     <StyledChatScreen>
-      <div className="chat-window" style={{zIndex: 10000000003}}>
+      <div className="chat-window" style={{ zIndex: 10000000003 }}>
         <h2>Chat window</h2>
         <div className="chat-header">
           <p>Live Chat</p>
@@ -417,6 +413,7 @@ const ChatScreen = (props) => {
   return (
     <Popover
       style={{
+        zIndex: 10000000003,
         width: 500
       }}
       content={hoverContent}
@@ -473,8 +470,8 @@ const QuestionScreen = (props) => {
 
   const hoverContent = <div>Chatbox</div>;
   const clickContent = (
-    <StyledQuestionScreen >
-      <div className="question-window" style={{zIndex: 10000000003}}>
+    <StyledQuestionScreen>
+      <div className="question-window" style={{ zIndex: 10000000003 }}>
         <h2>Question window</h2>
         <div className="chat-header">
           <p>Question List</p>
@@ -519,6 +516,7 @@ const QuestionScreen = (props) => {
   return (
     <Popover
       style={{
+        zIndex: 10000000003,
         width: 500
       }}
       content={hoverContent}
@@ -527,6 +525,9 @@ const QuestionScreen = (props) => {
       open={hovered}
       onOpenChange={handleHoverChange}>
       <Popover
+        style={{
+          zIndex: 10000000003
+        }}
         title="Question box"
         content={clickContent}
         trigger="click"
