@@ -22,8 +22,8 @@ import { ShowPresentation } from "./pages/Presentation/Show/ShowPresentation";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Collaborators from "./pages/Presentation/Collaborators/Collaborators";
-import { PublicPresentation } from "./pages/Presentation/Viewer/PublicPresentation";
 import { SocketContext, SocketContextProvider } from "./components/Socket/socket-client";
+import { PublicPresentation } from "./pages/Presentation/Public/PublicPresentation";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
