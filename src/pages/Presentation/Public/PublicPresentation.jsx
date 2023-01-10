@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Layout, Radio, Space, Input, Button } from "antd";
+import { Layout, Radio, Space, Input, Button, Popover } from "antd";
 import { toast } from "react-toastify";
 const { Header, Footer, Sider, Content } = Layout;
 import Styled, { StyledButton } from "../style";
@@ -17,8 +17,19 @@ import { StyledChatScreen, StyledNavLink, StyledQuestionScreen } from "./style";
 import { useNavigate, useParams } from "react-router-dom";
 import ScrollToBottom from "react-scroll-to-bottom";
 import { getMessageAPI, getQuestionAPI } from "../api/Presentation.Api";
-import { LikeOutlined, StarOutlined, LikeFilled, StarFilled } from "@ant-design/icons";
+import {
+  LikeOutlined,
+  StarOutlined,
+  LikeFilled,
+  StarFilled,
+  WechatOutlined,
+  MessageOutlined,
+  MessageFilled,
+  QuestionCircleFilled
+} from "@ant-design/icons";
 import { fetchUsers } from "../../../utils/api";
+import Icon from "@ant-design/icons/lib/components/Icon";
+
 export const PublicPresentation = (props) => {
   const { groupId } = useParams();
   const [presentation, setPresentation] = useContext(PresentationContext);
@@ -37,6 +48,10 @@ export const PublicPresentation = (props) => {
   const [questionList, setQuestionList] = useState([]);
   const [currentMessage, setCurrentMessage] = useState("");
   const [currentQuestion, setCurrentQuestion] = useState("");
+
+  useEffect(() => {
+    document.getElementById("main").style.backgroundColor = "rgb(56, 18, 114)";
+  });
 
   useEffect(() => {
     socket.emit("init-game", {
@@ -95,7 +110,6 @@ export const PublicPresentation = (props) => {
     };
   }, [socket]);
   useEffect(() => {
-    document.getElementById("main").style.backgroundColor = "rgb(56, 18, 114)";
     if (
       presentationId == "" ||
       presentationId.trim() == "" ||
@@ -147,6 +161,7 @@ export const PublicPresentation = (props) => {
         draggable: true,
         theme: "light"
       });
+      return;
     }
     setSubmitGetCode(true);
     if (username && code) {
@@ -174,16 +189,19 @@ export const PublicPresentation = (props) => {
         .catch((err) => {
           setCode("");
           setSubmitGetCode(false);
-          console.log("err ", err);
-          toast.error(err.response.data.message, {
-            position: "top-right",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            theme: "light"
-          });
+          console.log("err ", err.message);
+          toast.error(
+            "Cant not access the presentation with " + code + ". Please enter another PIN!",
+            {
+              position: "top-right",
+              autoClose: 2000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: false,
+              draggable: true,
+              theme: "light"
+            }
+          );
         });
     }
   };
@@ -299,48 +317,67 @@ export const PublicPresentation = (props) => {
   }
 
   return (
-    <LoadingScreen
-      loading={currentSlideIndex == 0}
-      bgColor="#fffff"
-      spinnerColor="#fff"
-      textColor="#fff"
-      text="Please waiting for the host to start">
-      <Styled>
-        <Layout>
-          <PresentForViewer
-            slide={currentSlide}
-            socket={socket}
-            presentationId={presentationId}
-            username={username}
-            isFinalSlide={isFinalSlide}
-            sessionId={sessionId}
-          />
-          <ChatScreen
-            currentMessage={currentMessage}
-            setCurrentMessage={setCurrentMessage}
-            messageList={messageList}
-            setMessageList={setMessageList}
-            sendMessage={sendMessage}
-          />
-          <QuestionScreen
-            questionList={questionList}
-            setQuestionList={setQuestionList}
-            currentQuestion={currentQuestion}
-            setCurrentQuestion={setCurrentQuestion}
-            sendQuestion={sendQuestion}
-            upVote={upVote}
-            markQuestion={markQuestion}
-          />
-        </Layout>
-      </Styled>
-    </LoadingScreen>
+    <>
+      <LoadingScreen
+        loading={currentSlideIndex == 0}
+        bgColor="#fffff"
+        spinnerColor="#fff"
+        textColor="#fff"
+        text="Please waiting for the host to start">
+        <Styled>
+          <Layout>
+            <PresentForViewer
+              slide={currentSlide}
+              socket={socket}
+              presentationId={presentationId}
+              username={username}
+              isFinalSlide={isFinalSlide}
+              sessionId={sessionId}
+            />
+          </Layout>
+        </Styled>
+      </LoadingScreen>
+      <ChatScreen
+        currentMessage={currentMessage}
+        setCurrentMessage={setCurrentMessage}
+        messageList={messageList}
+        setMessageList={setMessageList}
+        sendMessage={sendMessage}
+      />
+      <QuestionScreen
+        questionList={questionList}
+        setQuestionList={setQuestionList}
+        currentQuestion={currentQuestion}
+        setCurrentQuestion={setCurrentQuestion}
+        sendQuestion={sendQuestion}
+        upVote={upVote}
+        markQuestion={markQuestion}
+      />
+    </>
   );
 };
 const ChatScreen = (props) => {
   const { currentMessage, setCurrentMessage, messageList, setMessageList, sendMessage } = props;
-  return (
+  const [clicked, setClicked] = useState(false);
+  const [hovered, setHovered] = useState(false);
+
+  const hide = () => {
+    setClicked(false);
+    setHovered(false);
+  };
+  const handleHoverChange = (open) => {
+    setHovered(open);
+    setClicked(false);
+  };
+  const handleClickChange = (open) => {
+    setHovered(false);
+    setClicked(open);
+  };
+
+  const hoverContent = <div>Chatbox</div>;
+  const clickContent = (
     <StyledChatScreen>
-      <div className="chat-window">
+      <div className="chat-window" style={{zIndex: 10000000003}}>
         <h2>Chat window</h2>
         <div className="chat-header">
           <p>Live Chat</p>
@@ -376,6 +413,37 @@ const ChatScreen = (props) => {
       ;
     </StyledChatScreen>
   );
+
+  return (
+    <Popover
+      style={{
+        width: 500
+      }}
+      content={hoverContent}
+      title="Message box"
+      trigger="hover"
+      open={hovered}
+      onOpenChange={handleHoverChange}>
+      <Popover
+        title="Message box"
+        content={clickContent}
+        trigger="click"
+        open={clicked}
+        onOpenChange={handleClickChange}>
+        <span
+          className="d-inline-block"
+          style={{
+            position: "absolute",
+            right: 20,
+            bottom: 100,
+            zIndex: 10000000002,
+            fontSize: "50px"
+          }}>
+          <MessageFilled style={{ fontSize: "50px", color: "#08c" }} />
+        </span>
+      </Popover>
+    </Popover>
+  );
 };
 const QuestionScreen = (props) => {
   const {
@@ -387,9 +455,26 @@ const QuestionScreen = (props) => {
     upVote,
     markQuestion
   } = props;
-  return (
-    <StyledQuestionScreen>
-      <div className="question-window">
+  const [clicked, setClicked] = useState(false);
+  const [hovered, setHovered] = useState(false);
+
+  const hide = () => {
+    setClicked(false);
+    setHovered(false);
+  };
+  const handleHoverChange = (open) => {
+    setHovered(open);
+    setClicked(false);
+  };
+  const handleClickChange = (open) => {
+    setHovered(false);
+    setClicked(open);
+  };
+
+  const hoverContent = <div>Chatbox</div>;
+  const clickContent = (
+    <StyledQuestionScreen >
+      <div className="question-window" style={{zIndex: 10000000003}}>
         <h2>Question window</h2>
         <div className="chat-header">
           <p>Question List</p>
@@ -430,6 +515,36 @@ const QuestionScreen = (props) => {
       </div>
       ;
     </StyledQuestionScreen>
+  );
+  return (
+    <Popover
+      style={{
+        width: 500
+      }}
+      content={hoverContent}
+      title="Question box"
+      trigger="hover"
+      open={hovered}
+      onOpenChange={handleHoverChange}>
+      <Popover
+        title="Question box"
+        content={clickContent}
+        trigger="click"
+        open={clicked}
+        onOpenChange={handleClickChange}>
+        <span
+          className="d-inline-block"
+          style={{
+            position: "absolute",
+            right: 20,
+            bottom: 20,
+            zIndex: 10000000002,
+            fontSize: "50px"
+          }}>
+          <QuestionCircleFilled style={{ fontSize: "50px", color: "#08c" }} />
+        </span>
+      </Popover>
+    </Popover>
   );
 };
 const PresentForViewer = (props) => {
@@ -492,9 +607,9 @@ const MultipleChoicePresentation = (props) => {
     setHasSubmitted(true);
     // waiting screen or see chart.
   };
-  useEffect(() => {
-    document.getElementById("main").style.backgroundColor = "white";
-  });
+  // useEffect(() => {
+  //   document.getElementById("main").style.backgroundColor = "white";
+  // },[question]);
   useEffect(() => {
     console.log("socket", socket);
     socket.on("get-answer-from-player", (response) => {
