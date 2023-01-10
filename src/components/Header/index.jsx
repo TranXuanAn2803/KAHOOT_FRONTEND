@@ -46,8 +46,8 @@ export const Header = function (props) {
     return <DefaultHeader />;
   }
 
-  if (!currentUser) {
-    return <DefaultHeader />;
+  if (!currentUser || location.pathname.toLowerCase() == "/presentations/public") {
+    return <div></div>;
   }
 
   return <MainHeader user={currentUser} />;
@@ -56,13 +56,13 @@ export const Header = function (props) {
 const DefaultHeader = (props) => {
   return (
     <>
-      {/* <MenuBar id="menubar-horizontal" bg="light" className="d-none d-md-flex">
+      <MenuBar id="menubar-horizontal" bg="light" className="d-none d-md-flex">
         <Container fluid style={{ height: "inherit" }}>
-        <MenuBar.Brand href="/" className="d-flex">
+          <MenuBar.Brand href="/" className="d-flex">
             <img id="logo" style={{ maxWidth: "10rem" }} src="/assets/images/kahoot.png" />
           </MenuBar.Brand>
         </Container>
-      </MenuBar> */}
+      </MenuBar>
     </>
   );
 };
@@ -158,7 +158,7 @@ function CreatingButton(props) {
           </a>
         </MenuItem>
         <MenuItem>
-          <a className="text-decoration-none text-dark" href="/creator">
+          <a className="text-decoration-none text-dark" href="/presentation/creator">
             <span style={{ fontSize: "1.4rem" }}>Create new presentation</span>
           </a>
         </MenuItem>

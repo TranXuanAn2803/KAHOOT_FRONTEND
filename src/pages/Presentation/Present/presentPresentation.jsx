@@ -25,21 +25,8 @@ const PresentPresentation = () => {
       total: 30
     }
   ]);
-  useEffect(() => {
-    console.log("currentSlide ", currentSlide, presentation);
-    const currentSlideElement = presentation["slideList"][currentSlide];
-    const data = currentSlideElement.options.map((item, index) => {
-      return {
-        answer: item,
-        total: Math.floor(Math.random() * (100 - 20)) + 20
-      };
-    });
-    setDataChart(data);
 
-    //  const currentSlideArr = presentation
-  }, [currentSlide]);
-
-  const changeCurrentSlide = index => {
+  const changeCurrentSlide = (index) => {
     console.log("currentSlide ", currentSlide, presentation["slideList"].length);
     let newCurrentSlide = currentSlide + index;
     if (newCurrentSlide < 0 || newCurrentSlide >= presentation["slideList"].length) {

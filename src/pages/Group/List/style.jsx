@@ -20,7 +20,7 @@ export const Styled = styled.div`
     justify-content: flex-end;
   }
   .create-group-button {
-    margin: 0px;
+    margin: 20px;
     border: 0px;
     cursor: pointer;
     vertical-align: bottom;
@@ -30,7 +30,7 @@ export const Styled = styled.div`
     border-radius: 4px;
     font-size: 1.2rem;
     font-weight: bold;
-    /* padding: 20px; */
+    padding: 20px; 
     text-align: center;
     -webkit-text-decoration: none;
     text-decoration: none;
@@ -85,6 +85,17 @@ export const Styled = styled.div`
     line-height: 20px;
     margin: 20px 0px;
   }
+  .card-container {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    left: 300px;
+    flex-direction: column;
+    background-color: rgb(255, 255, 255);
+    border-radius: 1rem;
+    box-shadow: rgb(0 0 0 / 15%) 0 0.2rem 0.4rem 0;
+    padding: 1rem 4rem;
+  }
 `;
 
 export const StyledNavLink = styled(NavLink)`
@@ -99,5 +110,4 @@ export const StyledNavLink = styled(NavLink)`
     color: #009e58 !important;
   }
 `;
-
 

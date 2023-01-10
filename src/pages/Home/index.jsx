@@ -28,7 +28,7 @@ function HomePage() {
     document.body.style.backgroundImage = "none";
   }, []);
   useEffect(() => {
-    // console.log("currentUser ", currentUser);
+    console.log("currentUser ", currentUser, accessToken);
     if (!currentUser || !accessToken) {
       navigate("/signin");
     }

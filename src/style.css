@@ -18,7 +18,12 @@ body {
   background-color: #f2f2f2;
 }
 
-#root
-{
+#root {
   overflow: auto;
+}
+.error-message {
+  color: red;
+  font-size: 14px;
+  line-height: 20px;
+  margin: 20px 0px;
 }

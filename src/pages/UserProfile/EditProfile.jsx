@@ -62,7 +62,6 @@ export const EditProfileScreen = (props) => {
           const updateUserProfileResponse = await UpdateUserProfile(values);
           console.log("update user profile response ", updateUserProfileResponse);
           let cuser = await isAuthenticated();
-          console.log("cuser ", cuser);
           if (cuser?.user != undefined) {
             setCurrentUser(cuser.user);
           }
@@ -192,7 +191,6 @@ const EditUserNameModal = (props) => {
         const updateUserProfileResponse = await UpdateUserProfile(values);
         console.log(updateUserProfileResponse);
         let cuser = await isAuthenticated();
-        console.log("cuser ", cuser);
         if (cuser?.user != undefined) {
           setCurrentUser(cuser.user);
         }

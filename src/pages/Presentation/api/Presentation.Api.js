@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ApiConfig as _ParamConfig } from "../../actions/constants";
+import { ApiConfig as _ParamConfig } from "../../../actions/constants";
 let AxiosInstance = axios.create({
   baseURL: _ParamConfig.serverUrl,
   timeout: _ParamConfig.timeout
@@ -33,19 +33,6 @@ export const GetAllCollaboratorsAPI = async () => {
     message: response.data.message || null
   };
 };
-export const getOneDetailPresentationAPI = async (id) => {
-  var accessToken = localStorage.getItem("accessToken");
-  var response = await AxiosInstance.get(`/presentation/${id}`, {
-    headers: {
-      x_authorization: accessToken
-    }
-  });
-  return {
-    status: response.status,
-    data: response.data.data,
-    message: response.data.message || null
-  };
-};
 export const deleteCollaboratorAPI = async (idPresentation, collaborator) => {
   var accessToken = localStorage.getItem("accessToken");
   var response = await AxiosInstance.delete(
@@ -56,6 +43,26 @@ export const deleteCollaboratorAPI = async (idPresentation, collaborator) => {
       }
     }
   );
+  return {
+    status: response.status,
+    data: response.data.data,
+    message: response.data.message || null
+  };
+};
+export const getMessageAPI = async (presentationId, sessionId) => {
+  var response = await AxiosInstance.put(`/chat/${presentationId}`, {
+    sessionId: sessionId
+  });
+  return {
+    status: response.status,
+    data: response.data.data,
+    message: response.data.message || null
+  };
+};
+export const getQuestionAPI = async (presentationId, sessionId) => {
+  var response = await AxiosInstance.put(`/question/${presentationId}`, {
+    sessionId: sessionId
+  });
   return {
     status: response.status,
     data: response.data.data,
@@ -79,42 +86,6 @@ export const addCollaboratorAPI = async (data) => {
     message: response.data.message || null
   };
 };
-export const getPresentingRole = async (id, sessionId) => {
-  var accessToken = localStorage.getItem("accessToken");
-  var response = await AxiosInstance.put(
-    `/presentation/presenting/role/${id}`,
-    { sessionId: sessionId },
-    {
-      headers: {
-        x_authorization: accessToken
-      }
-    }
-  );
-  console.log("response getPresentingRole", response);
-  return {
-    status: response.status,
-    data: response.data.data,
-    message: response.data.message || null
-  };
-};
-export const toggleStatusPresentation = async (id, status, groupId) => {
-  var accessToken = localStorage.getItem("accessToken");
-  var response = await AxiosInstance.put(
-    `/presentation/toggleStatus/${id}`,
-    { status: status, groupId: groupId },
-
-    {
-      headers: {
-        x_authorization: accessToken
-      }
-    }
-  );
-  return {
-    status: response.status,
-    data: response.data.data,
-    message: response.data.message || null
-  };
-};
 export const GetOnePresentation = async (id) => {
   var accessToken = localStorage.getItem("accessToken");
   var response = await AxiosInstance.get(`/slide/by-present/${id}`, {
@@ -124,19 +95,7 @@ export const GetOnePresentation = async (id) => {
   });
   return response;
 };
-export const getSessionId = async (id, groupId = null) => {
-  var accessToken = localStorage.getItem("accessToken");
-  var response = await AxiosInstance.put(
-    `/presentation/presenting/session/${id}`,
-    { groupId: groupId },
-    {
-      headers: {
-        x_authorization: accessToken
-      }
-    }
-  );
-  return response;
-};
+
 export const getSlidesFromPresentation = async (id) => {
   var accessToken = localStorage.getItem("accessToken");
   var response = await AxiosInstance.get(`/slide/${id}`, {
@@ -224,18 +183,26 @@ export const savePresentationAPI = async (request) => {
     return {
       index: item.id,
       question: item.question,
-      options: item.options
+      options: item.options,
+      slideType: item.type,
+      heading: item.heading,
+      subHeading: item.subHeading,
+      paragraph: item.paragraph
     };
   });
-  var requestData = {
-    slides: newSlides
-  };
-  console.log("request data ", requestData);
-  var response = await AxiosInstance.post(`slide/${presentationId}`, requestData, {
-    headers: {
-      x_authorization: localStorage.getItem("accessToken")
+  console.log("savePresentationAPI newSlides", newSlides);
+  var response = await AxiosInstance.post(
+    `slide/${presentationId}`,
+    {
+      slides: newSlides
+    },
+
+    {
+      headers: {
+        x_authorization: localStorage.getItem("accessToken")
+      }
     }
-  });
+  );
   return {
     status: response.status,
     data: response.data.data,

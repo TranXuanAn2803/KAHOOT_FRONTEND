@@ -99,6 +99,29 @@ const Styled = styled.div`
     align-items: center;
     justify-content: center;
   }
+  .drawText-container {
+    margin: 0 auto;
+    background-color: #fff;
+    min-height: 50%;
+    min-width: 50%;
+    text-align: center;
+  }
+  .drawText-header{
+    font-weight: 700;
+    font-size: 30px;
+    padding-top: 100px;
+    margin-bottom: 20px;
+    max-width: 80%;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  
+  }
+  .drawText-body {
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+  }
   .body-right {
     width: 100%;
     height: 100%;
@@ -163,7 +186,26 @@ const Styled = styled.div`
     display: flex;
     flex-direction: column;
     gap: 20px;
+  .add-option button {
+    width: 100%;
+    background-color: rgb(219, 220, 225);
   }
+  .add-option button:hover {
+    background-color: rgb(175, 176, 180);
+  }
+  .presentation-button button {
+    width: 100%;
+  }
+  .presentation-button .play-icon {
+    transform: translate(-9px, -3px);
+  }
+  .form-create-slide {
+    margin-bottom: 20px;
+  }
+  .ant-tabs-content-holder {
+    min-height: 492px;
+  }
+ 
 `;
 
 export default Styled;

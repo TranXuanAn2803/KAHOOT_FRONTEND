@@ -7,6 +7,11 @@ export const Styled = styled.div`
     align-items: center;
     justify-content: center;
   }
+  .on-row {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
 `;
 
 export const StyleMenu = styled(Menu)`

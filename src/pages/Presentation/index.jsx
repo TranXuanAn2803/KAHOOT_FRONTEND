@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-import { SideBar } from "./SideBar";
+import React, { useEffect, useState } from "react";
+import SideBar from "./SideBar";
 import AddIcon from "@mui/icons-material/Add";
-import { Table, Layout, Dropdown, Space, Form, Input, Modal } from "antd";
+import { Table, Layout, Dropdown, Space, Form, Input, Modal, Button } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
@@ -11,15 +11,21 @@ import {
   SmallDashOutlined,
   UsergroupAddOutlined
 } from "@ant-design/icons";
-import { MenuItem, StyledButton } from "./style";
+import Styled, { MenuItem, StyledButton } from "./style";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   AddPresentation,
   GetAllPresentations,
   DeletePresentation,
   DeleteManyPresentation,
-  CreateSlide
-} from "./API";
+  CreateSlide,
+  addCollaboratorAPI,
+  GetAllCollaboratorsAPI,
+  deleteCollaboratorAPI
+} from "./api/Presentation.Api";
+import * as Yup from "yup";
+import { useFormik } from "formik";
+import Collaborators from "./Collaborators/Collaborators";
 
 const { Content } = Layout;
 const { Search } = Input;
@@ -29,14 +35,109 @@ export const Presentation = (props) => {
   return <Outlet />;
 };
 export const MyPresentations = (props) => {
-  React.useEffect(() => {
-    document.title = "List Presentations - Realtime quiz-based learning";
+  const [currentselected, setCurrentselected] = useState("presentation");
+  const [addCollaborators, setAddCollaborators] = useState(false);
+  const [currentPresentation, setCurrentPresentation] = useState("");
+  const [collaboratorsList, setCollaboratorsList] = useState([]);
+
+  const addCollaboratorsSchema = Yup.object({
+    email: Yup.string()
+      .email("Not a proper email")
+      .min(10, "Minimum 10 characters")
+      .required("Email required")
   });
+  const formik = useFormik({
+    initialValues: {
+      email: ""
+    },
+    validationSchema: addCollaboratorsSchema,
+    onSubmit: async (value) => {
+      console.log("value submit ", value, "presentation", currentPresentation);
+      const dataSubmit = {
+        idPresentation: currentPresentation,
+        email: value.email
+      };
+      addCollaboratorAPI(dataSubmit).then((values) => {
+        console.log("values return ", values);
+      });
+    }
+  });
+  const handleOpenAddCollaborators = (id) => {
+    setCurrentPresentation(id);
+    setAddCollaborators(true);
+  };
+
+  const handleCloseAddCollaborators = () => {
+    setAddCollaborators(false);
+  };
+  const deleteCollaborator = (data) => {
+    console.log("deleteCollaborator ", data);
+    deleteCollaboratorAPI(data._id, data.collaborator).then((value) => {
+      console.log("value return ", value);
+    });
+  };
+  useEffect(() => {
+    document.title = "List Presentations - Realtime quiz-based learning";
+    GetAllCollaboratorsAPI().then((values) => {
+      const data = values.data;
+      const newArr = [];
+      for (let i = 0; i < data.length; i++) {
+        for (let j = 0; j < data[i].collaborators.length; j++) {
+          const newObj = {
+            ...data[i],
+            collaborator: data[i].collaborators[j].username,
+            key: data[i]._id + j,
+            owner: data[i].created_by.username
+          };
+          newArr.push(newObj);
+        }
+      }
+      setCollaboratorsList(newArr);
+    });
+  }, []);
+
   // const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);
   return (
     <>
       <Layout style={{ height: "100%", width: "100%" }}>
-        <SideBar />
+        <Modal
+          title="Add collaborators"
+          open={addCollaborators}
+          onOk={handleCloseAddCollaborators}
+          onCancel={handleCloseAddCollaborators}
+          okButtonProps={<></>}
+          footer={null}>
+          <Styled>
+            <form
+              method="POST"
+              className="form-add-collaborators"
+              autoComplete="on"
+              onSubmit={formik.handleSubmit}>
+              <div className="input-box">
+                <label htmlFor="email" className="input-label">
+                  Email
+                </label>
+                <Input
+                  id="email"
+                  name="email"
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  type="email"
+                  placeholder="Input email address..."
+                  className="input-text"
+                  autoComplete="true"
+                />
+                {formik.errors.email && formik.touched.email && (
+                  <p className="error-message">{formik.errors.email}</p>
+                )}
+              </div>
+              <Button type="primary" htmlType="submit">
+                Add collaborator
+              </Button>
+            </form>
+          </Styled>
+        </Modal>
+        <SideBar currentselected={currentselected} setcurrentselected={setCurrentselected} />
         <Layout
           style={{
             backgroundColor: "white",
@@ -46,16 +147,32 @@ export const MyPresentations = (props) => {
             style={{
               margin: "0 1.6rem 2rem"
             }}>
-            <div className="d-flex flex-column" style={{ padding: "3rem 3.2rem" }}>
-              <p className="mb-5" style={{ fontWeight: "600", fontSize: "1.6rem" }}>
-                List presentations
-              </p>
-              <div className="mb-5">
-                <TableOfPresentations
-                // handleHasSelectedPresentation={setHasSelectedPresentation}
-                />
+            {currentselected == "presentation" ? (
+              <div className="d-flex flex-column" style={{ padding: "3rem 3.2rem" }}>
+                <p className="mb-5" style={{ fontWeight: "600", fontSize: "1.6rem" }}>
+                  List presentations
+                </p>
+                <div className="mb-5">
+                  <TableOfPresentations
+                    setCollaboratorsList={setCollaboratorsList}
+                    handleOpenAddCollaborators={handleOpenAddCollaborators}
+                    // handleHasSelectedPresentation={setHasSelectedPresentation}
+                  />
+                </div>
               </div>
-            </div>
+            ) : (
+              <div>
+                <p className="mb-5" style={{ fontWeight: "600", fontSize: "1.6rem" }}>
+                  List collaborators
+                </p>
+                <div className="mb-5">
+                  <Collaborators
+                    collaboratorsList={collaboratorsList}
+                    deleteCollaborator={deleteCollaborator}
+                  />
+                </div>
+              </div>
+            )}
           </Content>
         </Layout>
       </Layout>
@@ -66,6 +183,8 @@ export const MyPresentations = (props) => {
 // #region Table of Presentations
 
 const TableOfPresentations = (props) => {
+  const handleOpenAddCollaborators = props.handleOpenAddCollaborators;
+  const { setCollaboratorsList } = props;
   const [modal, contextHolder] = Modal.useModal();
   const [presentationList, setPresentationList] = React.useState([]);
   const [hasSelectedPresentation, setHasSelectedPresentation] = React.useState(false);
@@ -208,6 +327,22 @@ const TableOfPresentations = (props) => {
           )
         });
       });
+
+    GetAllCollaboratorsAPI().then((values) => {
+      console.log("collaborators ", values);
+      const data = values.data;
+      const newArr = [];
+      for (let i = 0; i < data.length; i++) {
+        for (let j = 0; j < data[i].collaborators.length; j++) {
+          const newObj = {
+            ...data[i],
+            collaborators: data[i].collaborators[j].username
+          };
+          newArr.push(newObj);
+        }
+      }
+      setCollaboratorsList(newArr);
+    });
   }, []);
 
   // #region handle cho các sự kiện select rows
@@ -316,7 +451,13 @@ const TableOfPresentations = (props) => {
           title=""
           key="action"
           render={(_, record) => {
-            return <ActionMenu data={record} handleDelete={deletePresentation} />;
+            return (
+              <ActionMenu
+                data={record}
+                handleDelete={deletePresentation}
+                handleOpenAddCollaborators={handleOpenAddCollaborators}
+              />
+            );
           }}
         />
       </Table>
@@ -326,8 +467,7 @@ const TableOfPresentations = (props) => {
 };
 
 const ActionMenu = (props) => {
-  const data = props.data;
-
+  const { data, handleOpenAddCollaborators } = props;
   const items = [
     {
       label: (
@@ -345,15 +485,15 @@ const ActionMenu = (props) => {
     },
     {
       label: (
-        <MenuItem to={`/presentations`}>
+        <MenuItem onClick={() => handleOpenAddCollaborators(data.id)}>
           <UsergroupAddOutlined style={{ fontSize: "2rem", paddingRight: "1rem !important" }} />
-          <p className="pl-3" style={{ marginLeft: "1.6rem" }}>
+          <span className="pl-3" style={{ marginLeft: "1.6rem" }}>
             Invite Collaborators
-          </p>
+          </span>
         </MenuItem>
       ),
-      key: "1",
-      disabled: true
+      key: "1"
+      // disabled: true
     },
     {
       label: (
@@ -443,7 +583,7 @@ const AddPresentations = (props) => {
     AddPresentation({ presentationName })
       .then((response) => {
         console.log(response);
-        const {data: presentation, message, status } = response;
+        const { data: presentation, message, status } = response;
         if (presentation == null || status !== 200) {
           modal.info({
             title: "Notifications",
@@ -456,7 +596,7 @@ const AddPresentations = (props) => {
         } else {
           CreateSlide({ presentationId: presentation._id, index: 0 })
             .then((values) => {
-              const {data: slide, message, status } = values;
+              const { data: slide, message, status } = values;
               if (slide == null || status !== 200) {
                 modal.info({
                   title: "Notifications",
@@ -546,63 +686,4 @@ const AddPresentations = (props) => {
     </>
   );
 };
-// #endregion
-
-// #region Delete Presentation
-
-// const DeletePresentation = (props) => {
-//   const selectedPresentationList = props.selectedPresentationList;
-//   if (selectedPresentationList == null || selectedPresentationList.length == 0) {
-//     return;
-//   }
-//   return;
-//   <>
-//     <StyledButton
-//       variant="danger"
-//       className="d-flex align-items-center"
-//       onClick={() => setModalShow(true)}>
-//       <p>Delete</p>
-//     </StyledButton>
-//     <Modal
-//       width={800}
-//       open={open}
-//       title={<p style={{ fontSize: "2rem" }}>Create new presentation</p>}
-//       onCancel={handleCancel}
-//       footer={null}>
-//       <Form
-//         name="addNewPresentationForm"
-//         initialValues={{
-//           remember: true
-//         }}
-//         autoComplete="off"
-//         size="large"
-//         onFinish={handleSubmit}>
-//         <Form.Item
-//           name="presentationName"
-//           rules={[
-//             {
-//               required: true,
-//               message: "Enter a name for your presentation."
-//             }
-//           ]}
-//           style={{ marginBottom: "4rem" }}>
-//           <Input placeholder="Presentation name" />
-//         </Form.Item>
-//         <Form.Item className="text-center text-md-end">
-//           <StyledButton
-//             key="back"
-//             variant="secondary"
-//             onClick={handleCancel}
-//             style={{ marginRight: "1rem" }}>
-//             Cancel
-//           </StyledButton>
-//           <StyledButton key="submit" variant="primary" type="submit">
-//             Create presentation
-//           </StyledButton>
-//         </Form.Item>
-//       </Form>
-//     </Modal>
-//   </>;
-// };
-
 // #endregion

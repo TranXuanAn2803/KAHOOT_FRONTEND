@@ -27,7 +27,7 @@ const SignUp = () => {
     email: Yup.string()
       .email("Not a proper email")
       .min(10, "Minimum 10 characters")
-      .required("Username required"),
+      .required("Email required"),
     password: Yup.string()
       .required("No password provided.")
       .min(8, "Password is too short - should be at least 8 characters")
@@ -104,7 +104,6 @@ const SignUp = () => {
         theme: "light"
       });
       let cuser = await isAuthenticated();
-      // console.log("cuser ", cuser);
       if (cuser?.user != undefined) {
         setCurrentUser(cuser.user);
       }
@@ -112,7 +111,7 @@ const SignUp = () => {
     }
   };
   useEffect(() => {
-    document.title = "Sign Up - KKahoot!";
+    document.title = "Sign Up - Realtime quiz-based learning";
     document.getElementById("root").style.backgroundImage = `url("./assets/images/universe.jpg")`;
     document.getElementById("root").style.backgroundSize = `cover`;
     document.getElementById("root").style.backgroundRepeat = `no-repeat`;
@@ -135,7 +134,7 @@ const SignUp = () => {
                   className="form-login"
                   method="post"
                   onSubmit={formik.handleSubmit}
-                  autoComplete="on">
+                  autoComplete="off">
                   <div className="input-box">
                     <label htmlFor="username" className="input-label">
                       Username
@@ -148,6 +147,7 @@ const SignUp = () => {
                       type="text"
                       placeholder="Input username"
                       className="input-text"
+                      autoComplete="false"
                     />
                     {formik.errors.username && formik.touched.username && (
                       <p className="error-message">{formik.errors.username}</p>
@@ -198,24 +198,6 @@ const SignUp = () => {
                       <p className="error-message">{formik.errors.password}</p>
                     )}
                   </div>
-                  {/* <div className="input-box">
-                    <label htmlFor="role_id" className="input-label">
-                      Your role
-                    </label>
-                    <select
-                      id="role_id"
-                      name="role_id"
-                      value={formik.values.role_id}
-                      onChange={formik.handleChange}>
-                      {userRole.map((item, idx) => {
-                        return (
-                          <option key={`userRole-${idx}`} value={item.value}>
-                            {item.content}
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </div> */}
                   <button type="submit" className="signup-btn">
                     Sign up
                   </button>
