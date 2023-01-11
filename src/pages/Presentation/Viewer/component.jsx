@@ -164,13 +164,47 @@ const MultipleChoicePresentation = (props) => {
 };
 
 const HeadingPresentation = (props) => {
-  const { content } = props;
-  return <h1>{content}</h1>;
+  const { slide } = props;
+  return (
+    <Layout style={{ margin: "1rem", position: "relative", top: "-17rem" }}>
+      <Content style={{ paddingBottom: "56.25%", backgroundColor: "white" }}>
+        <div
+          className="d-flex flex-column align-items-center justify-content-center"
+          style={{
+            height: "100%",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%"
+          }}>
+          <div style={{ fontSize: "10rem" }}>{slide.heading}</div>
+          <div style={{ fontSize: "1.6rem" }}>{slide.subHeading}</div>
+        </div>
+      </Content>
+    </Layout>
+  );
 };
 
 const ParagraphPresentation = (props) => {
-  const { content } = props;
-  return <p>{content}</p>;
+  const { slide } = props;
+  return (
+    <Layout style={{ margin: "1rem", position: "relative", top: "-17rem" }}>
+      <Content style={{ paddingBottom: "56.25%", backgroundColor: "white" }}>
+        <div
+          className="d-flex flex-column align-items-center justify-content-center"
+          style={{
+            height: "100%",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%"
+          }}>
+          <div style={{ fontSize: "10rem" }}>{slide.heading}</div>
+          <div style={{ fontSize: "1.6rem" }}>{slide.paragraph}</div>
+        </div>
+      </Content>
+    </Layout>
+  );
 };
 
 export const ChatScreen = (props) => {

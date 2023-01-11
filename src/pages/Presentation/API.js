@@ -40,6 +40,7 @@ export const getOneDetailPresentationAPI = async (id) => {
       x_authorization: accessToken
     }
   });
+  console.log("getOneDetailPresentationAPI response", response);
   return {
     status: response.status,
     data: response.data.data,

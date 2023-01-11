@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Header } from "../../components/Header";
 import Styled from "./style";
-import { Button, Tabs, Input, Select } from "antd";
-import { QuestionCircleOutlined, CloseOutlined } from "@ant-design/icons";
+import { Button, Tabs, Input, Select, Layout } from "antd";
+import { QuestionCircleOutlined, CloseOutlined, BarChartOutlined } from "@ant-design/icons";
 import PresentationContext from "../../utils/PresentationContext";
 import { SlideType } from "../../actions/constants";
-import { Slide } from "../Presentation/Slide";
+import { HeadingSlide, ParagraphSlide, MultipleChoiceSlide } from "../Presentation/Slide";
 const Creator = (props) => {
   //slide chua cac slide hien tai (slideList)
   //curentaSlide chua so thu tu cua slide hien tai
@@ -31,19 +31,99 @@ const Creator = (props) => {
     }
   ]);
   const [optionItems, setOptionsItem] = useState([]);
+  const MultipleChoiceOptions = (
+    <div className="d-flex align-items-center" style={{ fontSize: "1.6rem", padding: "0 0.8rem" }}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        role="img"
+        preserveAspectRatio="xMidYMid meet"
+        width="28"
+        height="28"
+        viewBox="0 0 48 48">
+        <title>Bar Chart Icon</title>
+        <rect x="32.73" y="17.04" width="11.4" height="25.25" fill="rgb(231, 232, 235)"></rect>
+        <rect x="3.87" y="26.22" width="11.4" height="16.06" fill="rgb(64, 70, 93)"></rect>
+        <rect x="18.3" y="4.31" width="11.4" height="37.97" fill="rgb(183, 186, 194)"></rect>
+        <rect y="42.28" width="48" height=".99" fill="#000000"></rect>
+      </svg>
+      <span style={{ marginLeft: "0.8rem" }}>Multiple Choice</span>
+    </div>
+  );
+  const HeadingOption = (
+    <div style={{ fontSize: "1.6rem", padding: "0 0.8rem" }}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        role="img"
+        preserveAspectRatio="xMidYMid meet"
+        width="28"
+        height="28"
+        viewBox="0 0 48 48">
+        <title>Heading Subheading Icon</title>
+        <rect fill="rgb(64, 70, 93)" y="18.05" width="48" height="10.15" rx="1.26"></rect>
+        <rect
+          fill="rgb(183, 186, 194)"
+          x="5.54"
+          y="30.05"
+          width="36.92"
+          height="4.62"
+          rx="1.3"></rect>
+      </svg>
+      <span style={{ marginLeft: "0.8rem" }}>Heading</span>
+    </div>
+  );
+  const ParagraphOption = (
+    <div style={{ fontSize: "1.6rem", padding: "0 0.8rem" }}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        role="img"
+        preserveAspectRatio="xMidYMid meet"
+        width="28"
+        height="28"
+        viewBox="0 0 48 48">
+        <title>Heading Paragraph Icon</title>
+        <rect
+          fill="rgb(183, 186, 194)"
+          x="3.93"
+          y="11.04"
+          width="40.92"
+          height="8.66"
+          rx="1.26"></rect>
+        <rect fill="rgb(64, 70, 93)" y="22.31" width="48" height="13.38" rx="1.26"></rect>
+      </svg>
+      <span style={{ marginLeft: "0.8rem" }}>Paragraph</span>
+    </div>
+  );
   const slideOptions = [
     {
-      label: "Popular question types",
-      options: [{ label: "MultipleChoice", value: SlideType.MultipleChoice }]
+      label: <div style={{ fontSize: "1.6rem" }}>Popular question types</div>,
+      options: [{ label: MultipleChoiceOptions, value: SlideType.MultipleChoice }]
     },
     {
-      label: "Content slides",
+      label: <div style={{ fontSize: "1.6rem" }}>Content slides</div>,
       options: [
-        { label: "Heading ", value: SlideType.Heading },
-        { label: "Paragraph ", value: SlideType.Paragraph }
+        { label: HeadingOption, value: SlideType.Heading },
+        { label: ParagraphOption, value: SlideType.Paragraph }
       ]
     }
   ];
+  const SlideSelect = () => {
+    return (
+      <Select
+        defaultValue={presentationContext.slideList[currentSlide].type}
+        size="large"
+        style={{
+          width: "100%",
+          marginBottom: "2rem",
+          fontSize: "1.6rem !important"
+        }}
+        listItemHeight={30}
+        listHeight={250}
+        onChange={handleChooseSlide}
+        options={slideOptions}
+      />
+    );
+  };
+
   const [currentSlideType, setCurrentSlideType] = useState(SlideType.MultipleChoice);
   useEffect(() => {
     // CHART
@@ -63,7 +143,6 @@ const Creator = (props) => {
         name: item
       };
     });
-
     setOptionsItem(optionsItem);
   }, [presentationContext, currentSlide]);
   useEffect(() => {
@@ -122,209 +201,208 @@ const Creator = (props) => {
     currentSlideList[currentSlide]["type"] = value;
     setPresentationContext({ ...presentationContext, slideList: currentSlideList });
   };
-  const SlideSelect = () => {
-    return (
-      <Select
-        defaultValue={presentationContext.slideList[currentSlide].type}
-        style={{ width: "100%", marginBottom: "20px" }}
-        onChange={handleChooseSlide}
-        options={slideOptions}
-      />
-    );
-  };
   const CenterDraw = () => {
-    if (presentationContext.slideList[currentSlide].type === SlideType.MultipleChoice) {
-      return <Slide dataChart={dataChart} />;
-    } else if (presentationContext.slideList[currentSlide].type === SlideType.Heading) {
-      return (
-        <div className="drawText-container">
-          <h3 className="drawText-header">{presentationContext.slideList[currentSlide].heading}</h3>
-          <p className="drawText-body">{presentationContext.slideList[currentSlide].subHeading}</p>
-        </div>
-      );
-    } else {
-      return (
-        <div className="drawText-container">
-          <h3 className="drawText-header">{presentationContext.slideList[currentSlide].heading}</h3>
-          <p className="drawText-body">{presentationContext.slideList[currentSlide].paragraph}</p>
-        </div>
-      );
+    switch (presentationContext.slideList[currentSlide].type) {
+      case SlideType.MultipleChoice:
+        var question = presentationContext.slideList[currentSlide].question;
+        return (
+          <Layout style={{ margin: "1rem", position: "relative", top: "-17rem" }}>
+            <MultipleChoiceSlide dataChart={dataChart} question={question} />
+          </Layout>
+        );
+      case SlideType.Heading:
+        var heading = presentationContext.slideList[currentSlide].heading;
+        var subHeading = presentationContext.slideList[currentSlide].subHeading;
+        return (
+          <Layout style={{ margin: "1rem", position: "relative", top: "-17rem" }}>
+            <HeadingSlide heading={heading} subHeading={subHeading} />
+          </Layout>
+        );
+      case SlideType.Paragraph:
+        var heading = presentationContext.slideList[currentSlide].heading;
+        var paragraph = presentationContext.slideList[currentSlide].paragraph;
+        return (
+          <Layout style={{ margin: "1rem", position: "relative", top: "-17rem" }}>
+            <ParagraphSlide heading={heading} paragraph={paragraph} />;
+          </Layout>
+        );
+      default:
+        break;
     }
   };
   const EditCurrentPresentation = () => {
-    if (presentationContext.slideList[currentSlide].type == SlideType.MultipleChoice) {
-      return (
-        <form method="post" action="/slide">
-          <div className="item-container">
-            <div className="item-question">
-              <label htmlFor="question-name" className="question-text">
-                Your question
-              </label>
-              <span className="question-icon">
-                <QuestionCircleOutlined />
-              </span>
+    switch (presentationContext.slideList[currentSlide].type) {
+      case SlideType.MultipleChoice:
+        return (
+          <form method="post" action="/slide">
+            <div className="item-container">
+              <div className="item-question">
+                <label
+                  htmlFor="question-name"
+                  className="question-text"
+                  style={{ fontSize: "1.6rem" }}>
+                  Your question
+                </label>
+                <span className="question-icon">
+                  <QuestionCircleOutlined />
+                </span>
+              </div>
+              <div className="item-answer">
+                <input
+                  id="question-name"
+                  type="text"
+                  className="question-input"
+                  maxLength={150}
+                  defaultValue={presentationContext.slideList[currentSlide].question}
+                  onBlur={(e) => changeTextOfSlide("question", e.target.value)}
+                />
+              </div>
             </div>
-            <div className="item-answer">
-              <input
-                id="question-name"
-                type="text"
-                className="question-input"
-                maxLength={150}
-                placeholder="Multiple Choice"
-                defaultValue={presentationContext.slideList[currentSlide].question}
-                // key={`question-input`}
-                onBlur={(e) => changeTextOfSlide("question", e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="item-container">
-            <div className="item-question">
-              <label htmlFor="answers" className="question-text">
-                Options
-              </label>
-              <span className="question-icon">
-                <QuestionCircleOutlined />
-              </span>
-            </div>
-            {optionItems.map((item, index) => {
-              return (
-                <div className="item-answer" key={`item-answer-${index}`}>
-                  <input
-                    id="answers"
-                    name="answers[]"
-                    type="text"
-                    className="question-input option-input"
-                    placeholder="Option"
-                    defaultValue={item.name}
-                    // key={`changeitemname-${item.name}`}
-                    onBlur={(e) => ChangeOptionValue(index, e.target.value)}
-                  />
-                  <div className="item-close" onClick={(e) => removeOption(index)}>
-                    <CloseOutlined />
+            <div className="item-container">
+              <div className="item-question">
+                <label htmlFor="answers" className="question-text">
+                  Options
+                </label>
+                <span className="question-icon">
+                  <QuestionCircleOutlined />
+                </span>
+              </div>
+              {optionItems.map((item, index) => {
+                return (
+                  <div className="item-answer" key={`item-answer-${index}`}>
+                    <input
+                      id="answers"
+                      name="answers[]"
+                      type="text"
+                      className="question-input option-input"
+                      placeholder="Option"
+                      defaultValue={item.name}
+                      // key={`changeitemname-${item.name}`}
+                      onBlur={(e) => ChangeOptionValue(index, e.target.value)}
+                    />
+                    <div className="item-close" onClick={(e) => removeOption(index)}>
+                      <CloseOutlined />
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-          <div className="button-creator-container">
-            <Button type="text" onClick={() => createNewOption()}>
-              + Add option
-            </Button>
-            <Button type="primary" onClick={() => savePresentation()}>
-              Save presentation
-            </Button>
-          </div>
-        </form>
-      );
-    } else if (presentationContext.slideList[currentSlide].type == SlideType.Heading) {
-      return (
-        <form method="post" action="/slide">
-          <div className="item-container">
-            <div className="item-question">
-              <label htmlFor="heading" className="question-text">
-                Heading
-              </label>
-              <span className="question-icon">
-                <QuestionCircleOutlined />
-              </span>
+                );
+              })}
             </div>
-            <div className="item-answer">
-              <input
-                id="heading"
-                type="text"
-                className="question-input"
-                maxLength={150}
-                placeholder="Heading"
-                defaultValue={presentationContext.slideList[currentSlide].heading}
-                onBlur={(e) => changeTextOfSlide("heading", e.target.value)}
-              />
+            <div className="button-creator-container">
+              <Button type="text" onClick={() => createNewOption()}>
+                + Add option
+              </Button>
+              <Button type="primary" onClick={() => savePresentation()}>
+                Save presentation
+              </Button>
             </div>
-          </div>
-          <div className="item-container">
-            <div className="item-question">
-              <label htmlFor="subHeading" className="question-text">
-                SubHeading
-              </label>
-              <span className="question-icon">
-                <QuestionCircleOutlined />
-              </span>
+          </form>
+        );
+      case SlideType.Heading:
+        return (
+          <form method="post" action="/slide">
+            <div className="item-container">
+              <div className="item-question">
+                <label htmlFor="heading" className="question-text">
+                  Heading
+                </label>
+                <span className="question-icon">
+                  <QuestionCircleOutlined />
+                </span>
+              </div>
+              <div className="item-answer">
+                <input
+                  id="heading"
+                  type="text"
+                  className="question-input"
+                  maxLength={150}
+                  defaultValue={presentationContext.slideList[currentSlide].heading}
+                  onBlur={(e) => changeTextOfSlide("heading", e.target.value)}
+                />
+              </div>
             </div>
-            <div className="item-answer">
-              <input
-                id="subHeading"
-                type="text"
-                className="question-input"
-                placeholder="SubHeading"
-                defaultValue={presentationContext.slideList[currentSlide].subHeading}
-                style={{ minHeight: "50px" }}
-                onBlur={(e) => changeTextOfSlide("subHeading", e.target.value)}
-              />
+            <div className="item-container">
+              <div className="item-question">
+                <label htmlFor="subHeading" className="question-text">
+                  SubHeading
+                </label>
+                <span className="question-icon">
+                  <QuestionCircleOutlined />
+                </span>
+              </div>
+              <div className="item-answer">
+                <input
+                  id="subHeading"
+                  type="text"
+                  className="question-input"
+                  defaultValue={presentationContext.slideList[currentSlide].subHeading}
+                  style={{ minHeight: "50px" }}
+                  onBlur={(e) => changeTextOfSlide("subHeading", e.target.value)}
+                />
+              </div>
             </div>
-          </div>
-          <div className="button-creator-container">
-            <Button type="primary" onClick={() => savePresentation()}>
-              Save presentation
-            </Button>
-          </div>
-        </form>
-      );
-    } else {
-      return (
-        <form method="post" action="/slide">
-          <div className="item-container">
-            <div className="item-question">
-              <label htmlFor="heading" className="question-text">
-                Heading
-              </label>
-              <span className="question-icon">
-                <QuestionCircleOutlined />
-              </span>
+            <div className="button-creator-container">
+              <Button type="primary" onClick={() => savePresentation()}>
+                Save presentation
+              </Button>
             </div>
-            <div className="item-answer">
-              <input
-                id="heading"
-                type="text"
-                className="question-input"
-                maxLength={150}
-                placeholder="Heading"
-                defaultValue={presentationContext.slideList[currentSlide].heading}
-                onBlur={(e) => changeTextOfSlide("heading", e.target.value)}
-              />
+          </form>
+        );
+      case SlideType.Paragraph:
+        return (
+          <form method="post" action="/slide">
+            <div className="item-container">
+              <div className="item-question">
+                <label htmlFor="heading" className="question-text">
+                  Heading
+                </label>
+                <span className="question-icon">
+                  <QuestionCircleOutlined />
+                </span>
+              </div>
+              <div className="item-answer">
+                <input
+                  id="heading"
+                  type="text"
+                  className="question-input"
+                  maxLength={150}
+                  defaultValue={presentationContext.slideList[currentSlide].heading}
+                  onBlur={(e) => changeTextOfSlide("heading", e.target.value)}
+                />
+              </div>
             </div>
-          </div>
-          <div className="item-container">
-            <div className="item-question">
-              <label htmlFor="paragraph" className="question-text">
-                Paragraph
-              </label>
-              <span className="question-icon">
-                <QuestionCircleOutlined />
-              </span>
+            <div className="item-container">
+              <div className="item-question">
+                <label htmlFor="paragraph" className="question-text">
+                  Paragraph
+                </label>
+                <span className="question-icon">
+                  <QuestionCircleOutlined />
+                </span>
+              </div>
+              <div className="item-answer">
+                <textarea
+                  id="paragraph"
+                  type="text"
+                  className="question-input"
+                  defaultValue={presentationContext.slideList[currentSlide].paragraph}
+                  style={{ minHeight: "50px" }}
+                  onBlur={(e) => changeTextOfSlide("paragraph", e.target.value)}
+                />
+              </div>
             </div>
-            <div className="item-answer">
-              <input
-                id="paragraph"
-                type="text"
-                className="question-input"
-                placeholder="Paragraph"
-                defaultValue={presentationContext.slideList[currentSlide].paragraph}
-                style={{ minHeight: "50px" }}
-                onBlur={(e) => changeTextOfSlide("paragraph", e.target.value)}
-              />
+            <div className="button-creator-container">
+              <Button type="primary" onClick={() => savePresentation()}>
+                Save presentation
+              </Button>
             </div>
-          </div>
-          <div className="button-creator-container">
-            <Button type="primary" onClick={() => savePresentation()}>
-              Save presentation
-            </Button>
-          </div>
-        </form>
-      );
+          </form>
+        );
+      default:
+        break;
     }
   };
   return (
     <Styled>
-      <Header />
       <div className="creator-container">
         <div className="creator-header">
           <div className="header-button">
@@ -366,7 +444,9 @@ const Creator = (props) => {
           </div>
           <div className="body-right">
             <div className="slide-type-container">
-              <h4>Slide type</h4>
+              <div className="my-2 py-1" style={{ fontWeight: "bold" }}>
+                Slide type
+              </div>
               <div className="slide-select">
                 <SlideSelect />
               </div>
