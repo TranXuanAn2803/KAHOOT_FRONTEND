@@ -115,38 +115,6 @@ export const ShowPresentation = () => {
               return;
             });
         }
-        // else {
-        //   if (presentationValue.data.status != 3) {
-        //     toggleStatusPresentation(presentationId, 3)
-        //       .then((values) => {
-        //         if (values && values.status == 200) {
-        //           // Gỉa sử delete thành công
-        //           toast.success(values.message, {
-        //             position: "top-right",
-        //             autoClose: 2000,
-        //             hideProgressBar: false,
-        //             closeOnClick: true,
-        //             pauseOnHover: false,
-        //             draggable: true,
-        //             theme: "light"
-        //           });
-        //           socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
-        //           getSessionId(presentationId).then((data) => {
-        //             console.log("getSessionId return ", data);
-        //             const sessionId = data.data.data.session;
-        //             setSessionId(sessionId);
-        //           });
-        //         } else {
-        //           printMessage(400, values.message);
-        //         }
-        //       })
-        //       .catch((err) => {
-        //         const values = err.response.data;
-        //         printMessage(400, values);
-        //       });
-        //     return;
-        //   }
-        // }
         if (!groupId && presentationValue.data.status != PresentationMode.PublicPresentation) {
           toggleStatusPresentation(presentationId, 3)
             .then((values) => {
@@ -289,6 +257,7 @@ export const ShowPresentation = () => {
   useEffect(() => {
     if (currentSlideIndex != -1) {
       var slide = currentPresentation["slides"][currentSlideIndex];
+      if(!slide) return;
       switch (slide.slide_type) {
         case "MULTIPLE_CHOICE":
           const currentArr = currentPresentation["slides"][currentSlideIndex]["options"];
@@ -314,7 +283,20 @@ export const ShowPresentation = () => {
     setCurrentSlideIndex(currentSlideIndex - 1);
   };
   const goToNextSlide = () => {
+    if (currentSlideIndex + 1 > currentPresentation.length - 1) {
+      toast.warn("You are in the final slide.", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        theme: "light"
+      });
+      return;
+    }
     socket.emit("next-slide", { id: sessionId, presentationId, user: currentUser });
+    setCurrentSlideIndex(currentSlideIndex + 1);
   };
 
   const stopPresentation = async () => {
@@ -395,7 +377,7 @@ export const ShowPresentation = () => {
                 boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
                 maxHeight: "50rem"
               }}>
-              {currentSlideIndex == -1 || !currentPresentation ? (
+              {currentSlideIndex == -1 || !currentPresentation || !currentPresentation["slides"][currentSlideIndex] ? (
                 <Content style={{ paddingBottom: "56.25%", backgroundColor: "white" }}></Content>
               ) : (
                 <PresentationForHost
@@ -439,7 +421,7 @@ const HeadingPresentation = (props) => {
   const { slide } = props;
   console.log("Heading", slide);
   return (
-    <Layout style={{ margin: "1rem" }}>
+    <Layout>
       <Content style={{ paddingBottom: "56.25%", backgroundColor: "white" }}>
         <div
           className="d-flex flex-column align-items-center justify-content-center"
