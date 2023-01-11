@@ -225,7 +225,7 @@ export const ChatScreen = (props) => {
     setClicked(open);
   };
 
-  const hoverContent = <div>Chatbox</div>;
+  const hoverContent = <div>Chatbox</div>
   const clickContent = (
     <StyledChatScreen>
       <div className="chat-window" style={{ zIndex: 10000000003 }}>
@@ -245,7 +245,7 @@ export const ChatScreen = (props) => {
                     </div>
                   </div>
                 </div>
-              );
+              )
             })}
           </ScrollToBottom>
         </div>
@@ -255,31 +255,22 @@ export const ChatScreen = (props) => {
             value={currentMessage}
             placeholder="Type your message "
             onChange={(event) => {
-              setCurrentMessage(event.target.value);
+              setCurrentMessage(event.target.value)
             }}
           />
           <button onClick={sendMessage}>&#9658;</button>
         </div>
       </div>
-      ;
+      
     </StyledChatScreen>
-  );
+  )
 
   return (
-    <Popover
-      style={{
-        zIndex: 10000000003,
-        width: 500
-      }}
-      content={hoverContent}
-      title="Message box"
-      trigger="hover"
-      open={hovered}
-      onOpenChange={handleHoverChange}>
       <Popover
         style={{
-          zIndex: 10000000003
+          zIndex: 10000000003,
         }}
+        placement="left" 
         title="Message box"
         content={clickContent}
         trigger="click"
@@ -296,9 +287,8 @@ export const ChatScreen = (props) => {
           }}>
           <MessageFilled style={{ fontSize: "50px", color: "#08c" }} />
         </span>
-      </Popover>
     </Popover>
-  );
+  )
 };
 
 export const QuestionScreen = (props) => {
@@ -327,7 +317,7 @@ export const QuestionScreen = (props) => {
     setClicked(open);
   };
 
-  const hoverContent = <div>Chatbox</div>;
+  const hoverContent = <div>Chatbox</div>
   const clickContent = (
     <StyledQuestionScreen>
       <div className="question-window" style={{ zIndex: 10000000003 }}>
@@ -353,7 +343,7 @@ export const QuestionScreen = (props) => {
                     </div>
                   </div>
                 </div>
-              );
+              )
             })}
           </ScrollToBottom>
         </div>
@@ -369,24 +359,15 @@ export const QuestionScreen = (props) => {
           <button onClick={sendQuestion}>&#9658;</button>
         </div>
       </div>
-      ;
+
     </StyledQuestionScreen>
-  );
+  )
   return (
-    <Popover
-      style={{
-        zIndex: 10000000003,
-        width: 500
-      }}
-      content={hoverContent}
-      title="Question box"
-      trigger="hover"
-      open={hovered}
-      onOpenChange={handleHoverChange}>
       <Popover
         style={{
-          zIndex: 10000000003
+          zIndex: 10000000003,
         }}
+        placement="left" 
         title="Question box"
         content={clickContent}
         trigger="click"
@@ -404,6 +385,5 @@ export const QuestionScreen = (props) => {
           <QuestionCircleFilled style={{ fontSize: "50px", color: "#08c" }} />
         </span>
       </Popover>
-    </Popover>
-  );
+  )
 };

@@ -35,7 +35,9 @@ export const StyleContainer = styled.div`
 `;
 export const StyledChatScreen = styled.div`
   position: relative;
+
   .chat-window {
     margin-top: 20px;
+
   }
 `;

@@ -317,7 +317,7 @@ export const PublicPresentation = (props) => {
   }
 
   return (
-    <>
+    <div>
       <LoadingScreen
         loading={currentSlideIndex == 0}
         bgColor="#fffff"
@@ -353,7 +353,8 @@ export const PublicPresentation = (props) => {
         upVote={upVote}
         markQuestion={markQuestion}
       />
-    </>
+
+    </div>
   );
 };
 const ChatScreen = (props) => {
@@ -422,17 +423,23 @@ const ChatScreen = (props) => {
       open={hovered}
       onOpenChange={handleHoverChange}>
       <Popover
+        style={{
+          zIndex: 10000000003,
+        }}
+        placement="left" 
+
         title="Message box"
         content={clickContent}
         trigger="click"
         open={clicked}
-        onOpenChange={handleClickChange}>
+        onOpenChange={handleClickChange}
+        >
         <span
           className="d-inline-block"
           style={{
             position: "absolute",
             right: 20,
-            bottom: 100,
+            bottom: 20,
             zIndex: 10000000002,
             fontSize: "50px"
           }}>
@@ -526,8 +533,11 @@ const QuestionScreen = (props) => {
       onOpenChange={handleHoverChange}>
       <Popover
         style={{
-          zIndex: 10000000003
+          zIndex: 10000000003,
+
         }}
+        placement="left" 
+
         title="Question box"
         content={clickContent}
         trigger="click"
@@ -538,7 +548,7 @@ const QuestionScreen = (props) => {
           style={{
             position: "absolute",
             right: 20,
-            bottom: 20,
+            bottom: 100,
             zIndex: 10000000002,
             fontSize: "50px"
           }}>

@@ -36,6 +36,8 @@ export const StyleContainer = styled.div`
 export const StyledChatScreen = styled.div`
   position: relative;
   z-index: 10000000003;
+  height: 500px;
+  
   .chat-window {
     width: 300px;
     height: 420px;
@@ -146,6 +148,8 @@ export const StyledChatScreen = styled.div`
 export const StyledQuestionScreen = styled.div`
   position: relative;
   z-index: 10000000003;
+  height: 500px;
+
   .question-window {
     width: 300px;
     height: 420px;
