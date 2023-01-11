@@ -1,9 +1,6 @@
 import { Layout, Divider, Modal } from "antd";
-const { Header, Footer, Sider, Content } = Layout;
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Slide } from "../Slide";
-import Container from "react-bootstrap/Container";
 import { MenuItem as MenuBarItem, MenuBar, MenuList, StyledButton } from "../style";
 import { ArrowLeftOutlined, PlayCircleOutlined, ShareAltOutlined } from "@ant-design/icons";
 import Creator from "../../Creator";
@@ -13,7 +10,8 @@ import { GetOnePresentation, savePresentationAPI } from "../api/Presentation.Api
 import { toggleStatusPresentation } from "../API";
 import { toast } from "react-toastify";
 import Styled from "./style";
-import PresentPresentation from "../Present/presentPresentation";
+const { Header, Footer, Sider, Content } = Layout;
+
 export const EditPresentation = () => {
   const { presentationId } = useParams();
   const [modal, contextHolder] = Modal.useModal();
@@ -136,74 +134,12 @@ export const EditPresentation = () => {
         )
       });
     }
-    // // change from 1 to 0
-    // toggleStatusPresentation(presentationId, 0)
-    //   .then((values) => {
-    //     // Gỉa sử delete thành công
-    //     toast.success(values.message, {
-    //       position: "top-right",
-    //       autoClose: 2000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: false,
-    //       draggable: true,
-    //       theme: "light"
-    //     });
-    //     navigate("/presentations");
-    //   })
-    //   .catch((err) => {
-    //     const values = err.response.data;
-    //     toast.error(values, {
-    //       position: "top-right",
-    //       autoClose: 2000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: false,
-    //       draggable: true,
-    //       theme: "light"
-    //     });
-    //   });
   };
   const presentPresentation = () => {
     const request = {
       presentationId: presentationId,
       slides: presentationContext.slideList
     };
-    // savePresentationAPI(request)
-    //   .then((values) => {
-    //     console.log(values);
-    //     if (values && values.status == 200) {
-    //       // Gỉa sử delete thành công
-    //       modal.info({
-    //         title: "Notifications",
-    //         content: (
-    //           <>
-    //             <p>{`Save presentations successfully.`}</p>
-    //           </>
-    //         )
-    //       });
-    //     } else {
-    //       modal.error({
-    //         title: "Notifications",
-    //         content: (
-    //           <>
-    //             <p>{`Save presentations failed.`}</p>
-    //           </>
-    //         )
-    //       });
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     modal.error({
-    //       title: "Notifications",
-    //       content: (
-    //         <>
-    //           <p>{`Delete presentations failed. ${error}`}</p>
-    //         </>
-    //       )
-    //     });
-    //   });
-    // change from 1 to 0
     toggleStatusPresentation(presentationId, 0)
       .then((values) => {
         // Gỉa sử delete thành công

@@ -122,6 +122,13 @@ export const GetSlideByPresentationAndIndex = async (request) => {
   }
   var slideList = GetSlideListResponse.data.data.slides;
   if (index <= slideList.length) {
+    switch (slideList[index - 1].slide_type) {
+      case "MULTIPLE_CHOICE":
+        slideList[index - 1].type = SlideType.MultipleChoice;
+        break;
+      default:
+        break;
+    }
     if (slideList[index - 1].slide_type == "MULTIPLE_CHOICE") {
       slideList[index - 1].type = SlideType.MultipleChoice;
     }

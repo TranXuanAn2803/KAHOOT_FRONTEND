@@ -10,6 +10,8 @@ export const Styled = styled.div`
   .on-row {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
     gap: 20px;
   }
 `;
