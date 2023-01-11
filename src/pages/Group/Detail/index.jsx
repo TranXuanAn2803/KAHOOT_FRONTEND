@@ -252,7 +252,9 @@ export default function GroupDetail() {
       p.username = p.created_by.username;
       p.current_session=data.current_session;
       present.push(p);
-      if (p.status === 2) {
+      if (data.current_session!=undefined &&data.current_session.length>0) {
+        console.log("data reloadPresent: ", data.current_session)
+
         setCurrentPresentation(p._id);
         setSessionId(data.current_session);
         setGroupId(data.group_id);

@@ -103,6 +103,7 @@ export const ShowPresentation = () => {
                   console.log("getSessionId return ", data);
                   const sessionId = data.data.data.session;
                   setSessionId(sessionId);
+                  console.log(sessionId)
                 });
               } else {
                 printMessage(400, values.message);
