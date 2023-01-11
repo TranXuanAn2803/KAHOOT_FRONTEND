@@ -229,41 +229,6 @@ export const sharePresentToGroup = async (id, groupId, accessToken) => {
     console.log("err", err);
   }
 };
-export const getCurrentSession = async (id, groupId, accessToken) => {
-  try {
-    const response = await axios
-      .put(
-        `${URL}/presentation/presenting/session/${id}`,
-        {
-          groupId: groupId
-        },
-        {
-          headers: {
-            x_authorization: accessToken
-          }
-        }
-      )
-      .catch((error) => {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          const objectReturn = {
-            data: error.response.data,
-            status: error.response.status
-          };
-          return objectReturn;
-        }
-      });
-    const { data, status } = response;
-    const objectReturn = {
-      data: data,
-      status: status
-    };
-    return objectReturn;
-  } catch (err) {
-    console.log("err", err);
-  }
-};
 
 export const fetchGroupMember = async (id, accessToken) => {
   const { data } = await axios.get(`${URL}/group/member/${id}`, {
