@@ -86,7 +86,10 @@ const App = () => {
                       <Route path=":presentationId/show" element={<ShowPresentation />} />
                       <Route path=":presentationId/show/:groupId" element={<ShowPresentation />} />
                       <Route path="public" element={<PublicPresentation />} />
-                      <Route path="public/:groupId/:presentationId" element={<GroupPresentation />} />
+                      <Route
+                        path="public/:presentationId/:groupId"
+                        element={<GroupPresentation />}
+                      />
                     </Route>
 
                     <Route path="/forgot-password" element={<ForgotPassword />} />

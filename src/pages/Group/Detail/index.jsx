@@ -178,6 +178,9 @@ export default function GroupDetail() {
     reloadPresent();
   }, []);
   useEffect(() => {
+    console.log("GroupDetail data ", data);
+  }, [data]);
+  useEffect(() => {
     socket.on("new-session-for-game", (data) => {
       console.log("new sesssion for game ", data);
       if (data.status == 200) {
@@ -250,7 +253,7 @@ export default function GroupDetail() {
       p.id = data._id;
       p.key = data._id;
       p.username = p.created_by.username;
-      p.current_session=data.current_session;
+      p.current_session = data.current_session;
       present.push(p);
       if (data.current_session!=undefined &&data.current_session.length>0) {
         console.log("data reloadPresent: ", data.current_session)
@@ -305,22 +308,23 @@ export default function GroupDetail() {
     if (toggleStatus.status === 200) {
       printMessage(toggleStatus.status, toggleStatus.message);
       navigate(`/presentations/${currentPresentation}/show/${groupId}`);
-
+      socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
+      setCurrentPresentation(presentationId);
+      reloadPresent();
     } else {
       printMessage(toggleStatus.status, toggleStatus.message);
     }
-    socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
-    setCurrentPresentation(presentationId);
-    reloadPresent();
   };
   const PresentCard = () => {
     let cardData = null;
     let description = "";
 
     for (let i = 0; i < data.length; i++) {
-
-      if (data[i].current_session!=undefined &&data[i].current_session.length>0) {
-
+      if (
+        data[i].current_session != undefined &&
+        data[i].current_session.length > 0 &&
+        data[i].status == 2
+      ) {
         cardData = data[i];
         description = `The presentation name ${data[i].name} is starting. Use this code to join ${currentPresentation} `;
       }
@@ -352,7 +356,7 @@ export default function GroupDetail() {
       // presentationId / groupId
       navigate(`/presentations/${currentPresentation}/show/${groupId}`);
     } else {
-      navigate(`/presentations/public/${groupId}/${currentPresentation}`);
+      navigate(`/presentations/public/${currentPresentation}/${groupId}`);
     }
   };
 

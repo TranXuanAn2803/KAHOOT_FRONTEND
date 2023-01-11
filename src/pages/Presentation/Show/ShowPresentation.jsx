@@ -22,6 +22,7 @@ import { toast } from "react-toastify";
 import { SocketContext } from "../../../components/Socket/socket-client";
 import UserContext from "../../../utils/UserContext";
 import { printMessage } from "../../../utils/method";
+import { fetchUsers } from "../../../utils/api";
 import { Content } from "antd/es/layout/layout";
 
 export const ShowPresentation = () => {
@@ -29,7 +30,7 @@ export const ShowPresentation = () => {
   const { presentationId, groupId } = useParams();
   const [currentSlideIndex, setCurrentSlideIndex] = useState(-1);
   const [sessionId, setSessionId] = useState("");
-  const [currentUser, setCurrentUser] = useContext(UserContext);
+  const [user, setUser] = useState({});
   const socket = useContext(SocketContext);
   const [dataChart, setDataChart] = useState({});
   const [currentPresentation, setCurrentPresentation] = useState({});
@@ -98,7 +99,7 @@ export const ShowPresentation = () => {
                   draggable: true,
                   theme: "light"
                 });
-                socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
+                socket.emit("init-game", { id: presentationId, groupId, user: user });
                 getSessionId(presentationId).then((data) => {
                   console.log("getSessionId return ", data);
                   const sessionId = data.data.data.session;
@@ -164,7 +165,9 @@ export const ShowPresentation = () => {
         }
       }
     };
+
     getInfo();
+
     // GetOnePresentation(presentationId)
     //   .then((values) => {
     //     setCurrentPresentation(values.data.data);
@@ -258,7 +261,7 @@ export const ShowPresentation = () => {
   useEffect(() => {
     if (currentSlideIndex != -1) {
       var slide = currentPresentation["slides"][currentSlideIndex];
-      if(!slide) return;
+      if (!slide) return;
       switch (slide.slide_type) {
         case "MULTIPLE_CHOICE":
           const currentArr = currentPresentation["slides"][currentSlideIndex]["options"];
@@ -279,7 +282,19 @@ export const ShowPresentation = () => {
       }
     }
   }, [currentSlideIndex]);
-
+  const SetUser = async () => {
+    console.log("vao SetUser");
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      return null;
+    }
+    const response = await fetchUsers(accessToken);
+    console.log("response user ", response);
+    if (response && response.user != null) {
+      setUser(response.user);
+    }
+    return response.user;
+  };
   const goToPreviousSlide = () => {
     setCurrentSlideIndex(currentSlideIndex - 1);
   };
@@ -332,8 +347,8 @@ export const ShowPresentation = () => {
   };
   //id session, idpresentatioonId, user
   const startGame = () => {
-    console.log("startGame ", sessionId, presentationId, currentUser);
-    socket.emit("next-slide", { id: sessionId, presentationId, user: currentUser });
+    console.log("startGame ", sessionId, presentationId, user);
+    socket.emit("next-slide", { id: sessionId, presentationId, user: user });
   };
   const showResult = () => {};
   return (
@@ -378,7 +393,9 @@ export const ShowPresentation = () => {
                 boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
                 maxHeight: "50rem"
               }}>
-              {currentSlideIndex == -1 || !currentPresentation || !currentPresentation["slides"][currentSlideIndex] ? (
+              {currentSlideIndex == -1 ||
+              !currentPresentation ||
+              !currentPresentation["slides"][currentSlideIndex] ? (
                 <Content style={{ paddingBottom: "56.25%", backgroundColor: "white" }}></Content>
               ) : (
                 <PresentationForHost
