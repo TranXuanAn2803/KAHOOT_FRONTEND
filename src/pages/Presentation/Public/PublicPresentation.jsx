@@ -325,7 +325,7 @@ export const PublicPresentation = (props) => {
         textColor="#fff"
         text="Please waiting for the host to start">
         <Styled>
-          <Layout>
+          <Layout style={{ marginRight: "4rem", marginLeft: "4rem" }}>
             <PresentForViewer
               slide={currentSlide}
               socket={socket}
@@ -407,7 +407,6 @@ const ChatScreen = (props) => {
           <button onClick={sendMessage}>&#9658;</button>
         </div>
       </div>
-      ;
     </StyledChatScreen>
   );
 
@@ -517,7 +516,6 @@ const QuestionScreen = (props) => {
           <button onClick={sendQuestion}>&#9658;</button>
         </div>
       </div>
-      ;
     </StyledQuestionScreen>
   );
   return (
@@ -674,7 +672,7 @@ const MultipleChoicePresentation = (props) => {
       spinnerColor="#fff"
       textColor="#fff"
       text="Please wait for the presenter to show the next slide.">
-      <div className="surveyPresentation-container">
+      <div className="surveyPresentation-container" style={{padding: "1.5rem 2rem"}}>
         <img
           id="logo"
           src="/assets/images/kahoot.png"
@@ -703,10 +701,10 @@ const MultipleChoicePresentation = (props) => {
 };
 
 const HeadingPresentation = (props) => {
-  const { slide} = props;
+  const { slide } = props;
   console.log("Heading", slide);
   return (
-    <Layout style={{ margin: "1rem", position: "relative", top: "-17rem" }}>
+    <Layout>
       <Content style={{ paddingBottom: "56.25%", backgroundColor: "white" }}>
         <div
           className="d-flex flex-column align-items-center justify-content-center"
@@ -718,7 +716,7 @@ const HeadingPresentation = (props) => {
             width: "100%"
           }}>
           <div style={{ fontSize: "10rem" }}>{slide.heading}</div>
-          <div style={{ fontSize: "1.6rem" }}>{slide.subHeading}</div>
+          <div style={{ fontSize: "1.6rem" }}>{slide.sub_heading}</div>
         </div>
       </Content>
     </Layout>
@@ -728,7 +726,7 @@ const HeadingPresentation = (props) => {
 const ParagraphPresentation = (props) => {
   const { slide } = props;
   return (
-    <Layout style={{ margin: "1rem", position: "relative", top: "-17rem" }}>
+    <Layout>
       <Content style={{ paddingBottom: "56.25%", backgroundColor: "white" }}>
         <div
           className="d-flex flex-column align-items-center justify-content-center"

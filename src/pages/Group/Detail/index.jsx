@@ -1,22 +1,15 @@
-import React, { useEffect, useState, useCallback, useContext } from "react";
-import AppBar from "@mui/material/AppBar";
+import React, { useEffect, useState, useContext } from "react";
 import {
   exitsGroup,
   sendInvitationMail,
   fetchMyOwnPresent,
   sharePresentToGroup,
   fetchSharingPresent,
-  removeSharingPresent,
-  presentGroup,
-  findGroupPresentation
+  removeSharingPresent, findGroupPresentation
 } from "../../../utils/api";
-import Toolbar from "@mui/material/Toolbar";
 import { useLocation } from "react-router";
 import { useNavigate } from "react-router-dom";
-import LogoutIcon from "@mui/icons-material/Logout";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { toast } from "react-toastify";
-import GroupsIcon from "@mui/icons-material/Groups";
 import { Styled } from "./style";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -24,7 +17,7 @@ import { Header } from "../../../components/Header";
 import SideBar from "../SideBar";
 import { Tabs, Form, Button, Modal, Input, Card, Table, Space, Select } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
-import { getPresentingRole, getSessionId, toggleStatusPresentation } from "../../Presentation/API";
+import { getPresentingRole, toggleStatusPresentation } from "../../Presentation/API";
 import { printMessage } from "../../../utils/method";
 import { SocketContext } from "../../../components/Socket/socket-client";
 import UserContext from "../../../utils/UserContext";

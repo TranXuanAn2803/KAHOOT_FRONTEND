@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
-import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from "recharts";
 import { Styled, StyleMenu } from "./style";
-import { Layout, Menu, Modal, Button } from "antd";
+import { Layout, Button } from "antd";
 import {
   ArrowsAltOutlined,
   ClockCircleOutlined,
@@ -11,7 +10,7 @@ import {
   ArrowLeftOutlined
 } from "@ant-design/icons";
 import { MultipleChoiceSlide } from "../Slide";
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   getOneDetailPresentationAPI,
   GetOnePresentation,
@@ -20,18 +19,19 @@ import {
 } from "../API";
 import { toast } from "react-toastify";
 import { SocketContext } from "../../../components/Socket/socket-client";
-import UserContext from "../../../utils/UserContext";
 import { printMessage } from "../../../utils/method";
 import { fetchUsers } from "../../../utils/api";
 import { Content } from "antd/es/layout/layout";
+import { GetCurrentSlide } from "../api/Session.Api";
 
 export const ShowPresentation = () => {
   const { Content } = Layout;
   const { presentationId, groupId } = useParams();
   const [currentSlideIndex, setCurrentSlideIndex] = useState(-1);
   const [sessionId, setSessionId] = useState("");
-  const [currentUser, setCurrentUser] = useContext(UserContext);
-  const [userAPI, setUserAPI] = useState({});
+  // const [currentUser, setCurrentUser] = useContext(UserContext);
+  // const [currentUserAPI, setCurrentUserAPI] = useState({});
+  const [currentUser, setCurrentUser] = useState({});
   const socket = useContext(SocketContext);
   const [dataChart, setDataChart] = useState({});
   const [currentPresentation, setCurrentPresentation] = useState({});
@@ -82,14 +82,43 @@ export const ShowPresentation = () => {
   useEffect(() => {
     //list all presentations
     const getInfo = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+        toast.error("You need to login first", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          theme: "light"
+        });
+        return;
+      }
+      const response = await fetchUsers(accessToken);
+      if (!response || response.user == null) {
+        toast.error("You need to login first", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          theme: "light"
+        });
+        return;
+      }
+      var user = response.user;
+      console.log("user:", user);
+      setCurrentUser(user);
       const GetOnePresentationData = await GetOnePresentation(presentationId);
-      const user = await SetUser();
-      console.log("getInfo user ", user);
+      // const user = await SetUser();
+      // console.log("getInfo user ", user);
       if (GetOnePresentationData.status == 200) {
         setCurrentPresentation(GetOnePresentationData.data.data);
         const presentationValue = await getOneDetailPresentationAPI(presentationId);
         if (groupId && presentationValue.data.status != PresentationMode.GroupPresentation) {
-          toggleStatusPresentation(presentationId, 3)
+          toggleStatusPresentation(presentationId, 2)
             .then((values) => {
               if (values && values.status == 200) {
                 // Gỉa sử delete thành công
@@ -103,12 +132,25 @@ export const ShowPresentation = () => {
                   theme: "light"
                 });
                 socket.emit("init-game", { id: presentationId, groupId, user: user });
-                getSessionId(presentationId).then((data) => {
-                  console.log("getSessionId return ", data);
-                  const sessionId = data.data.data.session;
-                  setSessionId(sessionId);
-                  console.log(sessionId);
-                });
+                getSessionId(presentationId)
+                  .then((data) => {
+                    console.log("getSessionId return ", data);
+                    const sessionId = data.data.data.session;
+                    setSessionId(sessionId);
+                    console.log("sessionId", sessionId);
+                  })
+                  .catch((error) => {
+                    console.log("GetCurrentSlide error.", error.message);
+                    toast.error("Cannot access presenting feature now. Please try again.", {
+                      position: "top-right",
+                      autoClose: 2000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: false,
+                      draggable: true,
+                      theme: "light"
+                    });
+                  });
               } else {
                 printMessage(400, values.message);
               }
@@ -153,74 +195,48 @@ export const ShowPresentation = () => {
         }
         let currentSession = presentationValue.data.current_session;
         console.log("currentSession = ", currentSession);
-        if (currentSession) {
+        if (currentSession && currentSession.trim() != "") {
           let currentIndex = presentationValue.data.current_slide;
-          setSessionId(sessionId);
-          setCurrentSlideIndex(currentIndex);
           console.log("currentSlideIndex = ", currentIndex);
+          setSessionId(sessionId);
+          setCurrentSlideIndex(currentIndex - 1);
         } else {
-          console.log("showPresentation status: ", presentationId, groupId, user);
-          socket.emit("init-game", { id: presentationId, groupId, user: user });
-          getSessionId(presentationId, groupId).then((data) => {
-            const sessionId = data.data.data.session;
-            setSessionId(sessionId);
-          });
+          console.log("showPresentation status: ", presentationId, groupId, currentUser);
+          socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
+          getSessionId(presentationId, groupId)
+            .then((data) => {
+              const sessionId = data.data.data.session;
+              console.log("sessionId = ", sessionId);
+              setSessionId(sessionId);
+              var request = {
+                sessionId: sessionId,
+                presentationId: presentationId
+              };
+              GetCurrentSlide(request)
+                .then((response) => {
+                  console.log("currentSlideIndex = ", response.data.data.current_slide);
+                  setCurrentSlideIndex(response.data.data.current_slide - 1);
+                })
+                .catch((error) => {
+                  throw error;
+                });
+            })
+            .catch((error) => {
+              console.log("GetCurrentSlide error.", error.message);
+              toast.error("Cannot access presenting feature now. Please try again.", {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                theme: "light"
+              });
+            });
         }
       }
     };
-
     getInfo();
-
-    // GetOnePresentation(presentationId)
-    //   .then((values) => {
-    //     setCurrentPresentation(values.data.data);
-    //     toggleStatusPresentation(presentationId, 3)
-    //       .then((values) => {
-    //         if (values && values.status == 200) {
-    //           // Gỉa sử delete thành công
-    //           toast.success(values.message, {
-    //             position: "top-right",
-    //             autoClose: 2000,
-    //             hideProgressBar: false,
-    //             closeOnClick: true,
-    //             pauseOnHover: false,
-    //             draggable: true,
-    //             theme: "light"
-    //           });
-    //           socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
-    //           getSessionId(presentationId).then((data) => {
-    //             const sessionId = data.data.data.session;
-    //             setSessionId(sessionId);
-    //           });
-    //         } else {
-    //           toast.error(values.message, {
-    //             position: "top-right",
-    //             autoClose: 2000,
-    //             hideProgressBar: false,
-    //             closeOnClick: true,
-    //             pauseOnHover: false,
-    //             draggable: true,
-    //             theme: "light"
-    //           });
-    //         }
-    //       })
-    //       .catch((err) => {
-    //         const values = err.response.data;
-    //         toast.error(values, {
-    //           position: "top-right",
-    //           autoClose: 2000,
-    //           hideProgressBar: false,
-    //           closeOnClick: true,
-    //           pauseOnHover: false,
-    //           draggable: true,
-    //           theme: "light"
-    //         });
-    //       });
-    //   })
-    //   .catch((err) => {
-    //     console.log("err ", err);
-    //   });
-    //change status presentation
   }, []);
   useEffect(() => {
     document.title = `${currentPresentation.name} - Realtime quiz-based learning `;
@@ -240,6 +256,7 @@ export const ShowPresentation = () => {
       }
     });
     socket.on("get-answer-from-player", (values) => {
+      console.log("values", values);
       if (values.status !== 200) {
         printMessage(values.status, values.message);
       } else {
@@ -262,8 +279,8 @@ export const ShowPresentation = () => {
     };
   }, [socket]);
   useEffect(() => {
-    if (currentSlideIndex != -1) {
-      var slide = currentPresentation["slides"][currentSlideIndex];
+    if (currentSlideIndex > 0) {
+      var slide = currentPresentation["slides"][currentSlideIndex - 1];
       if (!slide) return;
       switch (slide.slide_type) {
         case "MULTIPLE_CHOICE":
@@ -285,22 +302,23 @@ export const ShowPresentation = () => {
       }
     }
   }, [currentSlideIndex]);
-  const SetUser = async () => {
-    console.log("vao SetUser");
-    const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken) {
-      return null;
-    }
-    const response = await fetchUsers(accessToken);
-    if (response && response.user != null) {
-      setUserAPI(response.user);
-    }
-    return response.user;
-  };
+  // const SetUser = async () => {
+  //   console.log("vao SetUser");
+  //   const accessToken = localStorage.getItem("accessToken");
+  //   if (!accessToken) {
+  //     return null;
+  //   }
+  //   const response = await fetchUsers(accessToken);
+  //   if (response && response.user != null) {
+  //     setUserAPI(response.user);
+  //   }
+  //   return response.user;
+  // };
   const goToPreviousSlide = () => {
     setCurrentSlideIndex(currentSlideIndex - 1);
   };
   const goToNextSlide = () => {
+    console.log("current slide ", currentSlideIndex);
     if (currentSlideIndex + 1 > currentPresentation.length - 1) {
       toast.warn("You are in the final slide.", {
         position: "top-right",
@@ -313,8 +331,8 @@ export const ShowPresentation = () => {
       });
       return;
     }
-    console.log("goToNextSlide user", userAPI);
-    socket.emit("next-slide", { id: sessionId, presentationId, user: userAPI });
+    console.log("goToNextSlide user", currentUser);
+    socket.emit("next-slide", { id: sessionId, presentationId, user: currentUser });
     setCurrentSlideIndex(currentSlideIndex + 1);
   };
 
@@ -348,10 +366,12 @@ export const ShowPresentation = () => {
       });
     }
   };
-  //id session, idpresentatioonId, user
   const startGame = () => {
-    console.log("startGame ", sessionId, presentationId, userAPI);
-    socket.emit("next-slide", { id: sessionId, presentationId, user: userAPI });
+    if (currentSlideIndex > -1) {
+      return;
+    }
+    socket.emit("next-slide", { id: sessionId, presentationId, user: currentUser });
+    setCurrentSlideIndex(currentSlideIndex + 1);
   };
   const showResult = () => {};
   return (
@@ -365,13 +385,17 @@ export const ShowPresentation = () => {
                 style={{ fontSize: "2.4rem", cursor: "pointer" }}
                 onClick={() => stopPresentation()}
               />
-              <div className="codePublic">
-                Go to{" "}
-                <a className="url_code" href={`/presentations/public`}>
-                  this link{" "}
-                </a>
-                and use code <b>{presentationId}</b>
-              </div>
+              {groupId ? (
+                <></>
+              ) : (
+                <div className="codePublic">
+                  Go to{" "}
+                  <a className="url_code" href={`/presentations/public`}>
+                    this link{" "}
+                  </a>
+                  and use code <b>{presentationId}</b>
+                </div>
+              )}
             </div>
             <div className="btn-group d-flex align-items-center" style={{ gap: "2rem" }}>
               <Button
@@ -464,7 +488,7 @@ const HeadingPresentation = (props) => {
 const ParagraphPresentation = (props) => {
   const { slide } = props;
   return (
-    <Layout style={{ margin: "1rem" }}>
+    <Layout>
       <Content style={{ paddingBottom: "56.25%", backgroundColor: "white" }}>
         <div
           className="d-flex flex-column align-items-center justify-content-center"

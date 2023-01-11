@@ -39,9 +39,9 @@ export const PresentForViewer = (props) => {
         />
       );
     case SlideType.Heading:
-      return <HeadingPresentation content={slide.heading} />;
+      return <HeadingPresentation slide={slide} />;
     case SlideType.Paragraph:
-      return <ParagraphPresentation content={slide.paragraph} />;
+      return <ParagraphPresentation slide={slide} />;
     default:
       break;
   }
@@ -166,7 +166,7 @@ const MultipleChoicePresentation = (props) => {
 const HeadingPresentation = (props) => {
   const { slide } = props;
   return (
-    <Layout style={{ margin: "1rem", position: "relative", top: "-17rem" }}>
+    <Layout>
       <Content style={{ paddingBottom: "56.25%", backgroundColor: "white" }}>
         <div
           className="d-flex flex-column align-items-center justify-content-center"
@@ -178,7 +178,7 @@ const HeadingPresentation = (props) => {
             width: "100%"
           }}>
           <div style={{ fontSize: "10rem" }}>{slide.heading}</div>
-          <div style={{ fontSize: "1.6rem" }}>{slide.subHeading}</div>
+          <div style={{ fontSize: "1.6rem" }}>{slide.sub_heading}</div>
         </div>
       </Content>
     </Layout>
@@ -188,7 +188,7 @@ const HeadingPresentation = (props) => {
 const ParagraphPresentation = (props) => {
   const { slide } = props;
   return (
-    <Layout style={{ margin: "1rem", position: "relative", top: "-17rem" }}>
+    <Layout>
       <Content style={{ paddingBottom: "56.25%", backgroundColor: "white" }}>
         <div
           className="d-flex flex-column align-items-center justify-content-center"

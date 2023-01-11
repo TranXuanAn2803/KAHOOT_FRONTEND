@@ -126,12 +126,16 @@ export const GetSlideByPresentationAndIndex = async (request) => {
       case "MULTIPLE_CHOICE":
         slideList[index - 1].type = SlideType.MultipleChoice;
         break;
+      case "HEADING":
+        slideList[index - 1].type = SlideType.Heading;
+        break;
+      case "PARAGRAPH":
+        slideList[index - 1].type = SlideType.Paragraph;
+        break;
       default:
         break;
     }
-    if (slideList[index - 1].slide_type == "MULTIPLE_CHOICE") {
-      slideList[index - 1].type = SlideType.MultipleChoice;
-    }
+    console.log("slide", slideList[index-1]);
     return {
       success: true,
       isFinalSlide: index == slideList.Length, // đã hết slide
