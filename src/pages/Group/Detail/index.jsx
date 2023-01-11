@@ -250,7 +250,7 @@ export default function GroupDetail() {
       p.id = data._id;
       p.key = data._id;
       p.username = p.created_by.username;
-      p.current_session=data.current_session;
+      p.current_session = data.current_session;
       present.push(p);
       if (p.status === 2) {
         setCurrentPresentation(p._id);
@@ -303,7 +303,6 @@ export default function GroupDetail() {
     if (toggleStatus.status === 200) {
       printMessage(toggleStatus.status, toggleStatus.message);
       navigate(`/presentations/${currentPresentation}/show/${groupId}`);
-
     } else {
       printMessage(toggleStatus.status, toggleStatus.message);
     }
@@ -316,9 +315,7 @@ export default function GroupDetail() {
     let description = "";
 
     for (let i = 0; i < data.length; i++) {
-
-      if (data[i].current_session!=undefined &&data[i].current_session.length>0) {
-
+      if (data[i].current_session != undefined && data[i].current_session.length > 0) {
         cardData = data[i];
         description = `The presentation name ${data[i].name} is starting. Use this code to join ${currentPresentation} `;
       }
@@ -350,7 +347,7 @@ export default function GroupDetail() {
       // presentationId / groupId
       navigate(`/presentations/${currentPresentation}/show/${groupId}`);
     } else {
-      navigate(`/presentations/public/${groupId}/${currentPresentation}`);
+      navigate(`/presentations/public/${currentPresentation}/${groupId}`);
     }
   };
 

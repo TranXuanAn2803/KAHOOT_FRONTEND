@@ -73,6 +73,7 @@ export const GroupPresentation = (props) => {
     SetUser();
   }, []);
   useEffect(() => {
+    console.log("init-game pass", presentationId, groupId, user);
     socket.emit("init-game", {
       id: presentationId,
       groupId: groupId,

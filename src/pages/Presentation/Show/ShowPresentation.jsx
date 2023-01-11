@@ -22,6 +22,7 @@ import { toast } from "react-toastify";
 import { SocketContext } from "../../../components/Socket/socket-client";
 import UserContext from "../../../utils/UserContext";
 import { printMessage } from "../../../utils/method";
+import { fetchUsers } from "../../../utils/api";
 
 var presentationName = "presentation";
 export const ShowPresentation = () => {
@@ -29,7 +30,7 @@ export const ShowPresentation = () => {
   const { presentationId, groupId } = useParams();
   const [currentSlide, setCurrentSlide] = useState(-1);
   const [sessionId, setSessionId] = useState("");
-  const [currentUser, setCurrentUser] = useContext(UserContext);
+  const [user, setUser] = useState({});
   const socket = useContext(SocketContext);
   const [dataChart, setDataChart] = useState({});
   const [currentPresentation, setCurrentPresentation] = useState({});
@@ -99,7 +100,7 @@ export const ShowPresentation = () => {
                   draggable: true,
                   theme: "light"
                 });
-                socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
+                socket.emit("init-game", { id: presentationId, groupId, user: user });
                 getSessionId(presentationId).then((data) => {
                   console.log("getSessionId return ", data);
                   const sessionId = data.data.data.session;
@@ -114,16 +115,21 @@ export const ShowPresentation = () => {
               printMessage(400, values);
             });
         } else {
-          console.log("showPresentation status: 2", presentationId, groupId, currentUser);
-          socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
-          getSessionId(presentationId, groupId).then((data) => {
-            const sessionId = data.data.data.session;
-            setSessionId(sessionId);
+          SetUser().then((response) => {
+            console.log("showPresentation status: 2", presentationId, groupId, response);
+            console.log("send init-game");
+            socket.emit("init-game", { id: presentationId, groupId, user: response });
+            getSessionId(presentationId, groupId).then((data) => {
+              const sessionId = data.data.data.session;
+              setSessionId(sessionId);
+            });
           });
         }
       }
     };
+
     getInfo();
+
     // GetOnePresentation(presentationId)
     //   .then((values) => {
     //     setCurrentPresentation(values.data.data);
@@ -223,12 +229,24 @@ export const ShowPresentation = () => {
       setDataChart(newDataChart);
     }
   }, [currentSlide]);
-
+  const SetUser = async () => {
+    console.log("vao SetUser");
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      return null;
+    }
+    const response = await fetchUsers(accessToken);
+    console.log("response user ", response);
+    if (response && response.user != null) {
+      setUser(response.user);
+    }
+    return response.user;
+  };
   const goToPreviousSlide = () => {
     setCurrentSlide(currentSlide - 1);
   };
   const goToNextSlide = () => {
-    socket.emit("next-slide", { id: sessionId, presentationId, user: currentUser });
+    socket.emit("next-slide", { id: sessionId, presentationId, user: user });
   };
 
   const stopPresentation = async () => {
@@ -263,8 +281,8 @@ export const ShowPresentation = () => {
   };
   //id session, idpresentatioonId, user
   const startGame = () => {
-    console.log("startGame ", sessionId, presentationId, currentUser);
-    socket.emit("next-slide", { id: sessionId, presentationId, user: currentUser });
+    console.log("startGame ", sessionId, presentationId, user);
+    socket.emit("next-slide", { id: sessionId, presentationId, user: user });
   };
   const showResult = () => {};
   return (
