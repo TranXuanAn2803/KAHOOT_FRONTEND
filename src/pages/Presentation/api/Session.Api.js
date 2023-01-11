@@ -135,7 +135,6 @@ export const GetSlideByPresentationAndIndex = async (request) => {
       default:
         break;
     }
-    console.log("slide", slideList[index-1]);
     return {
       success: true,
       isFinalSlide: index == slideList.Length, // đã hết slide
