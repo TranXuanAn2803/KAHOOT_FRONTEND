@@ -353,7 +353,6 @@ export const PublicPresentation = (props) => {
         upVote={upVote}
         markQuestion={markQuestion}
       />
-
     </div>
   );
 };
@@ -416,6 +415,7 @@ const ChatScreen = (props) => {
         zIndex: 10000000003,
         width: 500
       }}
+      placement="leftBottom"
       content={hoverContent}
       title="Message box"
       trigger="hover"
@@ -423,16 +423,14 @@ const ChatScreen = (props) => {
       onOpenChange={handleHoverChange}>
       <Popover
         style={{
-          zIndex: 10000000003,
+          zIndex: 10000000003
         }}
-        placement="left" 
-
+        placement="leftBottom"
         title="Message box"
         content={clickContent}
         trigger="click"
         open={clicked}
-        onOpenChange={handleClickChange}
-        >
+        onOpenChange={handleClickChange}>
         <span
           className="d-inline-block"
           style={{
@@ -524,6 +522,7 @@ const QuestionScreen = (props) => {
         zIndex: 10000000003,
         width: 500
       }}
+      placement="leftBottom"
       content={hoverContent}
       title="Question box"
       trigger="hover"
@@ -531,11 +530,9 @@ const QuestionScreen = (props) => {
       onOpenChange={handleHoverChange}>
       <Popover
         style={{
-          zIndex: 10000000003,
-
+          zIndex: 10000000003
         }}
-        placement="left" 
-
+        placement="leftBottom"
         title="Question box"
         content={clickContent}
         trigger="click"
@@ -672,7 +669,7 @@ const MultipleChoicePresentation = (props) => {
       spinnerColor="#fff"
       textColor="#fff"
       text="Please wait for the presenter to show the next slide.">
-      <div className="surveyPresentation-container" style={{padding: "1.5rem 2rem"}}>
+      <div className="surveyPresentation-container" style={{ padding: "1.5rem 2rem" }}>
         <img
           id="logo"
           src="/assets/images/kahoot.png"
