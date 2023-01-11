@@ -212,12 +212,12 @@ const EditHeader = (props) => {
           </div>
         </div>
         <MenuList className="d-flex align-items-center justify-content-evenly">
-          <MenuBarItem to="/share">
+          {/* <MenuBarItem to="/share">
             <StyledButton variant="secondary">
               <ShareAltOutlined style={{ fontSize: "2rem" }} />
               <span style={{ marginLeft: "1rem" }}>Share</span>
             </StyledButton>
-          </MenuBarItem>
+          </MenuBarItem> */}
           <div onClick={() => presentPresentation()}>
             <StyledButton>
               <PlayCircleOutlined style={{ fontSize: "2rem" }} />
