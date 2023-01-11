@@ -307,7 +307,7 @@ export default function GroupDetail() {
     );
     if (toggleStatus.status === 200) {
       printMessage(toggleStatus.status, toggleStatus.message);
-      navigate(`/presentations/${currentPresentation}/show/${groupId}`);
+      navigate(`/presentations/${presentationId}/show/${groupId}`);
       socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
       setCurrentPresentation(presentationId);
       reloadPresent();
