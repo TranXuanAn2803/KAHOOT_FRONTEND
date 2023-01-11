@@ -136,6 +136,7 @@ export const EditPresentation = () => {
     }
   };
   const presentPresentation = () => {
+    console.log("presentationId ", presentationId);
     const request = {
       presentationId: presentationId,
       slides: presentationContext.slideList
@@ -143,6 +144,7 @@ export const EditPresentation = () => {
     toggleStatusPresentation(presentationId, 0)
       .then((values) => {
         // Gỉa sử delete thành công
+
         toast.success(values.message, {
           position: "top-right",
           autoClose: 2000,
@@ -152,6 +154,7 @@ export const EditPresentation = () => {
           draggable: true,
           theme: "light"
         });
+        navigate(`/presentations/${presentationId}/show`);
       })
       .catch((err) => {
         const values = err.response.data;
@@ -164,8 +167,8 @@ export const EditPresentation = () => {
           draggable: true,
           theme: "light"
         });
+        navigate(`/presentations`);
       });
-    navigate(`/presentations/${presentationId}/show`);
   };
 
   return (
