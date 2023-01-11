@@ -14,7 +14,7 @@ export const GroupPresentation = (props) => {
   const { groupId, presentationId } = useParams();
   const [user, setUser] = useState({});
   const [sessionId, setSessionId] = useState("");
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(1);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [currentSlide, setCurrentSlide] = useState({});
   const [isFinalSlide, setIsFinalSlide] = useState(false);
   const socket = useContext(SocketContext);
@@ -85,7 +85,7 @@ export const GroupPresentation = (props) => {
     socket.on("slide-changed", (response) => {
       console.log("response ", response);
       if (response.status == 200) {
-        setCurrentSlideIndex(response.data.current_slide);
+        setCurrentSlideIndex(response.data.currentSlide);
       }
     });
     socket.on("user-adding-message-chat", (response) => {
