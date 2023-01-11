@@ -31,6 +31,7 @@ export const ShowPresentation = () => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(-1);
   const [sessionId, setSessionId] = useState("");
   const [currentUser, setCurrentUser] = useContext(UserContext);
+  const [userAPI, setUserAPI] = useState({});
   const socket = useContext(SocketContext);
   const [dataChart, setDataChart] = useState({});
   const [currentPresentation, setCurrentPresentation] = useState({});
@@ -82,6 +83,8 @@ export const ShowPresentation = () => {
     //list all presentations
     const getInfo = async () => {
       const GetOnePresentationData = await GetOnePresentation(presentationId);
+      const user = await SetUser();
+      console.log("getInfo user ", user);
       if (GetOnePresentationData.status == 200) {
         setCurrentPresentation(GetOnePresentationData.data.data);
         const presentationValue = await getOneDetailPresentationAPI(presentationId);
@@ -99,7 +102,7 @@ export const ShowPresentation = () => {
                   draggable: true,
                   theme: "light"
                 });
-                socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
+                socket.emit("init-game", { id: presentationId, groupId, user: user });
                 getSessionId(presentationId).then((data) => {
                   console.log("getSessionId return ", data);
                   const sessionId = data.data.data.session;
@@ -131,7 +134,7 @@ export const ShowPresentation = () => {
                   draggable: true,
                   theme: "light"
                 });
-                socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
+                socket.emit("init-game", { id: presentationId, groupId, user: user });
                 getSessionId(presentationId).then((data) => {
                   console.log("getSessionId return ", data);
                   const sessionId = data.data.data.session;
@@ -156,8 +159,8 @@ export const ShowPresentation = () => {
           setCurrentSlideIndex(currentIndex);
           console.log("currentSlideIndex = ", currentIndex);
         } else {
-          console.log("showPresentation status: ", presentationId, groupId, currentUser);
-          socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
+          console.log("showPresentation status: ", presentationId, groupId, user);
+          socket.emit("init-game", { id: presentationId, groupId, user: user });
           getSessionId(presentationId, groupId).then((data) => {
             const sessionId = data.data.data.session;
             setSessionId(sessionId);
@@ -289,9 +292,8 @@ export const ShowPresentation = () => {
       return null;
     }
     const response = await fetchUsers(accessToken);
-    console.log("response user ", response);
     if (response && response.user != null) {
-      setUser(response.user);
+      setUserAPI(response.user);
     }
     return response.user;
   };
@@ -311,7 +313,8 @@ export const ShowPresentation = () => {
       });
       return;
     }
-    socket.emit("next-slide", { id: sessionId, presentationId, user: currentUser });
+    console.log("goToNextSlide user", userAPI);
+    socket.emit("next-slide", { id: sessionId, presentationId, user: userAPI });
     setCurrentSlideIndex(currentSlideIndex + 1);
   };
 
@@ -347,8 +350,8 @@ export const ShowPresentation = () => {
   };
   //id session, idpresentatioonId, user
   const startGame = () => {
-    console.log("startGame ", sessionId, presentationId, currentUser);
-    socket.emit("next-slide", { id: sessionId, presentationId, user: currentUser });
+    console.log("startGame ", sessionId, presentationId, userAPI);
+    socket.emit("next-slide", { id: sessionId, presentationId, user: userAPI });
   };
   const showResult = () => {};
   return (
