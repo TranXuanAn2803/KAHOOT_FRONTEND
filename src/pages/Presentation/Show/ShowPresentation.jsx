@@ -279,8 +279,8 @@ export const ShowPresentation = () => {
     };
   }, [socket]);
   useEffect(() => {
-    if (currentSlideIndex > 0) {
-      var slide = currentPresentation["slides"][currentSlideIndex - 1];
+    if (currentSlideIndex > -1) {
+      var slide = currentPresentation["slides"][currentSlideIndex];
       if (!slide) return;
       switch (slide.slide_type) {
         case "MULTIPLE_CHOICE":
@@ -319,7 +319,7 @@ export const ShowPresentation = () => {
   };
   const goToNextSlide = () => {
     console.log("current slide ", currentSlideIndex);
-    if (currentSlideIndex + 1 > currentPresentation.length - 1) {
+    if (currentSlideIndex > currentPresentation.length - 1) {
       toast.warn("You are in the final slide.", {
         position: "top-right",
         autoClose: 2000,
