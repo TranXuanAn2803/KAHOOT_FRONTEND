@@ -30,7 +30,7 @@ export const ShowPresentation = () => {
   const { presentationId, groupId } = useParams();
   const [currentSlideIndex, setCurrentSlideIndex] = useState(-1);
   const [sessionId, setSessionId] = useState("");
-  const [user, setUser] = useState({});
+  const [currentUser, setCurrentUser] = useContext(UserContext);
   const socket = useContext(SocketContext);
   const [dataChart, setDataChart] = useState({});
   const [currentPresentation, setCurrentPresentation] = useState({});
@@ -99,12 +99,12 @@ export const ShowPresentation = () => {
                   draggable: true,
                   theme: "light"
                 });
-                socket.emit("init-game", { id: presentationId, groupId, user: user });
+                socket.emit("init-game", { id: presentationId, groupId, user: currentUser });
                 getSessionId(presentationId).then((data) => {
                   console.log("getSessionId return ", data);
                   const sessionId = data.data.data.session;
                   setSessionId(sessionId);
-                  console.log(sessionId)
+                  console.log(sessionId);
                 });
               } else {
                 printMessage(400, values.message);
@@ -347,8 +347,8 @@ export const ShowPresentation = () => {
   };
   //id session, idpresentatioonId, user
   const startGame = () => {
-    console.log("startGame ", sessionId, presentationId, user);
-    socket.emit("next-slide", { id: sessionId, presentationId, user: user });
+    console.log("startGame ", sessionId, presentationId, currentUser);
+    socket.emit("next-slide", { id: sessionId, presentationId, user: currentUser });
   };
   const showResult = () => {};
   return (

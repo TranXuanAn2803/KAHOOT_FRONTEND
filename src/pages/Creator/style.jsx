@@ -32,6 +32,7 @@ const Styled = styled.div`
     height: 100%;
     width: 100%;
     min-height: 700px;
+    height: fit-content;
   }
   .body-left-container {
     display: flex;
@@ -79,12 +80,13 @@ const Styled = styled.div`
     padding: 32px;
     min-width: 500px;
     padding-top: 56.25%;
-    height: 90%;
+    height: 100%;
     overflow: hidden;
     /* height: 0; */
     position: relative;
     background-color: #e7e8eb;
     flex: 1 1 0;
+  
   }
   .center-draw {
     height: 100%;
@@ -93,11 +95,12 @@ const Styled = styled.div`
     top: 0px;
     bottom: 0;
     left: 0;
-    background-color: #e7e8eb;
+    background-color: #fff;
     right: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-right: 1px solid #ccc;
   }
   .drawText-container {
     margin: 0 auto;
@@ -124,7 +127,7 @@ const Styled = styled.div`
   }
   .body-right {
     width: 100%;
-    height: 100%;
+    overflow: auto;
     background-color: #fff;
     padding: 20px 30px;
     max-width: 400px;
